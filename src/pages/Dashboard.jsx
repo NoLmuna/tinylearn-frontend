@@ -1,9 +1,10 @@
 import { ChartBarIcon, BookOpenIcon, ClockIcon } from '@heroicons/react/24/outline';
+import PlayfulButton from '../components/PlayfulButton';
 
 const stats = [
-  { name: 'Lessons Completed', value: '12', icon: BookOpenIcon },
-  { name: 'Current Progress', value: '75%', icon: ChartBarIcon },
-  { name: 'Learning Hours', value: '24', icon: ClockIcon },
+  { name: 'Lessons Completed', value: '12', icon: BookOpenIcon, color: 'blue' },
+  { name: 'Current Progress', value: '75%', icon: ChartBarIcon, color: 'green' },
+  { name: 'Learning Hours', value: '24', icon: ClockIcon, color: 'purple' },
 ];
 
 const recentActivities = [
@@ -14,40 +15,38 @@ const recentActivities = [
 
 export default function Dashboard() {
   return (
-    <div className="space-y-8">
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Student Dashboard</h1>
-        <div className="mt-4 sm:mt-0">
-          <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
-            View All Lessons
-          </button>
-        </div>
+    <div className="space-y-8 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">Student Dashboard</h1>
+        <PlayfulButton className="w-full sm:w-auto text-base py-3" color="orange">
+          View All Lessons
+        </PlayfulButton>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div
             key={stat.name}
-            className="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow rounded-lg overflow-hidden"
+            className={`relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow-xl rounded-2xl overflow-hidden border-b-4 border-${stat.color}-400`}
           >
             <dt>
-              <div className="absolute bg-indigo-500 rounded-md p-3">
+              <div className={`absolute ${stat.color === 'blue' ? 'bg-blue-500' : stat.color === 'green' ? 'bg-green-500' : 'bg-purple-500'} rounded-md p-3`}>
                 <stat.icon className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
-              <p className="ml-16 text-sm font-medium text-gray-500 truncate">{stat.name}</p>
+              <p className="ml-16 text-base font-medium text-gray-600 truncate">{stat.name}</p>
             </dt>
             <dd className="ml-16 pb-6 flex items-baseline">
-              <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+              <p className="text-3xl font-semibold text-gray-900">{stat.value}</p>
             </dd>
           </div>
         ))}
       </div>
 
       {/* Progress Section */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white shadow-xl rounded-2xl border border-pink-100">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Learning Progress</h3>
+          <h3 className="text-lg font-semibold leading-6 text-gray-900 mb-4">Learning Progress</h3>
           <div className="mt-4">
             <div className="relative pt-1">
               <div className="flex mb-2 items-center justify-between">
@@ -72,9 +71,9 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white shadow rounded-lg">
+      <div className="bg-white shadow-xl rounded-2xl border border-yellow-100">
         <div className="px-4 py-5 sm:p-6">
-          <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold leading-6 text-gray-900 mb-4">Recent Activity</h3>
           <div className="flow-root">
             <ul className="-mb-8">
               {recentActivities.map((activity, activityIdx) => (

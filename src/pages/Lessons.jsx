@@ -1,131 +1,135 @@
 import { useState } from 'react';
-import { PlayIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import PlayfulButton from '../components/PlayfulButton';
+import { BookOpenIcon } from '@heroicons/react/24/outline';
 
-const categories = [
-  { id: 'all', name: 'All Lessons' },
-  { id: 'numbers', name: 'Numbers' },
-  { id: 'letters', name: 'Letters' },
-  { id: 'shapes', name: 'Shapes & Colors' },
+const lessonCategories = [
+  { id: 'colors', name: 'Colors & Shapes' },
+  { id: 'numbers', name: 'Numbers & Counting' },
+  { id: 'letters', name: 'Alphabet' },
+  { id: 'animals', name: 'Animals' },
+  { id: 'science', name: 'Basic Science' },
+  { id: 'arts', name: 'Arts & Crafts' },
 ];
 
 const lessons = [
-  {
-    id: 1,
-    title: 'Numbers 1-10',
-    description: 'Learn to count and recognize numbers from 1 to 10',
-    category: 'numbers',
-    duration: '20 min',
-    progress: 100,
-    thumbnail: 'https://placehold.co/400x300/4F46E5/ffffff?text=Numbers+1-10',
-  },
-  {
-    id: 2,
-    title: 'Basic Letters A-E',
-    description: 'Introduction to the first five letters of the alphabet',
-    category: 'letters',
-    duration: '25 min',
-    progress: 60,
-    thumbnail: 'https://placehold.co/400x300/4F46E5/ffffff?text=Letters+A-E',
-  },
-  {
-    id: 3,
-    title: 'Colors and Shapes',
-    description: 'Learn primary colors and basic shapes',
-    category: 'shapes',
-    duration: '15 min',
-    progress: 0,
-    thumbnail: 'https://placehold.co/400x300/4F46E5/ffffff?text=Colors+and+Shapes',
-  },
+  { id: 1, category: 'colors', title: 'Primary Colors', progress: 100, color: 'pink' },
+  { id: 2, category: 'colors', title: 'Basic Shapes', progress: 75, color: 'yellow' },
+  { id: 3, category: 'numbers', title: 'Numbers 1-10', progress: 100, color: 'green' },
+  { id: 4, category: 'numbers', title: 'Counting Fun', progress: 50, color: 'blue' },
+  { id: 5, category: 'letters', title: 'ABC\'s', progress: 25, color: 'purple' },
+  { id: 6, category: 'letters', title: 'Phonics', progress: 0, color: 'orange' },
+  { id: 7, category: 'animals', title: 'Farm Animals', progress: 0, color: 'pink' },
+  { id: 8, category: 'animals', title: 'Jungle Animals', progress: 0, color: 'yellow' },
 ];
 
-export default function Lessons() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+const getColorClasses = (color) => {
+  const colorMap = {
+    pink: {
+      bg: 'bg-pink-500',
+      border: 'border-pink-400',
+      progress: 'bg-pink-400',
+      hover: 'bg-pink-100'
+    },
+    yellow: {
+      bg: 'bg-yellow-500',
+      border: 'border-yellow-400',
+      progress: 'bg-yellow-400',
+      hover: 'bg-yellow-100'
+    },
+    green: {
+      bg: 'bg-green-500',
+      border: 'border-green-400',
+      progress: 'bg-green-400',
+      hover: 'bg-green-100'
+    },
+    blue: {
+      bg: 'bg-blue-500',
+      border: 'border-blue-400',
+      progress: 'bg-blue-400',
+      hover: 'bg-blue-100'
+    },
+    purple: {
+      bg: 'bg-purple-500',
+      border: 'border-purple-400',
+      progress: 'bg-purple-400',
+      hover: 'bg-purple-100'
+    },
+    orange: {
+      bg: 'bg-orange-500',
+      border: 'border-orange-400',
+      progress: 'bg-orange-400',
+      hover: 'bg-orange-100'
+    }
+  };
+  return colorMap[color] || colorMap.pink;
+};
 
-  const filteredLessons = selectedCategory === 'all'
-    ? lessons
-    : lessons.filter(lesson => lesson.category === selectedCategory);
+export default function Lessons() {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const filteredLessons = selectedCategory
+    ? lessons.filter(lesson => lesson.category === selectedCategory)
+    : lessons;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-4 sm:mb-0">Interactive Lessons</h1>
+    <div className="space-y-8 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">Browse Lessons</h1>
+        {/* Maybe add a search bar or filter options here later */}
       </div>
 
       {/* Category Filter */}
-      <div className="bg-white p-4 rounded-lg shadow-sm overflow-x-auto">
-        <div className="flex flex-nowrap sm:flex-wrap gap-2 sm:gap-4 min-w-max sm:min-w-0">
-          {categories.map((category) => (
-            <button
+      <div className="mb-8">
+        <div className="flex space-x-3 overflow-x-auto pb-2 no-scrollbar">
+          <PlayfulButton
+            key="all"
+            color="gray"
+            className={`flex-shrink-0 ${selectedCategory === null ? 'bg-gray-400 text-white' : 'bg-white text-gray-700'}`}
+            onClick={() => setSelectedCategory(null)}
+          >
+            All Categories
+          </PlayfulButton>
+          {lessonCategories.map(category => (
+            <PlayfulButton
               key={category.id}
+              color="gray"
+              className={`flex-shrink-0 ${selectedCategory === category.id ? 'bg-gray-400 text-white' : 'bg-white text-gray-700'}`}
               onClick={() => setSelectedCategory(category.id)}
-              className={`${
-                selectedCategory === category.id
-                  ? 'bg-indigo-100 text-indigo-700 border-indigo-200'
-                  : 'text-gray-500 hover:text-gray-700 border-gray-200 hover:border-gray-300'
-              } px-4 py-2 rounded-md text-sm font-medium border whitespace-nowrap transition-colors`}
             >
               {category.name}
-            </button>
+            </PlayfulButton>
           ))}
         </div>
       </div>
 
       {/* Lessons Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredLessons.map((lesson) => (
-          <div
-            key={lesson.id}
-            className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
-          >
-            <div className="relative aspect-video">
-              <img
-                src={lesson.thumbnail}
-                alt={lesson.title}
-                className="w-full h-full object-cover"
-              />
-              {lesson.progress === 100 && (
-                <div className="absolute top-2 right-2 bg-green-500 text-white p-1.5 rounded-full">
-                  <CheckCircleIcon className="h-5 w-5" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredLessons.map(lesson => {
+          const colorClasses = getColorClasses(lesson.color);
+          return (
+            <div key={lesson.id} className={`relative bg-white shadow-xl rounded-2xl overflow-hidden border-b-4 ${colorClasses.border} group`}>
+              <div className="p-5">
+                <div className={`flex items-center justify-center h-12 w-12 rounded-full ${colorClasses.bg} mb-4`}>
+                  <BookOpenIcon className="h-6 w-6 text-white" aria-hidden="true" />
                 </div>
-              )}
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{lesson.title}</h3>
-              <p className="mt-1 text-sm text-gray-500 line-clamp-2">{lesson.description}</p>
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">{lesson.duration}</span>
-                  {lesson.progress > 0 && (
-                    <span className="text-indigo-600 font-medium">
-                      {lesson.progress}% Complete
-                    </span>
-                  )}
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{lesson.title}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className={`h-2.5 rounded-full ${colorClasses.progress}`}
+                    style={{ width: `${lesson.progress}%` }}
+                  ></div>
                 </div>
-                {lesson.progress > 0 && (
-                  <div className="mt-2 relative pt-1">
-                    <div className="overflow-hidden h-2 text-xs flex rounded bg-indigo-200">
-                      <div
-                        style={{ width: `${lesson.progress}%` }}
-                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500 transition-all duration-300"
-                      ></div>
-                    </div>
-                  </div>
-                )}
-                <button className="mt-4 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                  <PlayIcon className="h-5 w-5 mr-2" />
-                  {lesson.progress === 0 ? 'Start Lesson' : 'Continue Learning'}
-                </button>
+                <p className="text-sm text-gray-600 mt-2">Progress: {lesson.progress}%</p>
+              </div>
+              <div className={`absolute bottom-0 inset-x-0 px-5 py-3 transition-all duration-300 transform translate-y-full group-hover:translate-y-0 ${colorClasses.hover}`}>
+                <PlayfulButton color={lesson.color} className="w-full text-sm py-2">
+                  Start Lesson
+                </PlayfulButton>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
-      {filteredLessons.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No lessons found in this category.</p>
-        </div>
-      )}
     </div>
   );
 } 
