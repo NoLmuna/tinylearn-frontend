@@ -1,15 +1,23 @@
 import { Howl } from 'howler';
-import React from 'react';
+import React, { useCallback } from 'react';
 
-// Simple cheerful sound effects (public domain or generated)
-const clickSound = new Howl({
-  src: ['https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3'], // cheerful pop
-  volume: 0.3,
-});
-const hoverSound = new Howl({
-  src: ['https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3'], // same for demo, can use a different sound
-  volume: 0.15,
-});
+let clickSound, hoverSound;
+
+try {
+  clickSound = new Howl({
+    src: ['https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3'],
+    volume: 0.3,
+    preload: false,
+  });
+
+  hoverSound = new Howl({
+    src: ['https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3'],
+    volume: 0.15,
+    preload: false,
+  });
+} catch (error) {
+  console.warn('Audio failed to initialize:', error);
+}
 
 const colorMap = {
   blue: 'bg-blue-400 hover:bg-blue-500 focus:ring-blue-200',
@@ -28,19 +36,28 @@ export default function PlayfulButton({
   type = 'button',
   ...props
 }) {
+  const handleClick = useCallback(
+    e => {
+      if (clickSound?.play) clickSound.play();
+      onClick?.(e);
+    },
+    [onClick]
+  );
+
+  const handleHover = useCallback(() => {
+    if (hoverSound?.play) hoverSound.play();
+  }, []);
+
   return (
     <button
       type={type}
       className={`flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-lg shadow-lg text-white transition-all outline-none focus:ring-4 ${colorMap[color] || colorMap.blue} ${className}`}
-      onClick={e => {
-        clickSound.play();
-        onClick && onClick(e);
-      }}
-      onMouseEnter={() => hoverSound.play()}
+      onClick={handleClick}
+      onMouseEnter={handleHover}
       {...props}
     >
       {Icon && <Icon className="h-7 w-7" />}
       {children}
     </button>
   );
-} 
+}

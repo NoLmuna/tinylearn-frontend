@@ -1,7 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/levelup-logo.png';
 
 // Public navigation
@@ -18,36 +19,68 @@ const privateNav = [
   { name: 'Lessons', href: '/lessons' },
 ];
 
+const roleBasedNav = {
+  student: [
+    { name: 'Dashboard', href: '/student' },
+    { name: 'Lessons', href: '/lessons' },
+  ],
+  parent: [
+    { name: 'Dashboard', href: '/parent' },
+    { name: 'Child Progress', href: '/parent/progress' },
+  ],
+  tutor: [
+    { name: 'Dashboard', href: '/tutor' },
+    { name: 'Students', href: '/tutor/students' },
+  ],
+};
+
 export default function MainLayout() {
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [currentHash, setCurrentHash] = useState(window.location.hash);
 
-  // Listen for hash changes
+  // Only keep the hash change effect
   useEffect(() => {
     const onHashChange = () => setCurrentHash(window.location.hash);
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  // Simulate user login after successful login/signup (for demo only)
-  useEffect(() => {
-    if (location.pathname === '/dashboard' && !user) {
-      setUser({ name: 'Demo User', role: 'student' });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
-  const navigation = user ? privateNav : publicNav;
+  // Update navigation based on path and auth state
+  const navigation = user 
+    ? (location.pathname === '/' 
+      ? publicNav 
+      : (roleBasedNav[user.role] || privateNav))
+    : publicNav;
 
   // Smooth scroll for anchor links
   const handleNavClick = (e, href) => {
-    if (href.startsWith('#')) {
+    if (!href.startsWith('#')) {
       e.preventDefault();
-      const el = document.getElementById(href.replace('#', ''));
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        window.location.hash = href;
+      navigate(href);
+    } else {
+      e.preventDefault();
+      if (location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const el = document.getElementById(href.replace('#', ''));
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            window.location.hash = href;
+          }
+        }, 100);
+      } else {
+        const el = document.getElementById(href.replace('#', ''));
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          window.location.hash = href;
+        }
       }
     }
   };
@@ -102,18 +135,18 @@ export default function MainLayout() {
                 </div>
                 {/* Right side: Get Started button for public, user info for logged in */}
                 {!user ? (
-                  <a
-                    href="/signup"
+                  <Link
+                    to="/signup"
                     className="hidden sm:inline-block px-8 py-3 rounded-full bg-gradient-to-r from-yellow-300 to-pink-300 text-pink-900 font-extrabold shadow hover:from-yellow-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:ring-offset-2 transition-all text-lg font-[Fredoka]"
                   >
                     Get Started
-                  </a>
+                  </Link>
                 ) : (
                   <div className="flex items-center gap-2">
                     <span className="hidden sm:inline text-lg font-bold text-pink-700 font-[Fredoka]">{user.name}</span>
                     <span className="inline-block px-3 py-1 rounded-full bg-pink-200 text-pink-700 text-base font-bold capitalize font-[Fredoka]">{user.role}</span>
                     <button
-                      onClick={() => setUser(null)}
+                      onClick={handleLogout}
                       className="px-4 py-2 rounded-xl text-base font-bold text-pink-600 border border-pink-200 bg-white hover:bg-pink-100 transition-colors font-[Fredoka]"
                     >
                       Logout
@@ -177,4 +210,4 @@ export default function MainLayout() {
       </main>
     </div>
   );
-} 
+}
