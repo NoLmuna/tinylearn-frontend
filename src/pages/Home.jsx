@@ -1,5 +1,9 @@
+// Home page with hero section, features and call-to-actions for students, parents and tutors
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AcademicCapIcon, UserGroupIcon, BookOpenIcon, SparklesIcon, PuzzlePieceIcon, ChartBarIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
-import PlayfulButton from '../components/PlayfulButton';
+import Hero from '../components/Hero';
+import Card from '../components/ui/Card';
 
 const getStartedRoles = [
   {
@@ -9,7 +13,7 @@ const getStartedRoles = [
     to: '/signup?role=student',
   },
   {
-    label: 'Parent',
+    label: 'Parent', 
     icon: UserGroupIcon,
     color: 'green',
     to: '/signup?role=parent',
@@ -26,105 +30,212 @@ const features = [
   {
     title: 'Interactive Lessons',
     icon: SparklesIcon,
-    bg: 'bg-yellow-300',
-    text: 'text-yellow-900',
-    desc: 'Engaging, playful content for early learners.'
+    bg: 'bg-gradient-to-br from-yellow-200 via-yellow-100 to-amber-50',
+    iconBg: 'bg-gradient-to-br from-yellow-400 to-amber-500',
+    text: 'text-amber-900',
+    iconColor: 'text-white',
+    desc: 'Engaging, playful content for early learners with interactive activities.'
   },
   {
     title: 'Educational Games',
     icon: PuzzlePieceIcon,
-    bg: 'bg-pink-200',
-    text: 'text-pink-900',
-    desc: 'Learn through play with fun activities.'
+    bg: 'bg-gradient-to-br from-pink-200 via-pink-100 to-rose-50',
+    iconBg: 'bg-gradient-to-br from-pink-400 to-rose-500',
+    text: 'text-rose-900', 
+    iconColor: 'text-white',
+    desc: 'Learn through play with fun activities and gamified lessons.'
   },
   {
     title: 'Progress Tracking',
     icon: ChartBarIcon,
-    bg: 'bg-sky-200',
-    text: 'text-sky-900',
-    desc: 'Visualize learning achievements easily.'
+    bg: 'bg-gradient-to-br from-blue-200 via-blue-100 to-sky-50',
+    iconBg: 'bg-gradient-to-br from-blue-400 to-sky-500',
+    text: 'text-blue-900',
+    iconColor: 'text-white',
+    desc: 'Visualize learning achievements and monitor growth easily.'
   },
   {
     title: 'Parent-Tutor Connect',
     icon: ChatBubbleLeftRightIcon,
-    bg: 'bg-green-200',
-    text: 'text-green-900',
-    desc: 'Stay updated and communicate with ease.'
+    bg: 'bg-gradient-to-br from-green-200 via-green-100 to-emerald-50',
+    iconBg: 'bg-gradient-to-br from-green-400 to-emerald-500',
+    text: 'text-emerald-900',
+    iconColor: 'text-white',
+    desc: 'Stay updated and communicate with seamless messaging.'
   },
 ];
 
 export default function Home() {
-  return (
-    <div className="bg-gradient-to-b from-pink-50 via-yellow-50 to-sky-50 min-h-screen pb-12">
-      {/* Hero Section */}
-      <section className="max-w-4xl mx-auto text-center pt-16 pb-10 px-4">
-        <h1 className="text-5xl sm:text-6xl font-extrabold text-primary mb-4 drop-shadow-sm leading-tight" style={{letterSpacing: '-1px'}}>
-          Where Little Minds Begin Big Journeys
-        </h1>
-        <p className="text-xl sm:text-2xl text-gray-700 mb-8 max-w-2xl mx-auto font-semibold">
-          TinyLearn is an early education platform connecting students, parents, and tutors with interactive learning.
-        </p>
-        <div className="flex justify-center mt-6">
-          <img
-            src="https://images.unsplash.com/photo-1503676382389-4809596d5290?auto=format&fit=crop&w=600&q=80"
-            alt="Happy kids learning"
-            className="rounded-3xl shadow-xl w-full max-w-md object-cover border-4 border-white"
-            style={{ aspectRatio: '4/3' }}
-          />
-        </div>
-      </section>
+  const navigate = useNavigate();
 
-      {/* Get Started As... */}
-      <section className="max-w-3xl mx-auto mt-12 mb-16 px-4">
-        <h2 className="text-3xl font-extrabold text-primary text-center mb-6">Get started as a...</h2>
-        <div className="flex flex-col sm:flex-row justify-center gap-6">
-          {getStartedRoles.map((role) => (
-            <PlayfulButton
-              key={role.label}
-              as="a"
-              href={role.to}
-              icon={role.icon}
-              color={role.color}
-              className="w-full sm:w-auto flex-1 py-5 text-xl"
-              style={{ minWidth: 140 }}
-            >
-              {role.label}
-            </PlayfulButton>
-          ))}
-        </div>
-      </section>
+  const heroButtons = getStartedRoles.map((role, index) => ({
+    label: `Get started as a ${role.label}`,
+    icon: role.icon,
+    variant: index === 0 ? 'primary' : index === 1 ? 'secondary' : 'accent',
+    size: 'lg',
+    onClick: () => navigate(role.to)
+  }));
+
+  return (
+    <div className="bg-gradient-to-b from-pink-50 via-yellow-50 to-blue-50 min-h-screen relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-200/30 rounded-full blur-xl"></div>
+        <div className="absolute top-40 right-20 w-40 h-40 bg-pink-200/30 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-blue-200/30 rounded-full blur-xl"></div>
+        <div className="absolute bottom-40 right-10 w-28 h-28 bg-green-200/30 rounded-full blur-xl"></div>
+      </div>
+      
+      {/* Hero Section */}
+      <Hero
+        title="Where Little Minds Begin Big Journeys"
+        subtitle="TinyLearn is an interactive learning platform connecting students, parents, and tutors with engaging educational experiences designed for young learners."
+        image="/src/assets/home-based-learning-8968710_1280.png"
+        imageAlt="Home-based learning environment for young learners"
+        buttons={heroButtons}
+      />
 
       {/* What We Offer */}
-      <section id="features" className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl font-extrabold text-primary text-center mb-8">What We Offer</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <section id="features" className="max-w-6xl mx-auto px-4 pb-20 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-heading font-extrabold text-primary mb-4 drop-shadow-sm">What We Offer</h2>
+          <p className="text-xl text-gray-600 font-body max-w-2xl mx-auto leading-relaxed">
+            Discover our comprehensive suite of tools designed to make learning fun and effective for everyone.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {features.map((feature) => (
-            <div
+            <Card
               key={feature.title}
-              className={`flex items-center gap-6 p-8 rounded-3xl shadow-xl ${feature.bg} ${feature.text} border-2 border-white`}
-              style={{ minHeight: 140 }}
+              elevate={true}
+              className={`${feature.bg} ${feature.text} border-white/50 shadow-xl relative overflow-hidden`}
             >
-              <span className={`p-5 rounded-full bg-white shadow-lg flex items-center justify-center`}>
-                <feature.icon className="h-12 w-12" />
-              </span>
-              <div>
-                <h3 className="text-2xl font-extrabold mb-2 leading-tight" style={{letterSpacing: '-0.5px'}}>{feature.title}</h3>
-                <p className="text-lg font-medium opacity-90 leading-snug">{feature.desc}</p>
+              {/* Subtle pattern overlay */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
               </div>
-            </div>
+              
+              <div className="relative flex items-start gap-6">
+                <div className={`p-4 ${feature.iconBg} rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-200`}>
+                  <feature.icon className={`h-8 w-8 ${feature.iconColor} drop-shadow-sm`} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-heading font-bold mb-3 leading-tight drop-shadow-sm">
+                    {feature.title}
+                  </h3>
+                  <p className="text-lg font-body font-medium opacity-90 leading-relaxed">
+                    {feature.desc}
+                  </p>
+                </div>
+              </div>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* About & Contact (simple placeholders) */}
-      <section id="about" className="max-w-3xl mx-auto mt-20 px-4 text-center">
-        <h2 className="text-2xl font-extrabold text-primary mb-4">About TinyLearn</h2>
-        <p className="text-gray-700 mb-2 text-lg font-medium">TinyLearn is dedicated to making early education engaging, accessible, and fun for every child, parent, and tutor. We believe in playful learning and strong connections between home and school.</p>
+      {/* About & Contact Sections */}
+      <section id="about" className="max-w-4xl mx-auto px-4 py-20 text-center relative z-10">
+        <Card className="bg-white/90 backdrop-blur-sm border-white/60 shadow-xl">
+          <h2 className="text-3xl font-heading font-bold text-primary mb-6 drop-shadow-sm">About TinyLearn</h2>
+          <p className="text-lg font-body text-gray-700 leading-relaxed mb-6">
+            TinyLearn is an interactive learning platform that connects students, parents, and tutors through engaging 
+            educational experiences. In partnership with Level Up Learning Center, we provide positive and productive 
+            educational environments that develop learning for students of all ages.
+          </p>
+          <p className="text-lg font-body text-gray-700 leading-relaxed">
+            Our comprehensive platform includes interactive lessons, educational games, progress tracking, and seamless 
+            communication between parents and tutors. We're committed to helping every student reach their full potential 
+            through innovative teaching methods and personalized learning approaches.
+          </p>
+        </Card>
       </section>
-      <section id="contact" className="max-w-3xl mx-auto mt-12 px-4 text-center">
-        <h2 className="text-2xl font-extrabold text-primary mb-4">Contact</h2>
-        <p className="text-gray-700 mb-2 text-lg font-medium">Questions? Suggestions? <a href="mailto:info@tinylearn.com" className="text-indigo-600 underline">Email us</a> and we'll get back to you soon!</p>
+
+      <section id="contact" className="max-w-4xl mx-auto px-4 pb-20 text-center relative z-10">
+        <Card className="bg-gradient-to-br from-white via-blue-50/80 to-purple-50/80 backdrop-blur-sm border border-blue-200/60 shadow-2xl">
+          <h2 className="text-3xl font-heading font-bold text-gray-800 mb-6 drop-shadow-sm">Contact Level Up Learning Center</h2>
+          <p className="text-lg font-body text-gray-700 mb-8 leading-relaxed">
+            Ready to get started with TinyLearn? Contact Level Up Learning Center today to learn more about our programs and how we can help your child succeed!
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-500 rounded-lg">
+                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-gray-800">Address</h3>
+                  <p className="text-gray-600">Ground Floor #30 Canda St, Corner 18th St, East Bajac Bajac</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-500 rounded-lg">
+                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-gray-800">Phone</h3>
+                  <p className="text-gray-600">(047) 222 5321</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-500 rounded-lg">
+                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-gray-800">Email</h3>
+                  <p className="text-gray-600">lulc0214@gmail.com</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-500 rounded-lg">
+                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-heading font-semibold text-gray-800">YouTube</h3>
+                  <a 
+                    href="https://youtube.com/@Level%20Up%20Learning%20Center" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-red-600 transition-colors"
+                  >
+                    Level Up Learning Center
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="mailto:lulc0214@gmail.com"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-700 text-gray-100 font-heading font-bold text-lg rounded-full shadow-xl button-lift transition-all duration-150 hover:from-blue-700 hover:to-purple-800 hover:shadow-2xl hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 transform hover:scale-105 border-2 border-white/20"
+            >
+              📧 Email Us
+            </a>
+            <a
+              href="tel:(047)222-5321"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-700 text-gray-100 font-heading font-bold text-lg rounded-full shadow-xl button-lift transition-all duration-150 hover:from-green-700 hover:to-emerald-800 hover:shadow-2xl hover:text-white focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-offset-2 transform hover:scale-105 border-2 border-white/20"
+            >
+              📞 Call Us
+            </a>
+          </div>
+        </Card>
       </section>
     </div>
   );
-} 
+}

@@ -42,14 +42,7 @@ export default function MainLayout() {
   const [currentHash, setCurrentHash] = useState(window.location.hash);
 
   useEffect(() => {
-    const onHashChange = () => {
-      const newHash = window.location.hash;
-      setCurrentHash(newHash);
-    };
-    
-    // Set initial hash state
-    setCurrentHash(window.location.hash);
-    
+    const onHashChange = () => setCurrentHash(window.location.hash);
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
@@ -68,44 +61,26 @@ export default function MainLayout() {
 
   // Smooth scroll for anchor links
   const handleNavClick = (e, href) => {
-    e.preventDefault();
-    
-    if (href === '/') {
-      // Home button - clear hash and scroll to top
-      if (location.pathname !== '/') {
-        navigate('/');
-      }
-      // Clear hash and update state
-      window.location.hash = '';
-      setCurrentHash('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (href.startsWith('#')) {
-      // Hash links (Features, About, Contact, etc.)
+    if (!href.startsWith('#')) {
+      e.preventDefault();
+      navigate(href);
+    } else {
+      e.preventDefault();
       if (location.pathname !== '/') {
         navigate('/');
         setTimeout(() => {
           const el = document.getElementById(href.replace('#', ''));
           if (el) {
-            window.location.hash = href;
-            setCurrentHash(href);
             el.scrollIntoView({ behavior: 'smooth' });
+            window.location.hash = href;
           }
         }, 100);
       } else {
         const el = document.getElementById(href.replace('#', ''));
         if (el) {
-          window.location.hash = href;
-          setCurrentHash(href);
           el.scrollIntoView({ behavior: 'smooth' });
+          window.location.hash = href;
         }
-      }
-    } else {
-      // Regular navigation to other pages
-      navigate(href);
-      // Clear hash when navigating away from home
-      if (currentHash) {
-        window.location.hash = '';
-        setCurrentHash('');
       }
     }
   };
@@ -119,8 +94,8 @@ export default function MainLayout() {
     </Link>
   ) : (
     <div className="flex items-center gap-2">
-      <span className="hidden sm:inline text-lg font-bold text-blue-700 font-heading">{user.name}</span>
-      <span className="inline-block px-3 py-1 rounded-full bg-blue-200 text-blue-700 text-base font-bold capitalize font-heading">{user.role}</span>
+      <span className="hidden sm:inline text-lg font-bold text-pink-700 font-heading">{user.name}</span>
+      <span className="inline-block px-3 py-1 rounded-full bg-pink-200 text-pink-700 text-base font-bold capitalize font-heading">{user.role}</span>
       <Button
         variant="outline"
         size="sm" 
