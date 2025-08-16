@@ -30,14 +30,14 @@ export default function Hero({
         
         {image && (
           <div className="flex justify-center mt-8 mb-12">
-            <Card className="w-full max-w-md p-0 shadow-2xl border-4 border-white">
+            <div className="w-full max-w-md">
               <img
                 src={image}
                 alt={imageAlt || 'Hero image'}
                 className="rounded-2xl w-full object-cover"
                 style={{ aspectRatio: '4/3' }}
               />
-            </Card>
+            </div>
           </div>
         )}
         
