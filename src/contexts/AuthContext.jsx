@@ -1,36 +1,112 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-
-const AuthContext = createContext(null);
+import { useState, useEffect } from 'react';
+import { AuthContext } from './AuthContext';
+import ApiService from '../services/api';
+import toast from 'react-hot-toast';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('tinylearn_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const initAuth = async () => {
+      const token = localStorage.getItem('tinylearn_token');
+      if (token) {
+        try {
+          const response = await ApiService.getProfile();
+          if (response.success) {
+            setUser(response.data);
+          } else {
+            // Invalid token, clear it
+            localStorage.removeItem('tinylearn_token');
+            localStorage.removeItem('tinylearn_user');
+          }
+        } catch (error) {
+          console.error('Auth initialization error:', error);
+          localStorage.removeItem('tinylearn_token');
+          localStorage.removeItem('tinylearn_user');
+        }
+      }
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('tinylearn_user', JSON.stringify(userData));
+  const login = async (credentials) => {
+    try {
+      const response = await ApiService.login(credentials);
+      
+      if (response.success) {
+        const { user, token } = response.data;
+        setUser(user);
+        localStorage.setItem('tinylearn_token', token);
+        localStorage.setItem('tinylearn_user', JSON.stringify(user));
+        return { success: true, user };
+      } else {
+        throw new Error(response.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await ApiService.register(userData);
+      
+      if (response.success) {
+        // Auto-login after successful registration
+        const loginResponse = await login({
+          email: userData.email,
+          password: userData.password
+        });
+        return loginResponse;
+      } else {
+        throw new Error(response.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('tinylearn_token');
     localStorage.removeItem('tinylearn_user');
     localStorage.removeItem('tinylearn_email');
     localStorage.removeItem('tinylearn_role');
+    toast.success('Logged out successfully');
+  };
+
+  const updateProfile = async (userData) => {
+    try {
+      const response = await ApiService.updateProfile(userData);
+      
+      if (response.success) {
+        setUser(response.data);
+        localStorage.setItem('tinylearn_user', JSON.stringify(response.data));
+        return { success: true, user: response.data };
+      } else {
+        throw new Error(response.message || 'Profile update failed');
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+      throw error;
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {!loading && children}
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      updateProfile, 
+      loading 
+    }}>
+      {children}
     </AuthContext.Provider>
   );
 }
-
-export const useAuth = () => useContext(AuthContext);

@@ -1,7 +1,7 @@
 // Main layout component with navbar, routing and user authentication state
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import Navbar from '../components/ui/Navbar';
 import Button from '../components/ui/Button';
 import logo from '../assets/levelup-logo.png';

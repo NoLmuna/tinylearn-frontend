@@ -7,22 +7,18 @@ import Card from '../components/ui/Card';
 
 const getStartedRoles = [
   {
-    label: 'Student',
-    icon: AcademicCapIcon,
-    color: 'blue',
-    to: '/signup?role=student',
-  },
-  {
     label: 'Parent', 
     icon: UserGroupIcon,
     color: 'green',
     to: '/signup?role=parent',
+    description: 'Create an account to track your child\'s learning progress'
   },
   {
-    label: 'Tutor',
+    label: 'Teacher',
     icon: BookOpenIcon,
     color: 'purple',
-    to: '/signup?role=tutor',
+    to: '/signup?role=teacher',
+    description: 'Join as an educator to create lessons and manage students'
   },
 ];
 
@@ -69,9 +65,9 @@ export default function Home() {
   const navigate = useNavigate();
 
   const heroButtons = getStartedRoles.map((role, index) => ({
-    label: `Get started as a ${role.label}`,
+    label: `Join as a ${role.label}`,
     icon: role.icon,
-    variant: index === 0 ? 'primary' : index === 1 ? 'secondary' : 'accent',
+    variant: index === 0 ? 'primary' : 'secondary',
     size: 'lg',
     onClick: () => navigate(role.to)
   }));
@@ -132,6 +128,79 @@ export default function Home() {
             </Card>
           ))}
         </div>
+      </section>
+
+      {/* Getting Started Section */}
+      <section className="max-w-6xl mx-auto px-4 pb-20 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-heading font-extrabold text-primary mb-4 drop-shadow-sm">Get Started Today</h2>
+          <p className="text-xl text-gray-600 font-body max-w-3xl mx-auto leading-relaxed">
+            Join our learning community! Parents and teachers can create accounts, while students receive their accounts from their teachers.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {getStartedRoles.map((role) => (
+            <Card
+              key={role.label}
+              elevate={true}
+              className="bg-gradient-to-br from-white via-gray-50 to-gray-100 border-gray-200 shadow-xl relative overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
+            >
+              <div className="relative flex items-start gap-6 p-6">
+                <div className={`p-4 ${role.color === 'green' ? 'bg-gradient-to-br from-green-400 to-emerald-500' : 'bg-gradient-to-br from-purple-400 to-violet-500'} rounded-2xl shadow-lg`}>
+                  <role.icon className="h-8 w-8 text-white drop-shadow-sm" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-heading font-bold mb-3 text-gray-800 leading-tight">
+                    {role.label}s Welcome!
+                  </h3>
+                  <p className="text-lg font-body text-gray-600 mb-4 leading-relaxed">
+                    {role.description}
+                  </p>
+                  <button
+                    onClick={() => navigate(role.to)}
+                    className={`inline-flex items-center px-6 py-3 ${
+                      role.color === 'green' 
+                        ? 'bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800' 
+                        : 'bg-gradient-to-r from-purple-600 to-violet-700 hover:from-purple-700 hover:to-violet-800'
+                    } text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105`}
+                  >
+                    <role.icon className="h-5 w-5 mr-2" />
+                    Sign Up as {role.label}
+                  </button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Student Info Card */}
+        <Card className="bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 border-blue-200 shadow-xl">
+          <div className="text-center p-8">
+            <div className="mb-4">
+              <AcademicCapIcon className="h-16 w-16 text-blue-600 mx-auto" />
+            </div>
+            <h3 className="text-2xl font-heading font-bold text-blue-900 mb-4">For Students</h3>
+            <p className="text-lg text-blue-800 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Students receive their TinyLearn accounts directly from their teachers or administrators. 
+              This ensures a safe, supervised learning environment for all our young learners.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={() => navigate('/login')}
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-sky-700 hover:from-blue-700 hover:to-sky-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+              >
+                🎒 Student Login
+              </button>
+              <a
+                href="#contact"
+                className="inline-flex items-center px-6 py-3 bg-white text-blue-700 border-2 border-blue-200 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
+              >
+                📞 Contact for Student Account
+              </a>
+            </div>
+          </div>
+        </Card>
       </section>
 
       {/* About & Contact Sections */}
