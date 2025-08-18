@@ -16,7 +16,9 @@ const seedData = async () => {
                 lastName: 'User',
                 email: 'admin@tinylearn.com',
                 password: adminPassword,
-                role: 'admin'
+                role: 'admin',
+                accountStatus: 'approved',
+                createdBy: null
             }
         });
 
@@ -29,7 +31,9 @@ const seedData = async () => {
                 lastName: 'Johnson',
                 email: 'teacher@tinylearn.com',
                 password: teacherPassword,
-                role: 'teacher'
+                role: 'teacher',
+                accountStatus: 'approved',
+                createdBy: null
             }
         });
 
@@ -45,7 +49,9 @@ const seedData = async () => {
                 role: 'student',
                 age: 6,
                 grade: '1st Grade',
-                parentEmail: 'parent@example.com'
+                parentEmail: 'parent@example.com',
+                accountStatus: 'approved',
+                createdBy: 1  // Created by admin
             }
         });
 

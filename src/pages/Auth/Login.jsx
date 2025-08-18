@@ -21,7 +21,7 @@ const roleConfig = {
 };
 
 export default function Login() {
-  const { login, user } = useAuth();
+  const { login, user, getRoleDashboardPath } = useAuth();
   const [form, setForm] = useState({ 
     email: '', 
     password: '', 
@@ -105,8 +105,8 @@ export default function Login() {
 
         toast.success(`Welcome back, ${result.user.firstName}!`);
         
-        // Navigate to appropriate dashboard
-        const dashboardPath = roleConfig[result.user.role]?.dashboardPath || '/dashboard';
+        // Navigate to role-specific dashboard
+        const dashboardPath = getRoleDashboardPath(result.user.role);
         navigate(dashboardPath);
       }
     } catch (error) {

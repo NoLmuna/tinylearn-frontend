@@ -80,6 +80,20 @@ module.exports = (sequelize) => {
             defaultValue: true,
             field: 'is_active'
         },
+        accountStatus: {
+            type: DataTypes.ENUM('pending', 'approved', 'suspended'),
+            defaultValue: 'approved',
+            field: 'account_status'
+        },
+        createdBy: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            field: 'created_by',
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
         lastLogin: {
             type: DataTypes.DATE,
             allowNull: true,

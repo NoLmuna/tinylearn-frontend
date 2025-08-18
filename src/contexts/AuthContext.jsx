@@ -97,6 +97,21 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const getRoleDashboardPath = (role) => {
+    switch (role) {
+      case 'student':
+        return '/student';
+      case 'teacher':
+        return '/teacher';
+      case 'parent':
+        return '/parent';
+      case 'admin':
+        return '/admin';
+      default:
+        return '/';
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -104,7 +119,8 @@ export function AuthProvider({ children }) {
       register, 
       logout, 
       updateProfile, 
-      loading 
+      loading,
+      getRoleDashboardPath
     }}>
       {children}
     </AuthContext.Provider>

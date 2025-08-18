@@ -25,7 +25,12 @@ class ApiService {
         throw new Error(data.message || 'An error occurred');
       }
 
-      return data;
+      // Transform backend response format to expected frontend format
+      return {
+        success: true,
+        data: data.data,
+        message: data.message
+      };
     } catch (error) {
       console.error('API Error:', error);
       throw error;

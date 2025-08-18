@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { Player } from '@lottiefiles/react-lottie-player';
 import Confetti from 'react-confetti';
@@ -13,9 +14,9 @@ import {
   MoonIcon
 } from '@heroicons/react/24/outline';
 
-import AnimatedProgressBar from '../../components/AnimatedProgressBar';
-import WeatherWidget from '../../components/WeatherWidget';
-import PlayfulButton from '../../components/PlayfulButton';
+import AnimatedProgressBar from '../../../components/AnimatedProgressBar';
+import WeatherWidget from '../../../components/WeatherWidget';
+import PlayfulButton from '../../../components/PlayfulButton';
 
 const subjects = {
   math: {
