@@ -45,13 +45,6 @@ class ApiService {
     });
   }
 
-  async register(userData) {
-    return this.request('/users/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-  }
-
   async getProfile() {
     return this.request('/users/profile');
   }

@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Lessons from './pages/Lessons';
 import Login from './pages/Auth/Login';
-import Signup from './pages/Auth/Signup';
 import StudentDashboard from './pages/dashboards/Student/StudentDashboard';
 import TeacherDashboard from './pages/dashboards/Teacher/TeacherDashboard';
 import ParentDashboard from './pages/dashboards/Parent/ParentDashboard';
@@ -17,7 +16,6 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />

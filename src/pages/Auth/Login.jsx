@@ -214,12 +214,9 @@ export default function Login() {
                 </label>
               </div>
               <div className="text-sm">
-                <Link
-                  to="/forgot-password"
-                  className="font-medium text-primary hover:text-primary-dark transition-colors"
-                >
-                  Forgot password?
-                </Link>
+                <span className="text-gray-500">
+                  Contact admin for help
+                </span>
               </div>
             </div>
 
@@ -242,19 +239,13 @@ export default function Login() {
             </div>
           </form>
 
-          {/* Sign Up Link */}
+          {/* Account Information */}
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-600">
-              Are you a parent or teacher?{' '}
-              <Link
-                to="/signup"
-                className="font-medium text-primary hover:text-primary-dark transition-colors"
-              >
-                Create an account
-              </Link>
+              Need an account?
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              Students receive accounts from their teachers
+              All accounts are created by administrators. Please contact your school admin for access.
             </p>
           </div>
         </div>

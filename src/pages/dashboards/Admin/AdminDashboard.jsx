@@ -441,11 +441,19 @@ export default function AdminDashboard() {
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Add Student
                 </Button>
+                <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white justify-start">
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Teacher
+                </Button>
                 <Button className="w-full bg-green-500 hover:bg-green-600 text-white justify-start">
+                  <PlusIcon className="h-4 w-4 mr-2" />
+                  Add Parent
+                </Button>
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white justify-start">
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Add Admin
                 </Button>
-                <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white justify-start">
+                <Button className="w-full bg-indigo-500 hover:bg-indigo-600 text-white justify-start">
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Create Lesson
                 </Button>

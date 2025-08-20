@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from './AuthContext.js';
 import ApiService from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -51,26 +51,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const register = async (userData) => {
-    try {
-      const response = await ApiService.register(userData);
-      
-      if (response.success) {
-        // Auto-login after successful registration
-        const loginResponse = await login({
-          email: userData.email,
-          password: userData.password
-        });
-        return loginResponse;
-      } else {
-        throw new Error(response.message || 'Registration failed');
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
-  };
-
   const logout = () => {
     setUser(null);
     localStorage.removeItem('tinylearn_token');
@@ -116,7 +96,6 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ 
       user, 
       login, 
-      register, 
       logout, 
       updateProfile, 
       loading,

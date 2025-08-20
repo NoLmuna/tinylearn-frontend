@@ -112,9 +112,9 @@ export default function MainLayout() {
 
   // Right side content for navbar
   const rightContent = !user ? (
-    <Link to="/signup" className="hidden sm:inline-block">
+    <Link to="/login" className="hidden sm:inline-block">
       <Button variant="primary" size="lg" className="font-heading">
-        Get Started
+        Sign In
       </Button>
     </Link>
   ) : (
