@@ -1,29 +1,31 @@
 import { useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext.js';
-import ApiService from '../services/api';
+import apiService from '../services/api';
 import toast from 'react-hot-toast';
 
+// Provider component
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('tinylearn_token');
+      const token = apiService.getToken();
       if (token) {
         try {
-          const response = await ApiService.getProfile();
-          if (response.success) {
+          const response = await apiService.getProfile();
+          if (response.success && response.data) {
             setUser(response.data);
           } else {
             // Invalid token, clear it
-            localStorage.removeItem('tinylearn_token');
-            localStorage.removeItem('tinylearn_user');
+            apiService.removeToken();
           }
         } catch (error) {
           console.error('Auth initialization error:', error);
-          localStorage.removeItem('tinylearn_token');
-          localStorage.removeItem('tinylearn_user');
+          apiService.removeToken();
+          if (error.status !== 401) {
+            toast.error('Authentication error. Please login again.');
+          }
         }
       }
       setLoading(false);
@@ -32,52 +34,80 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (credentials, showToast = true) => {
     try {
-      const response = await ApiService.login(credentials);
+      setLoading(true);
+      const response = await apiService.login(credentials);
       
-      if (response.success) {
-        const { user, token } = response.data;
-        setUser(user);
-        localStorage.setItem('tinylearn_token', token);
-        localStorage.setItem('tinylearn_user', JSON.stringify(user));
-        return { success: true, user };
+      if (response.success && response.data) {
+        const userData = response.data.user || response.data;
+        setUser(userData);
+        
+        // Only show toast if requested (to prevent duplicate notifications)
+        if (showToast) {
+          toast.success(`Welcome back, ${userData.firstName}!`);
+        }
+        
+        return { success: true, user: userData };
       } else {
         throw new Error(response.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
+      const message = error.message || 'Login failed. Please try again.';
+      
+      // Always show error toasts
+      toast.error(message);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('tinylearn_token');
-    localStorage.removeItem('tinylearn_user');
-    localStorage.removeItem('tinylearn_email');
-    localStorage.removeItem('tinylearn_role');
-    toast.success('Logged out successfully');
+  const logout = async (showToast = true) => {
+    try {
+      await apiService.logout();
+      setUser(null);
+      
+      // Only show toast if requested (to prevent duplicate notifications)
+      if (showToast) {
+        toast.success('Logged out successfully');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear user state even if API call fails
+      setUser(null);
+      
+      // Only show toast if requested
+      if (showToast) {
+        toast.success('Logged out successfully');
+      }
+    }
   };
 
   const updateProfile = async (userData) => {
     try {
-      const response = await ApiService.updateProfile(userData);
+      setLoading(true);
+      const response = await apiService.updateUser(user.id, userData);
       
-      if (response.success) {
+      if (response.success && response.data) {
         setUser(response.data);
-        localStorage.setItem('tinylearn_user', JSON.stringify(response.data));
+        toast.success('Profile updated successfully');
         return { success: true, user: response.data };
       } else {
         throw new Error(response.message || 'Profile update failed');
       }
     } catch (error) {
       console.error('Profile update error:', error);
+      const message = error.message || 'Failed to update profile';
+      toast.error(message);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getRoleDashboardPath = (role) => {
+  const getRoleDashboardPath = (role = user?.role) => {
     switch (role) {
       case 'student':
         return '/student';
@@ -86,21 +116,24 @@ export function AuthProvider({ children }) {
       case 'parent':
         return '/parent';
       case 'admin':
-        return '/admin';
+        return '/admin/dashboard';
       default:
         return '/';
     }
   };
 
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    updateProfile,
+    getRoleDashboardPath,
+    isAuthenticated: !!user
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      logout, 
-      updateProfile, 
-      loading,
-      getRoleDashboardPath
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

@@ -16,6 +16,7 @@ import {
 import { useAuth } from '../../../hooks/useAuth';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
+import DashboardNavbar from '../../../components/ui/DashboardNavbar';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -179,8 +180,9 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <DashboardNavbar role="admin" currentPage="Dashboard" />
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">

@@ -11,12 +11,19 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   SunIcon,
-  MoonIcon
+  MoonIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  DocumentTextIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 import AnimatedProgressBar from '../../../components/AnimatedProgressBar';
 import WeatherWidget from '../../../components/WeatherWidget';
 import PlayfulButton from '../../../components/PlayfulButton';
+import DashboardNavbar from '../../../components/ui/DashboardNavbar';
+import { useAuth } from '../../../hooks/useAuth';
+import api from '../../../services/api';
 
 const subjects = {
   math: {
@@ -86,11 +93,12 @@ const recentActivities = [
 ];
 
 export default function StudentDashboard() {
+  const { user } = useAuth();
   const [showConfetti, setShowConfetti] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [parentMode, setParentMode] = useState(false);
+  const [assignments, setAssignments] = useState([]);
   // Removed unused selectedSubject state
-  const user = JSON.parse(localStorage.getItem('tinylearn_user') || '{"name": "Little Learner"}');
 
   useEffect(() => {
     // Show confetti animation when a new badge is earned
@@ -98,6 +106,34 @@ export default function StudentDashboard() {
     const timer = setTimeout(() => setShowConfetti(false), 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    loadAssignments();
+  }, []);
+
+  const loadAssignments = async () => {
+    try {
+      const response = await api.getStudentAssignments({ limit: 5, status: 'all' });
+      if (response.success) {
+        setAssignments(response.data.assignments || []);
+      }
+    } catch (error) {
+      console.error('Failed to load assignments:', error);
+    }
+  };
+
+  const getAssignmentStatus = (assignment) => {
+    if (assignment.submission && assignment.submission.status === 'graded') {
+      return { status: 'graded', color: 'green', icon: CheckCircleIcon };
+    }
+    if (assignment.submission && assignment.submission.status === 'submitted') {
+      return { status: 'submitted', color: 'blue', icon: ClockIcon };
+    }
+    if (assignment.isOverdue) {
+      return { status: 'overdue', color: 'red', icon: ExclamationTriangleIcon };
+    }
+    return { status: 'pending', color: 'yellow', icon: DocumentTextIcon };
+  };
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -122,7 +158,8 @@ export default function StudentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-pink-50 to-purple-50 pb-12">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-pink-50 to-purple-50">
+      <DashboardNavbar role="student" currentPage="Dashboard" />
       {showConfetti && <Confetti numberOfPieces={200} recycle={false} />}
       <motion.div 
         className="p-6 sm:p-8"
@@ -141,7 +178,7 @@ export default function StudentDashboard() {
             </motion.div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2">
-                Hello, {user.name}! 
+                Hello, {user?.firstName || 'Little Learner'}! 
               </h1>
               <p className="text-lg text-gray-600">Ready to learn something amazing?</p>
             </div>
@@ -261,6 +298,81 @@ export default function StudentDashboard() {
                 </span>
               </motion.div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* Assignments */}
+        <motion.div 
+          variants={itemVariants}
+          className="bg-white rounded-2xl shadow-xl p-6 mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">My Assignments 📝</h2>
+            <PlayfulButton 
+              onClick={() => console.log('View all assignments')}
+              variant="outline"
+              size="sm"
+            >
+              View All
+            </PlayfulButton>
+          </div>
+          
+          <div className="space-y-4">
+            {assignments.length > 0 ? (
+              assignments.slice(0, 3).map(assignment => {
+                const statusInfo = getAssignmentStatus(assignment);
+                const StatusIcon = statusInfo.icon;
+                
+                return (
+                  <motion.div
+                    key={assignment.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 border border-gray-200"
+                  >
+                    <div className={`p-2 rounded-full ${
+                      statusInfo.color === 'green' ? 'bg-green-100' :
+                      statusInfo.color === 'blue' ? 'bg-blue-100' :
+                      statusInfo.color === 'red' ? 'bg-red-100' : 'bg-yellow-100'
+                    }`}>
+                      <StatusIcon className={`w-5 h-5 ${
+                        statusInfo.color === 'green' ? 'text-green-600' :
+                        statusInfo.color === 'blue' ? 'text-blue-600' :
+                        statusInfo.color === 'red' ? 'text-red-600' : 'text-yellow-600'
+                      }`} />
+                    </div>
+                    
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-800">{assignment.title}</h3>
+                      <p className="text-sm text-gray-500">
+                        Due: {new Date(assignment.dueDate).toLocaleDateString()}
+                        {assignment.submission && assignment.submission.score && (
+                          <span className="ml-2 text-green-600">
+                            Score: {assignment.submission.score}%
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      statusInfo.color === 'green' ? 'bg-green-100 text-green-800' :
+                      statusInfo.color === 'blue' ? 'bg-blue-100 text-blue-800' :
+                      statusInfo.color === 'red' ? 'bg-red-100 text-red-800' : 
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {statusInfo.status === 'graded' ? 'Graded' :
+                       statusInfo.status === 'submitted' ? 'Submitted' :
+                       statusInfo.status === 'overdue' ? 'Overdue' : 'Pending'}
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">📚</div>
+                <p className="text-gray-500">No assignments yet!</p>
+                <p className="text-sm text-gray-400">Your teacher will assign work soon.</p>
+              </div>
+            )}
           </div>
         </motion.div>
 

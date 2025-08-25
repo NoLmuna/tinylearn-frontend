@@ -1,7 +1,5 @@
 /* eslint-disable no-undef */
 const express = require('express');
-const app = express();
-const parser = require('body-parser');
 const morgan = require('morgan');
 const cors = require('cors');
 
@@ -12,34 +10,36 @@ require('./models/database');
 const UserRoutes = require('./routes/UserRoutes');
 const LessonRoutes = require('./routes/LessonRoutes');
 const ProgressRoutes = require('./routes/ProgressRoutes');
+const AssignmentRoutes = require('./routes/AssignmentRoutes');
+const SubmissionRoutes = require('./routes/SubmissionRoutes');
+const MessageRoutes = require('./routes/MessageRoutes');
 
+const app = express();
+
+// Middleware
 app.use(morgan('dev'));
-app.use(parser.urlencoded({extended: false}));
-app.use(parser.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'], // Frontend URLs
-  credentials: true
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:5174', 
+    'http://localhost:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
 }));
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET', 'POST', 'PATCH', 'PUT', 'DELETE');
-    return res.status(200).json({});
-  }
-  next();
-});
 
 // Mount routes
 app.use('/api/users', UserRoutes);
 app.use('/api/lessons', LessonRoutes);
 app.use('/api/progress', ProgressRoutes);
+app.use('/api/assignments', AssignmentRoutes);
+app.use('/api/submissions', SubmissionRoutes);
+app.use('/api/messages', MessageRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -47,25 +47,18 @@ app.get('/api/health', (req, res) => {
     status: 'OK', 
     message: 'TinyLearn API is running',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
+    environment: process.env.NODE_ENV
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
-});
+// Import error handling middleware
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
-// Error handler
-// eslint-disable-next-line no-unused-vars
-app.use((error, req, res, next) => {
-  res.status(error.status || 500).json({
-    success: false,
-    message: error.message || 'Internal server error'
-  });
-});
+// 404 handler (must be after all routes)
+app.use(notFoundHandler);
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 module.exports = app;

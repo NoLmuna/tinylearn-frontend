@@ -13,15 +13,15 @@ const roleConfig = {
     dashboardPath: '/parent'
   },
   teacher: { 
-    dashboardPath: '/dashboard'
+    dashboardPath: '/teacher'
   },
   admin: { 
-    dashboardPath: '/dashboard'
+    dashboardPath: '/admin'
   },
 };
 
 export default function Login() {
-  const { login, user, getRoleDashboardPath } = useAuth();
+  const { login, logout, user, getRoleDashboardPath } = useAuth();
   const [form, setForm] = useState({ 
     email: '', 
     password: '', 
@@ -93,9 +93,19 @@ export default function Login() {
       const result = await login({
         email: form.email.trim(),
         password: form.password
-      });
+      }, false); // Disable AuthContext toast
 
       if (result.success) {
+        // Block admin users from logging in through regular login
+        if (result.user.role === 'admin') {
+          await logout(false); // Logout the admin user immediately (no toast)
+          toast.error('Access denied. Administrators must use the secure admin login.');
+          setTimeout(() => {
+            navigate('/admin/login');
+          }, 2000);
+          return;
+        }
+
         // Save email if remember me is checked
         if (form.rememberMe) {
           localStorage.setItem('tinylearn_email', form.email);
@@ -247,6 +257,21 @@ export default function Login() {
             <p className="text-xs text-gray-500 mt-2">
               All accounts are created by administrators. Please contact your school admin for access.
             </p>
+          </div>
+
+          {/* Admin Login Link */}
+          <div className="mt-6 text-center">
+            <div className="border-t border-gray-200 pt-4">
+              <p className="text-sm text-gray-600">
+                Administrator?{' '}
+                <Link
+                  to="/admin/login"
+                  className="font-medium text-red-600 hover:text-red-500 transition-colors"
+                >
+                  Secure Admin Login
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
