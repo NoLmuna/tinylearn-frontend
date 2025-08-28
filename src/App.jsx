@@ -11,6 +11,9 @@ import StudentDashboard from './pages/dashboards/Student/StudentDashboard';
 import TeacherDashboard from './pages/dashboards/Teacher/TeacherDashboard';
 import ParentDashboard from './pages/dashboards/Parent/ParentDashboard';
 import AdminDashboard from './pages/dashboards/Admin/AdminDashboard';
+import AdminUsers from './pages/dashboards/Admin/AdminUsers';
+import AdminSystem from './pages/dashboards/Admin/AdminSystem';
+import AdminReports from './pages/dashboards/Admin/AdminReports';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 
@@ -30,6 +33,9 @@ function App() {
               <AdminProtectedRoute>
                 <Routes>
                   <Route path="dashboard" element={<AdminDashboard />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="system" element={<AdminSystem />} />
+                  <Route path="reports" element={<AdminReports />} />
                   <Route path="" element={<Navigate to="dashboard" replace />} />
                 </Routes>
               </AdminProtectedRoute>

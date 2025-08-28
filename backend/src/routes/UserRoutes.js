@@ -17,5 +17,6 @@ router.post('/register', authGuard, userController.registerUser); // Admin creat
 router.post('/create-student', authGuard, userController.createStudentAccount);
 router.put('/approve-teacher/:userId', authGuard, userController.approveTeacher);
 router.get('/pending-teachers', authGuard, userController.getPendingTeachers);
+router.delete('/:userId', authGuard, userController.deleteUser); // Admin deletes users
 
 module.exports = router;

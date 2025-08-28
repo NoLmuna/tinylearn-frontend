@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -17,13 +17,18 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
     navigate('/login');
   };
 
+  const handleNavigation = (item) => {
+    // All admin pages are now implemented, so navigate directly
+    navigate(item.path);
+  };
+
   const roleConfigs = {
     admin: {
       color: 'red',
       bgGradient: 'from-red-500 to-red-600',
       textColor: 'text-red-600',
       navItems: [
-        { name: 'Dashboard', path: '/admin' },
+        { name: 'Dashboard', path: '/admin/dashboard' },
         { name: 'Users', path: '/admin/users' },
         { name: 'System', path: '/admin/system' },
         { name: 'Reports', path: '/admin/reports' }
@@ -93,7 +98,7 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
             {config.navItems.map((item) => (
               <button
                 key={item.name}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleNavigation(item)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   item.name === currentPage
                     ? `bg-gradient-to-r ${config.bgGradient} text-white`

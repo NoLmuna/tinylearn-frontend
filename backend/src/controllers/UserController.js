@@ -354,6 +354,32 @@ const UserController = {
             console.error('Get pending teachers error:', error);
             return send.sendErrorMessage(res, 500, error);
         }
+    },
+
+    // Delete a user (admin only)
+    deleteUser: async (req, res) => {
+        try {
+            const { userId } = req.params;
+
+            // Check if user exists
+            const user = await User.findByPk(userId);
+            if (!user) {
+                return send.sendResponseMessage(res, 404, null, 'User not found');
+            }
+
+            // Prevent admin from deleting themselves
+            if (req.user && req.user.id === parseInt(userId)) {
+                return send.sendResponseMessage(res, 400, null, 'Cannot delete your own account');
+            }
+
+            // Delete the user
+            await user.destroy();
+
+            return send.sendResponseMessage(res, 200, null, 'User deleted successfully');
+        } catch (error) {
+            console.error('Delete user error:', error);
+            return send.sendErrorMessage(res, 500, error);
+        }
     }
 };
 

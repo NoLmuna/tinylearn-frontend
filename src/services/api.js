@@ -158,13 +158,18 @@ class ApiService {
 
   // === USER MANAGEMENT ===
   async createUser(userData) {
-    return this.post('/users/create', userData);
+    // Use the register endpoint for admin-created accounts
+    return this.post('/users/register', userData);
   }
 
-  async getUsers(filters = {}) {
-    const queryString = new URLSearchParams(filters).toString();
-    const endpoint = `/users${queryString ? `?${queryString}` : ''}`;
-    return this.get(endpoint);
+  async createStudent(userData) {
+    // Use the specific create-student endpoint
+    return this.post('/users/create-student', userData);
+  }
+
+  async getUsers() {
+    // Use the /all endpoint to get all users (admin only)
+    return this.get('/users/all');
   }
 
   async updateUser(userId, userData) {

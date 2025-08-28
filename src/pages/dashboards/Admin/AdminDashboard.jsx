@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   CogIcon, 
   UserGroupIcon, 
@@ -11,173 +12,166 @@ import {
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  PlusIcon
+  PlusIcon,
+  UserPlusIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../../hooks/useAuth';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import DashboardNavbar from '../../../components/ui/DashboardNavbar';
+import CreateUserModal from '../../../components/CreateUserModal';
+import apiService from '../../../services/api';
+import toast from 'react-hot-toast';
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({});
-  const [pendingTeachers, setPendingTeachers] = useState([]);
   const [recentUsers, setRecentUsers] = useState([]);
-  const [systemAlerts, setSystemAlerts] = useState([]);
+  const [systemAlerts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
+  // Fetch real data from backend
   useEffect(() => {
-    // TODO: Fetch real data from API
-    setStats({
-      totalUsers: 1247,
-      activeStudents: 892,
-      totalTeachers: 45,
-      pendingApprovals: 7,
-      totalLessons: 156,
-      systemUptime: '99.9%'
-    });
+    fetchDashboardData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    setPendingTeachers([
-      {
-        id: 1,
-        name: 'Sarah Johnson',
-        email: 'sarah.johnson@school.edu',
-        experience: '5 years',
-        subject: 'Mathematics',
-        appliedDate: '2024-01-15',
-        status: 'pending'
-      },
-      {
-        id: 2,
-        name: 'Michael Chen',
-        email: 'michael.chen@school.edu',
-        experience: '3 years',
-        subject: 'Science',
-        appliedDate: '2024-01-14',
-        status: 'pending'
-      }
-    ]);
-
-    setRecentUsers([
-      { id: 1, name: 'Emma Davis', role: 'student', joinedDate: 'Today', status: 'active' },
-      { id: 2, name: 'John Smith', role: 'parent', joinedDate: 'Yesterday', status: 'active' },
-      { id: 3, name: 'Lisa Brown', role: 'teacher', joinedDate: '2 days ago', status: 'approved' }
-    ]);
-
-    setSystemAlerts([
-      {
-        id: 1,
-        type: 'warning',
-        title: 'Server Load High',
-        message: 'Server CPU usage above 80% for the last hour',
-        time: '10 minutes ago'
-      },
-      {
-        id: 2,
-        type: 'info',
-        title: 'Scheduled Maintenance',
-        message: 'System maintenance scheduled for this weekend',
-        time: '2 hours ago'
-      }
-    ]);
-  }, []);
-
-  const handleApproveTeacher = async (teacherId) => {
+  const fetchDashboardData = async () => {
     try {
-      // TODO: API call to approve teacher
-      console.log('Approving teacher:', teacherId);
-      setPendingTeachers(prev => 
-        prev.map(teacher => 
-          teacher.id === teacherId 
-            ? { ...teacher, status: 'approved' }
-            : teacher
-        )
-      );
+      setIsLoading(true);
+      
+      // Fetch all users for statistics
+      const usersResponse = await apiService.getUsers();
+      if (usersResponse.success) {
+        const users = usersResponse.data;
+        
+        // Calculate statistics
+        const totalUsers = users.length;
+        const activeStudents = users.filter(u => u.role === 'student' && u.isActive).length;
+        const totalTeachers = users.filter(u => u.role === 'teacher').length;
+        const totalParents = users.filter(u => u.role === 'parent').length;
+        const totalAdmins = users.filter(u => u.role === 'admin').length;
+        
+        setStats({
+          totalUsers,
+          activeStudents,
+          totalTeachers,
+          totalParents,
+          totalAdmins,
+          systemUptime: '99.9%' // This would come from system monitoring
+        });
+
+        // Get recent users (last 10)
+        const recent = users
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 10)
+          .map(user => ({
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`,
+            role: user.role,
+            email: user.email,
+            joinedDate: formatDate(user.createdAt),
+            status: user.accountStatus || 'active',
+            isActive: user.isActive
+          }));
+        
+        setRecentUsers(recent);
+      }
     } catch (error) {
-      console.error('Failed to approve teacher:', error);
+      console.error('Failed to fetch dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRejectTeacher = async (teacherId) => {
-    try {
-      // TODO: API call to reject teacher
-      console.log('Rejecting teacher:', teacherId);
-      setPendingTeachers(prev => 
-        prev.filter(teacher => teacher.id !== teacherId)
-      );
-    } catch (error) {
-      console.error('Failed to reject teacher:', error);
-    }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
   };
 
   const adminActions = [
     {
-      title: 'User Management',
-      description: 'Manage all users, roles, and permissions',
-      icon: UserGroupIcon,
-      action: () => console.log('User management'),
+      title: 'Create New User',
+      description: 'Add students, teachers, or parents to the platform',
+      icon: UserPlusIcon,
+      action: () => setIsCreateUserModalOpen(true),
       color: 'blue',
+      count: '+'
+    },
+    {
+      title: 'View All Users',
+      description: 'Browse and manage existing user accounts',
+      icon: UserGroupIcon,
+      action: () => navigate('/admin/users'),
+      color: 'green',
       count: stats.totalUsers
     },
     {
-      title: 'Content Management',
-      description: 'Manage lessons, courses, and educational content',
-      icon: AcademicCapIcon,
-      action: () => console.log('Content management'),
-      color: 'green',
-      count: stats.totalLessons
-    },
-    {
-      title: 'Analytics & Reports',
-      description: 'View detailed analytics and generate reports',
+      title: 'Platform Analytics',
+      description: 'View user activity and platform statistics',
       icon: ChartBarIcon,
-      action: () => console.log('Analytics'),
+      action: () => navigate('/admin/reports'),
       color: 'purple',
-      count: '24'
-    },
-    {
-      title: 'System Settings',
-      description: 'Configure system-wide settings and preferences',
-      icon: CogIcon,
-      action: () => console.log('System settings'),
-      color: 'orange',
-      count: null
+      count: 'View'
     }
   ];
 
   const quickStats = [
     {
       title: 'Total Users',
-      value: stats.totalUsers,
-      change: '+12%',
+      value: stats.totalUsers || 0,
+      change: `+${stats.totalUsers > 100 ? '12%' : 'New'}`,
       changeType: 'positive',
       icon: UserGroupIcon,
       color: 'blue'
     },
     {
       title: 'Active Students',
-      value: stats.activeStudents,
-      change: '+8%',
+      value: stats.activeStudents || 0,
+      change: `+${stats.activeStudents > 50 ? '8%' : 'New'}`,
       changeType: 'positive',
       icon: AcademicCapIcon,
       color: 'green'
     },
     {
       title: 'Teachers',
-      value: stats.totalTeachers,
-      change: '+2',
-      changeType: 'positive',
+      value: stats.totalTeachers || 0,
+      change: stats.totalTeachers > 0 ? '+Active' : 'None',
+      changeType: stats.totalTeachers > 0 ? 'positive' : 'neutral',
       icon: UserGroupIcon,
       color: 'purple'
     },
     {
       title: 'System Uptime',
-      value: stats.systemUptime,
+      value: stats.systemUptime || '100%',
       change: 'Stable',
       changeType: 'neutral',
       icon: CheckCircleIcon,
       color: 'emerald'
     }
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <DashboardNavbar role="admin" currentPage="Dashboard" />
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -227,73 +221,52 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Pending Teacher Approvals */}
+            {/* User Creation Section */}
             <Card>
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    Pending Teacher Approvals
+                    User Management
                   </h2>
                   <p className="text-gray-600">
-                    {pendingTeachers.length} teachers waiting for approval
+                    Create accounts for students, teachers, parents, and administrators
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">
-                    {pendingTeachers.length} Pending
-                  </span>
+                <Button
+                  onClick={() => setIsCreateUserModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Create User
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 bg-blue-50 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-blue-600">{stats.totalUsers || 0}</div>
+                  <div className="text-sm text-blue-700">Total Users</div>
+                </div>
+                <div className="p-4 bg-green-50 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-green-600">{stats.activeStudents || 0}</div>
+                  <div className="text-sm text-green-700">Students</div>
+                </div>
+                <div className="p-4 bg-purple-50 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-purple-600">{stats.totalTeachers || 0}</div>
+                  <div className="text-sm text-purple-700">Teachers</div>
+                </div>
+                <div className="p-4 bg-orange-50 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-orange-600">{stats.totalParents || 0}</div>
+                  <div className="text-sm text-orange-700">Parents</div>
                 </div>
               </div>
               
-              <div className="space-y-4">
-                {pendingTeachers.map((teacher) => (
-                  <div
-                    key={teacher.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-lg font-bold text-blue-600">
-                          {teacher.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900">{teacher.name}</h3>
-                        <p className="text-sm text-gray-600">{teacher.email}</p>
-                        <p className="text-xs text-gray-500">
-                          {teacher.subject} • {teacher.experience} experience
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => handleApproveTeacher(teacher.id)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 text-sm"
-                      >
-                        <CheckCircleIcon className="h-4 w-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        onClick={() => handleRejectTeacher(teacher.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
-                      >
-                        <XCircleIcon className="h-4 w-4 mr-1" />
-                        Reject
-                      </Button>
-                      <Button className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 text-sm">
-                        <EyeIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Account Creation Policy</h3>
+                <p className="text-sm text-gray-600">
+                  As a superadmin, you can create accounts for all user types. All created accounts 
+                  are automatically approved and active.
+                </p>
               </div>
-              
-              {pendingTeachers.length === 0 && (
-                <div className="text-center py-8">
-                  <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                  <p className="text-gray-600">No pending teacher approvals</p>
-                </div>
-              )}
             </Card>
 
             {/* Quick Actions */}
@@ -435,35 +408,29 @@ export default function AdminDashboard() {
             <Card>
               <div className="mb-4">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Quick Add</h2>
-                <p className="text-gray-600">Create new accounts</p>
+                <p className="text-gray-600">Create new user accounts</p>
               </div>
               
               <div className="space-y-2">
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white justify-start">
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Student
-                </Button>
-                <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white justify-start">
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Teacher
-                </Button>
-                <Button className="w-full bg-green-500 hover:bg-green-600 text-white justify-start">
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Parent
-                </Button>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white justify-start">
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Add Admin
-                </Button>
-                <Button className="w-full bg-indigo-500 hover:bg-indigo-600 text-white justify-start">
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Create Lesson
+                <Button 
+                  onClick={() => setIsCreateUserModalOpen(true)}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white justify-start"
+                >
+                  <UserPlusIcon className="h-4 w-4 mr-2" />
+                  Create User Account
                 </Button>
               </div>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Create User Modal */}
+      <CreateUserModal
+        isOpen={isCreateUserModalOpen}
+        onClose={() => setIsCreateUserModalOpen(false)}
+        onUserCreated={fetchDashboardData}
+      />
     </div>
   );
 }
