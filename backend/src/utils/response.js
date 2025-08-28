@@ -108,8 +108,18 @@ const sendErrorMessage = (res, status, error) => {
     return ApiResponse.error(res, status, error.message || 'Internal Server Error', error);
 };
 
+// Function that matches the expected signature: sendResponse(res, statusCode, status, message, data)
+const sendResponse = (res, statusCode, status, message, data = null) => {
+    if (status === 'success') {
+        return ApiResponse.success(res, statusCode, data, message);
+    } else {
+        return ApiResponse.error(res, statusCode, message, data);
+    }
+};
+
 module.exports = {
     ApiResponse,
     sendResponseMessage,
-    sendErrorMessage
+    sendErrorMessage,
+    sendResponse
 };

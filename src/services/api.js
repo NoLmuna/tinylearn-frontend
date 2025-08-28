@@ -168,8 +168,8 @@ class ApiService {
   }
 
   async getUsers() {
-    // Use the /all endpoint to get all users (admin only)
-    return this.get('/users/all');
+    // Use the new endpoint that works for teachers (students) and admins (all users)
+    return this.get('/users/by-role?role=student');
   }
 
   async updateUser(userId, userData) {
@@ -286,6 +286,10 @@ class ApiService {
   // === PARENT-STUDENT RELATIONSHIPS ===
   async getParentStudents(parentId) {
     return this.get(`/users/${parentId}/students`, true);
+  }
+
+  async getParentChildren() {
+    return this.get('/users/parent/children');
   }
 
   async linkParentStudent(parentId, studentId, relationship = 'guardian') {

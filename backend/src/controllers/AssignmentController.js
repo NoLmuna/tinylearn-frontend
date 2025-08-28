@@ -41,7 +41,53 @@ const createAssignment = async (req, res) => {
         sendResponse(res, 201, 'success', 'Assignment created successfully', assignmentWithDetails);
     } catch (error) {
         console.error('Create assignment error:', error);
-        sendResponse(res, 500, 'error', 'Failed to create assignment');
+        sendResponse(res, 500, 'error', 'Failed to create assignment', null);
+    }
+};
+
+// Get all assignments (for teachers - shows their assignments)
+const getAssignments = async (req, res) => {
+    try {
+        // If user is a teacher, show their assignments
+        if (req.user.role === 'teacher') {
+            return getTeacherAssignments(req, res);
+        }
+        
+        // If user is a student, show their assigned assignments
+        if (req.user.role === 'student') {
+            return getStudentAssignments(req, res);
+        }
+
+        // For admin users, show all assignments
+        if (req.user.role === 'admin') {
+            const { page = 1, limit = 10 } = req.query;
+            const offset = (page - 1) * limit;
+
+            const assignments = await Assignment.findAndCountAll({
+                include: [
+                    { model: User, as: 'teacher', attributes: ['id', 'firstName', 'lastName'] },
+                    { model: Lesson, as: 'lesson', attributes: ['id', 'title'] }
+                ],
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                order: [['createdAt', 'DESC']]
+            });
+
+            return sendResponse(res, 200, 'success', 'All assignments retrieved successfully', {
+                assignments: assignments.rows,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total: assignments.count,
+                    pages: Math.ceil(assignments.count / limit)
+                }
+            });
+        }
+
+        sendResponse(res, 403, 'error', 'Access denied', null);
+    } catch (error) {
+        console.error('Get assignments error:', error);
+        sendResponse(res, 500, 'error', 'Failed to retrieve assignments', null);
     }
 };
 
@@ -100,7 +146,7 @@ const getTeacherAssignments = async (req, res) => {
         });
     } catch (error) {
         console.error('Get teacher assignments error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve assignments');
+        sendResponse(res, 500, 'error', 'Failed to retrieve assignments', null);
     }
 };
 
@@ -177,7 +223,7 @@ const getStudentAssignments = async (req, res) => {
         });
     } catch (error) {
         console.error('Get student assignments error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve assignments');
+        sendResponse(res, 500, 'error', 'Failed to retrieve assignments', null);
     }
 };
 
@@ -207,7 +253,7 @@ const updateAssignment = async (req, res) => {
         sendResponse(res, 200, 'success', 'Assignment updated successfully', assignmentWithDetails);
     } catch (error) {
         console.error('Update assignment error:', error);
-        sendResponse(res, 500, 'error', 'Failed to update assignment');
+        sendResponse(res, 500, 'error', 'Failed to update assignment', null);
     }
 };
 
@@ -230,7 +276,7 @@ const deleteAssignment = async (req, res) => {
         sendResponse(res, 200, 'success', 'Assignment deleted successfully');
     } catch (error) {
         console.error('Delete assignment error:', error);
-        sendResponse(res, 500, 'error', 'Failed to delete assignment');
+        sendResponse(res, 500, 'error', 'Failed to delete assignment', null);
     }
 };
 
@@ -271,12 +317,13 @@ const getAssignmentById = async (req, res) => {
         sendResponse(res, 200, 'success', 'Assignment retrieved successfully', assignment);
     } catch (error) {
         console.error('Get assignment by ID error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve assignment');
+        sendResponse(res, 500, 'error', 'Failed to retrieve assignment', null);
     }
 };
 
 module.exports = {
     createAssignment,
+    getAssignments,
     getTeacherAssignments,
     getStudentAssignments,
     updateAssignment,

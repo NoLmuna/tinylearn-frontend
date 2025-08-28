@@ -10,6 +10,9 @@ router.use(userGuard);
 // Create assignment (teachers only)
 router.post('/', AssignmentController.createAssignment);
 
+// Get assignments (role-based)
+router.get('/', AssignmentController.getAssignments);
+
 // Get assignments
 router.get('/teacher', AssignmentController.getTeacherAssignments);
 router.get('/student', AssignmentController.getStudentAssignments);

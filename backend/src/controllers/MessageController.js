@@ -52,7 +52,63 @@ const sendMessage = async (req, res) => {
         sendResponse(res, 201, 'success', 'Message sent successfully', messageWithDetails);
     } catch (error) {
         console.error('Send message error:', error);
-        sendResponse(res, 500, 'error', 'Failed to send message');
+        sendResponse(res, 500, 'error', 'Failed to send message', null);
+    }
+};
+
+// Get all messages (received and sent combined)
+const getMessages = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { page = 1, limit = 10, type = 'received' } = req.query;
+
+        if (type === 'received') {
+            return getReceivedMessages(req, res);
+        } else if (type === 'sent') {
+            return getSentMessages(req, res);
+        } else {
+            // Get both received and sent messages
+            const offset = (page - 1) * limit;
+            
+            const messages = await Message.findAndCountAll({
+                where: {
+                    [Op.or]: [
+                        { receiverId: userId },
+                        { senderId: userId }
+                    ]
+                },
+                include: [
+                    { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
+                    { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
+                    { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
+                ],
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                order: [['createdAt', 'DESC']]
+            });
+
+            // Add metadata to distinguish sent vs received
+            const messagesWithType = messages.rows.map(message => ({
+                ...message.toJSON(),
+                isSent: message.senderId === userId,
+                isReceived: message.receiverId === userId,
+                senderName: message.sender ? `${message.sender.firstName} ${message.sender.lastName}` : 'Unknown',
+                receiverName: message.receiver ? `${message.receiver.firstName} ${message.receiver.lastName}` : 'Unknown'
+            }));
+
+            sendResponse(res, 200, 'success', 'Messages retrieved successfully', {
+                messages: messagesWithType,
+                pagination: {
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    total: messages.count,
+                    pages: Math.ceil(messages.count / limit)
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Get messages error:', error);
+        sendResponse(res, 500, 'error', 'Failed to retrieve messages', null);
     }
 };
 
@@ -99,7 +155,7 @@ const getReceivedMessages = async (req, res) => {
         });
     } catch (error) {
         console.error('Get received messages error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve messages');
+        sendResponse(res, 500, 'error', 'Failed to retrieve messages', null);
     }
 };
 
@@ -138,7 +194,7 @@ const getSentMessages = async (req, res) => {
         });
     } catch (error) {
         console.error('Get sent messages error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve sent messages');
+        sendResponse(res, 500, 'error', 'Failed to retrieve sent messages', null);
     }
 };
 
@@ -173,7 +229,7 @@ const markAsRead = async (req, res) => {
         sendResponse(res, 200, 'success', 'Message marked as read', updatedMessage);
     } catch (error) {
         console.error('Mark as read error:', error);
-        sendResponse(res, 500, 'error', 'Failed to mark message as read');
+        sendResponse(res, 500, 'error', 'Failed to mark message as read', null);
     }
 };
 
@@ -211,7 +267,7 @@ const getMessageById = async (req, res) => {
         sendResponse(res, 200, 'success', 'Message retrieved successfully', message);
     } catch (error) {
         console.error('Get message by ID error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve message');
+        sendResponse(res, 500, 'error', 'Failed to retrieve message', null);
     }
 };
 
@@ -264,7 +320,7 @@ const getConversation = async (req, res) => {
         });
     } catch (error) {
         console.error('Get conversation error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve conversation');
+        sendResponse(res, 500, 'error', 'Failed to retrieve conversation', null);
     }
 };
 
@@ -291,7 +347,7 @@ const getMessageStats = async (req, res) => {
         sendResponse(res, 200, 'success', 'Message statistics retrieved successfully', stats);
     } catch (error) {
         console.error('Get message stats error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve message statistics');
+        sendResponse(res, 500, 'error', 'Failed to retrieve message statistics', null);
     }
 };
 
@@ -343,7 +399,7 @@ const getContacts = async (req, res) => {
         sendResponse(res, 200, 'success', 'Contacts retrieved successfully', contacts);
     } catch (error) {
         console.error('Get contacts error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve contacts');
+        sendResponse(res, 500, 'error', 'Failed to retrieve contacts', null);
     }
 };
 
@@ -355,5 +411,6 @@ module.exports = {
     getMessageById,
     getConversation,
     getMessageStats,
-    getContacts
+    getContacts,
+    getMessages
 };

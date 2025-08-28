@@ -7,6 +7,9 @@ const userGuard = require('../middleware/user-guard');
 // Protected routes - all message routes require authentication
 router.use(userGuard);
 
+// General message retrieval
+router.get('/', MessageController.getMessages);
+
 // Send message
 router.post('/', MessageController.sendMessage);
 

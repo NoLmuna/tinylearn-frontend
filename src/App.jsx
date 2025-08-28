@@ -8,7 +8,15 @@ import Lessons from './pages/Lessons';
 import Login from './pages/Auth/Login';
 import AdminLogin from './pages/Auth/AdminLogin';
 import StudentDashboard from './pages/dashboards/Student/StudentDashboard';
-import TeacherDashboard from './pages/dashboards/Teacher/TeacherDashboard';
+import TeacherDashboard from './pages/dashboards/Teacher/TeacherDashboard.jsx';
+import CreateLesson from './pages/dashboards/Teacher/CreateLesson.jsx';
+import CreateAssignment from './pages/dashboards/Teacher/CreateAssignment.jsx';
+import TeacherLessons from './pages/dashboards/Teacher/TeacherLessons.jsx';
+import TeacherAssignments from './pages/dashboards/Teacher/TeacherAssignments.jsx';
+import TeacherStudents from './pages/dashboards/Teacher/TeacherStudents.jsx';
+import TeacherMessages from './pages/dashboards/Teacher/TeacherMessages.jsx';
+import GradeAssignment from './pages/dashboards/Teacher/GradeAssignment.jsx';
+import ViewLesson from './pages/dashboards/Teacher/ViewLesson.jsx';
 import ParentDashboard from './pages/dashboards/Parent/ParentDashboard';
 import AdminDashboard from './pages/dashboards/Admin/AdminDashboard';
 import AdminUsers from './pages/dashboards/Admin/AdminUsers';
@@ -44,10 +52,20 @@ function App() {
           
           {/* Regular User Role-specific Dashboard Routes */}
           <Route 
-            path="/teacher" 
+            path="/teacher/*" 
             element={
               <ProtectedRoute allowedRoles={['teacher']}>
-                <TeacherDashboard />
+                <Routes>
+                  <Route path="" element={<TeacherDashboard />} />
+                  <Route path="lessons" element={<TeacherLessons />} />
+                  <Route path="lessons/create" element={<CreateLesson />} />
+                  <Route path="lessons/:lessonId" element={<ViewLesson />} />
+                  <Route path="assignments" element={<TeacherAssignments />} />
+                  <Route path="assignments/create" element={<CreateAssignment />} />
+                  <Route path="assignments/:assignmentId/grade" element={<GradeAssignment />} />
+                  <Route path="students" element={<TeacherStudents />} />
+                  <Route path="messages" element={<TeacherMessages />} />
+                </Routes>
               </ProtectedRoute>
             } 
           />

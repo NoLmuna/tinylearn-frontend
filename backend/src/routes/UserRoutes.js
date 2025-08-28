@@ -11,6 +11,8 @@ router.post('/login', userController.userLogin);
 router.get('/profile', authGuard, userController.getProfile);
 router.put('/profile', authGuard, userController.updateProfile);
 router.get('/all', authGuard, userController.getAllUsers);
+router.get('/by-role', authGuard, userController.getUsersByRole);
+router.get('/parent/children', authGuard, userController.getParentChildren);
 
 // Admin-only routes
 router.post('/register', authGuard, userController.registerUser); // Admin creates accounts

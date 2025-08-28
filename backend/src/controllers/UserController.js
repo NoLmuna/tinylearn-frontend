@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models/database');
+const { User, Lesson } = require('../models/database');
 const send = require('../utils/response');
 
 const UserController = {
@@ -378,6 +378,167 @@ const UserController = {
             return send.sendResponseMessage(res, 200, null, 'User deleted successfully');
         } catch (error) {
             console.error('Delete user error:', error);
+            return send.sendErrorMessage(res, 500, error);
+        }
+    },
+
+    // Get parent's children data
+    getParentChildren: async (req, res) => {
+        try {
+            const parentId = req.user.id;
+
+            if (req.user.role !== 'parent') {
+                return send.sendResponseMessage(res, 403, null, 'Access denied. Parent role required.');
+            }
+
+            // Get all student-parent relationships for this parent
+            const { StudentParent, Progress, Assignment, Submission } = require('../models');
+            
+            const childrenRelations = await StudentParent.findAll({
+                where: { parentId },
+                include: [
+                    {
+                        model: User,
+                        as: 'student',
+                        attributes: ['id', 'firstName', 'lastName', 'email', 'age', 'grade', 'profilePicture'],
+                        include: [
+                            {
+                                model: Progress,
+                                as: 'progress',
+                                include: [
+                                    {
+                                        model: Lesson,
+                                        as: 'lesson',
+                                        attributes: ['id', 'title', 'category', 'difficulty']
+                                    }
+                                ]
+                            },
+                            {
+                                model: Submission,
+                                as: 'submissions',
+                                include: [
+                                    {
+                                        model: Assignment,
+                                        as: 'assignment',
+                                        attributes: ['id', 'title', 'dueDate', 'maxPoints']
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            // Transform the data to include calculated statistics
+            const children = childrenRelations.map(relation => {
+                const student = relation.student;
+                const progress = student.progress || [];
+                const submissions = student.submissions || [];
+
+                // Calculate progress statistics
+                const completedLessons = progress.filter(p => p.status === 'completed').length;
+                const totalTimeSpent = progress.reduce((sum, p) => sum + (p.timeSpent || 0), 0);
+                const scores = progress.filter(p => p.score !== null).map(p => p.score);
+                const averageScore = scores.length > 0 ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length) : 0;
+                
+                // Calculate current streak (consecutive days with activity)
+                const recentProgress = progress
+                    .filter(p => p.completedAt)
+                    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+                
+                let streak = 0;
+                const today = new Date();
+                for (let i = 0; i < recentProgress.length; i++) {
+                    const progressDate = new Date(recentProgress[i].completedAt);
+                    const daysDiff = Math.floor((today - progressDate) / (1000 * 60 * 60 * 24));
+                    if (daysDiff === i) {
+                        streak++;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Get recent activities (last 5 completed lessons)
+                const recentActivities = progress
+                    .filter(p => p.status === 'completed' && p.score !== null)
+                    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+                    .slice(0, 5)
+                    .map(p => ({
+                        id: p.id,
+                        lesson: p.lesson?.title || 'Unknown Lesson',
+                        score: p.score,
+                        date: p.completedAt,
+                        category: p.lesson?.category || 'general'
+                    }));
+
+                // Get upcoming assignments
+                const upcomingAssignments = submissions
+                    .filter(s => s.assignment && new Date(s.assignment.dueDate) > new Date())
+                    .sort((a, b) => new Date(a.assignment.dueDate) - new Date(b.assignment.dueDate))
+                    .slice(0, 3)
+                    .map(s => ({
+                        id: s.assignment.id,
+                        title: s.assignment.title,
+                        dueDate: s.assignment.dueDate,
+                        status: s.status,
+                        maxPoints: s.assignment.maxPoints
+                    }));
+
+                return {
+                    id: student.id,
+                    name: `${student.firstName} ${student.lastName}`,
+                    firstName: student.firstName,
+                    lastName: student.lastName,
+                    age: student.age,
+                    grade: student.grade,
+                    profilePicture: student.profilePicture,
+                    recentProgress: {
+                        lessonsCompleted: completedLessons,
+                        averageScore,
+                        timeSpent: `${Math.round(totalTimeSpent / 60)} hours`,
+                        streak
+                    },
+                    recentActivities,
+                    upcomingAssignments,
+                    relationship: relation.relationship
+                };
+            });
+
+            return send.sendResponseMessage(res, 200, { children }, 'Parent children data retrieved successfully');
+        } catch (error) {
+            console.error('Get parent children error:', error);
+            return send.sendErrorMessage(res, 500, error);
+        }
+    },
+
+    // Get students for teacher (or all users for admin)
+    getUsersByRole: async (req, res) => {
+        try {
+            const { role } = req.query;
+            let users;
+
+            if (req.user.role === 'admin') {
+                // Admin can access all users
+                const whereClause = role ? { role } : {};
+                users = await User.findAll({
+                    where: whereClause,
+                    attributes: { exclude: ['password'] },
+                    order: [['createdAt', 'DESC']]
+                });
+            } else if (req.user.role === 'teacher') {
+                // Teacher can only access students
+                users = await User.findAll({
+                    where: { role: 'student' },
+                    attributes: { exclude: ['password'] },
+                    order: [['createdAt', 'DESC']]
+                });
+            } else {
+                return send.sendResponseMessage(res, 403, null, 'Access denied. Insufficient permissions.');
+            }
+
+            return send.sendResponseMessage(res, 200, users, 'Users retrieved successfully');
+        } catch (error) {
+            console.error('Get users by role error:', error);
             return send.sendErrorMessage(res, 500, error);
         }
     }
