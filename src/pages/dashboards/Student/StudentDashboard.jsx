@@ -54,16 +54,21 @@ export default function StudentDashboard() {
         api.getProgress()
       ]);
 
-      const lessons = lessonsRes.success ? lessonsRes.data.lessons : [];
-      const assignments = assignmentsRes.success ? assignmentsRes.data.assignments : [];
-      const progress = progressRes.success ? progressRes.data.progress : [];
+      const lessons = lessonsRes.success ? lessonsRes.data : [];
+      const assignments = assignmentsRes.success ? assignmentsRes.data : [];
+      const progress = progressRes.success ? progressRes.data : [];
+
+      // Ensure data is in the correct format - handle both direct arrays and nested objects
+      const lessonsList = Array.isArray(lessons) ? lessons : (lessons.lessons || []);
+      const assignmentsList = Array.isArray(assignments) ? assignments : (assignments.assignments || []);
+      const progressList = Array.isArray(progress) ? progress : (progress.progress || []);
 
       // Calculate stats
-      const completedLessons = progress.filter(p => p.completed).length;
-      const totalLessons = lessons.length;
-      const pendingAssignments = assignments.filter(a => !a.isCompleted).length;
+      const completedLessons = progressList.filter(p => p.completed || p.isCompleted).length;
+      const totalLessons = lessonsList.length;
+      const pendingAssignments = assignmentsList.filter(a => !a.isCompleted && !a.completed).length;
       const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-      const streak = 5; // This would come from backend calculation
+      const streak = 7; // This would come from backend calculation in a real app
 
       setDashboardData({
         stats: {
@@ -73,13 +78,27 @@ export default function StudentDashboard() {
           overallProgress,
           streak
         },
-        lessons: lessons.slice(0, 6), // Show recent 6 lessons
-        assignments: assignments.slice(0, 5), // Show recent 5 assignments
-        progress
+        lessons: lessonsList.slice(0, 6), // Show recent 6 lessons
+        assignments: assignmentsList.slice(0, 5), // Show recent 5 assignments
+        progress: progressList
       });
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');
+      
+      // Fallback to empty data
+      setDashboardData({
+        stats: {
+          completedLessons: 0,
+          totalLessons: 0,
+          pendingAssignments: 0,
+          overallProgress: 0,
+          streak: 0
+        },
+        lessons: [],
+        assignments: [],
+        progress: []
+      });
     } finally {
       setLoading(false);
     }

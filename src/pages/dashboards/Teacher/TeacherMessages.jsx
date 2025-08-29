@@ -86,7 +86,10 @@ const TeacherMessages = () => {
       const response = await api.getMessages();
       
       if (response.success) {
-        setMessages(response.data.messages || []);
+        // Handle both direct array and nested object format
+        const messagesData = response.data;
+        const messagesList = Array.isArray(messagesData) ? messagesData : (messagesData.messages || []);
+        setMessages(messagesList);
       } else {
         toast.error('Failed to load messages');
       }
@@ -103,7 +106,8 @@ const TeacherMessages = () => {
       const response = await api.getUsers();
       
       if (response.success) {
-        const allUsers = response.data.users || [];
+        // Handle both direct array and nested object format
+        const allUsers = response.data || [];
         const parentUsers = allUsers.filter(user => user.role === 'parent');
         setParents(parentUsers);
       }

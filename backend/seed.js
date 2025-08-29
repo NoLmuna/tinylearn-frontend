@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 require('dotenv').config();
-const { User, Lesson, StudentParent } = require('./src/models/database');
+const { User, Lesson, Assignment, StudentParent } = require('./src/models/database');
 const argon2 = require('argon2');
 
 /**
@@ -156,6 +156,67 @@ const seedData = async () => {
             await Lesson.findOrCreate({
                 where: { title: lessonData.title },
                 defaults: lessonData
+            });
+        }
+
+        // Create sample assignments
+        console.log('📝 Creating sample assignments...');
+        const lessons = await Lesson.findAll();
+        const sampleAssignments = [
+            {
+                title: 'Numbers Practice Worksheet',
+                description: 'Practice counting and writing numbers 1-10',
+                instructions: 'Complete the worksheet by writing numbers and counting objects. Take your time and ask for help if needed.',
+                teacherId: teacher.id,
+                lessonId: lessons.find(l => l.title.includes('Numbers'))?.id || lessons[0].id,
+                assignedTo: [student.id],
+                dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+                maxPoints: 100,
+                assignmentType: 'worksheet',
+                isActive: true
+            },
+            {
+                title: 'Letter Recognition Exercise',
+                description: 'Identify and trace uppercase and lowercase letters A-F',
+                instructions: 'Look at each letter and trace it carefully. Say the letter name out loud as you trace.',
+                teacherId: teacher.id,
+                lessonId: lessons.find(l => l.title.includes('Letters'))?.id || lessons[1].id,
+                assignedTo: [student.id],
+                dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+                maxPoints: 80,
+                assignmentType: 'exercise',
+                isActive: true
+            },
+            {
+                title: 'Draw Your Family',
+                description: 'Create a drawing of your family members',
+                instructions: 'Draw a picture of your family. Include everyone who lives in your house. Use colors to make it bright and beautiful!',
+                teacherId: teacher.id,
+                lessonId: lessons.find(l => l.title.includes('Colors'))?.id || lessons[2].id,
+                assignedTo: [student.id],
+                dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // 10 days from now
+                maxPoints: 100,
+                assignmentType: 'project',
+                isActive: true
+            },
+            {
+                title: 'Animal Sounds Quiz',
+                description: 'Match animals with the sounds they make',
+                instructions: 'Listen to each sound and draw a line to the correct animal. You can ask a grown-up to help you listen.',
+                teacherId: teacher.id,
+                lessonId: lessons.find(l => l.title.includes('Animal'))?.id || lessons[3].id,
+                assignedTo: [student.id],
+                dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+                maxPoints: 60,
+                assignmentType: 'quiz',
+                isActive: true
+            }
+        ];
+
+        for (const assignmentData of sampleAssignments) {
+            await Assignment.findOrCreate({
+                where: { title: assignmentData.title },
+                defaults: assignmentData
             });
         }
 

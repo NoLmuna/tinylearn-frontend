@@ -74,10 +74,11 @@ const TeacherStudents = () => {
       const response = await api.getUsers();
       
       if (response.success) {
-        const allUsers = response.data.users || [];
+        // Handle both direct array and nested object format
+        const allUsers = response.data || [];
         const studentUsers = allUsers.filter(user => user.role === 'student');
         
-        // Add mock progress data
+        // Add mock progress data for now (this would come from backend in production)
         const studentsWithProgress = studentUsers.map(student => ({
           ...student,
           progress: Math.floor(Math.random() * 40) + 60, // 60-100%

@@ -87,7 +87,10 @@ const TeacherAssignments = () => {
       const response = await api.getAssignments();
       
       if (response.success) {
-        setAssignments(response.data.assignments || []);
+        // Handle both direct array and nested object format
+        const assignmentsData = response.data;
+        const assignmentsList = Array.isArray(assignmentsData) ? assignmentsData : (assignmentsData.assignments || []);
+        setAssignments(assignmentsList);
       } else {
         toast.error('Failed to load assignments');
       }

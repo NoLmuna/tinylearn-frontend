@@ -82,7 +82,10 @@ const TeacherLessons = () => {
       const response = await api.getLessons();
       
       if (response.success) {
-        setLessons(response.data.lessons || []);
+        // Handle both direct array and nested object format
+        const lessonsData = response.data;
+        const lessonsList = Array.isArray(lessonsData) ? lessonsData : (lessonsData.lessons || []);
+        setLessons(lessonsList);
       } else {
         toast.error('Failed to load lessons');
       }

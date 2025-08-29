@@ -52,6 +52,8 @@ const TeacherDashboard = () => {
     try {
       setLoading(true);
       
+      console.log('🔍 Fetching teacher dashboard data...');
+      
       // Fetch all data in parallel
       const [
         lessonsRes, 
@@ -65,13 +67,24 @@ const TeacherDashboard = () => {
         api.getMessages()
       ]);
 
-      const lessons = lessonsRes.success ? lessonsRes.data.lessons || [] : [];
-      const assignments = assignmentsRes.success ? assignmentsRes.data.assignments || [] : [];
-      const allUsers = usersRes.success ? usersRes.data.users || [] : [];
-      const messages = messagesRes.success ? messagesRes.data.messages || [] : [];
+      console.log('📚 Lessons response:', lessonsRes);
+      console.log('📝 Assignments response:', assignmentsRes);
+      console.log('👥 Users response:', usersRes);
+      console.log('💬 Messages response:', messagesRes);
+
+      const lessons = lessonsRes.success ? lessonsRes.data.lessons || lessonsRes.data || [] : [];
+      const assignments = assignmentsRes.success ? assignmentsRes.data.assignments || assignmentsRes.data || [] : [];
+      const allUsers = usersRes.success ? usersRes.data || [] : [];
+      const messages = messagesRes.success ? messagesRes.data.messages || messagesRes.data || [] : [];
+
+      console.log('✅ Processed lessons:', lessons);
+      console.log('✅ Processed assignments:', assignments);
+      console.log('✅ Processed users:', allUsers);
+      console.log('✅ Processed messages:', messages);
 
       // Filter students only
       const students = allUsers.filter(u => u.role === 'student');
+      console.log('🎓 Filtered students:', students);
       
       // Calculate stats
       const totalStudents = students.length;

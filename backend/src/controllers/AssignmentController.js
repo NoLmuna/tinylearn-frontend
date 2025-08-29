@@ -159,12 +159,20 @@ const getStudentAssignments = async (req, res) => {
         const offset = (page - 1) * limit;
         
         // Find assignments where the student is assigned
+        // For MySQL, we need to use JSON_CONTAINS function
+        const { Op } = require('sequelize');
         const assignments = await Assignment.findAndCountAll({
             where: {
-                assignedTo: {
-                    [require('sequelize').Op.contains]: [studentId]
-                },
-                isActive: true
+                [Op.and]: [
+                    { isActive: true },
+                    Assignment.sequelize.where(
+                        Assignment.sequelize.fn('JSON_CONTAINS', 
+                            Assignment.sequelize.col('assigned_to'), 
+                            JSON.stringify(studentId)
+                        ), 
+                        true
+                    )
+                ]
             },
             include: [
                 { model: User, as: 'teacher', attributes: ['id', 'firstName', 'lastName'] },

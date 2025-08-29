@@ -64,8 +64,9 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
       navItems: [
         { name: 'Dashboard', path: '/student' },
         { name: 'Lessons', path: '/student/lessons' },
-        { name: 'Games', path: '/student/games' },
-        { name: 'Achievements', path: '/student/achievements' }
+        { name: 'Assignments', path: '/student/assignments' },
+        { name: 'Progress', path: '/student/progress' },
+        { name: 'Profile', path: '/student/profile' }
       ]
     }
   };
@@ -115,7 +116,7 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
           <div className="flex items-center space-x-4">
             {/* Role Badge */}
             <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${config.bgGradient} text-white text-sm font-medium`}>
-              {role.charAt(0).toUpperCase() + role.slice(1)}
+              {role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User'}
             </div>
 
             {/* User Dropdown */}
