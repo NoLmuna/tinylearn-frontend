@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import { 
   HeartIcon, 
-  ChartBarIcon,
+  ChartBarIcon, 
   ChatBubbleLeftRightIcon, 
+  CalendarDaysIcon,
   TrophyIcon,
   BookOpenIcon,
   ClockIcon,
@@ -31,7 +32,8 @@ const ParentDashboard = () => {
       upcomingAssignments: 0
     },
     children: [],
-    messages: []
+    messages: [],
+    upcomingEvents: []
   });
   const [selectedChild, setSelectedChild] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -46,47 +48,33 @@ const ParentDashboard = () => {
     try {
       setLoading(true);
       console.log('🔍 Fetching parent dashboard data...');
-      console.log('👤 Current user:', user);
       
       // Fetch all data in parallel
       const [
         childrenRes, 
-        conversationsRes
+        messagesRes
       ] = await Promise.all([
         api.getParentChildren(),
-        api.getConversations()
+        api.getMessages()
       ]);
 
       console.log('👨‍👩‍👧‍👦 Children response:', childrenRes);
-      console.log('📧 Conversations response:', conversationsRes);
+      console.log('📧 Messages response:', messagesRes);
 
-      // Handle the data structure correctly - backend returns children array directly in data
-      const childrenData = childrenRes.success ? (childrenRes.data || []) : [];
-      const conversationsData = conversationsRes.success ? (conversationsRes.data || []) : [];
+      // Handle the data structure correctly - backend returns {children: [...]}
+      const childrenData = childrenRes.success ? (childrenRes.data?.children || childrenRes.data || []) : [];
+      const messagesData = messagesRes.success ? (messagesRes.data?.messages || messagesRes.data || []) : [];
       
       console.log('✅ Processed children data:', childrenData);
-      console.log('✅ Processed conversations data:', conversationsData);
-
-      // Check if we have valid data
-      if (!childrenRes.success) {
-        console.error('❌ Failed to fetch children:', childrenRes);
-        toast.error('Failed to load children data');
-      }
-      
-      if (!conversationsRes.success) {
-        console.error('❌ Failed to fetch conversations:', conversationsRes);
-        toast.error('Failed to load messages');
-      }
+      console.log('✅ Processed messages data:', messagesData);
       
       // Extract teachers from children data
       const teachersSet = new Set();
-      if (Array.isArray(childrenData) && childrenData.length > 0) {
+      if (Array.isArray(childrenData)) {
         childrenData.forEach(child => {
           if (child.teachers && Array.isArray(child.teachers)) {
             child.teachers.forEach(teacher => {
-              if (teacher && teacher.id) {
-                teachersSet.add(JSON.stringify(teacher));
-              }
+              teachersSet.add(JSON.stringify(teacher));
             });
           }
         });
@@ -103,22 +91,22 @@ const ParentDashboard = () => {
       // Calculate real stats from children data
       const totalChildren = childrenData.length;
       
-      // Calculate average progress from recentProgress data
-      let totalAverageScore = 0;
-      let childrenWithData = 0;
+      // Calculate average progress from lessons
+      let totalLessons = 0;
+      let completedLessons = 0;
       
       childrenData.forEach(child => {
-        if (child.recentProgress) {
-          totalAverageScore += child.recentProgress.averageScore || 0;
-          childrenWithData++;
-        }
+        const progress = child.progress || [];
+        
+        totalLessons += progress.length;
+        completedLessons += progress.filter(p => p.completed).length;
       });
       
-      const averageProgress = childrenWithData > 0 
-        ? Math.round(totalAverageScore / childrenWithData)
+      const averageProgress = totalLessons > 0 
+        ? Math.round((completedLessons / totalLessons) * 100)
         : 0;
       
-      const totalMessages = conversationsData.length;
+      const totalMessages = messagesData.length;
       const upcomingAssignments = childrenData.reduce((sum, child) => {
         const submissions = child.submissions || [];
         return sum + submissions.filter(sub => 
@@ -129,6 +117,55 @@ const ParentDashboard = () => {
         ).length;
       }, 0);
 
+      // Generate upcoming events based on assignments
+      const upcomingEvents = [];
+      childrenData.forEach((child, index) => {
+        if (index < 3) { // Limit to first 3 children
+          const submissions = child.submissions || [];
+          const upcomingAssignment = submissions.find(sub => 
+            sub.assignment && 
+            new Date(sub.assignment.dueDate) > new Date()
+          );
+          
+          if (upcomingAssignment) {
+            upcomingEvents.push({
+              id: `assignment-${upcomingAssignment.assignment.id}`,
+              title: upcomingAssignment.assignment.title,
+              date: upcomingAssignment.assignment.dueDate.split('T')[0],
+              time: '11:59 PM',
+              type: 'assignment',
+              childName: child.student.firstName
+            });
+          }
+        }
+      });
+
+      // Add some default events if no assignments
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      const nextMonth = new Date(today);
+      nextMonth.setMonth(today.getMonth() + 1);
+      
+      upcomingEvents.push(
+        {
+          id: 'conference-1',
+          title: 'Parent-Teacher Conference',
+          date: nextWeek.toISOString().split('T')[0],
+          time: '3:00 PM',
+          type: 'meeting',
+          childName: childrenData[0]?.student.firstName || 'Child'
+        },
+        {
+          id: 'fair-1',
+          title: 'Science Fair',
+          date: nextMonth.toISOString().split('T')[0],
+          time: '10:00 AM',
+          type: 'event',
+          childName: 'All Students'
+        }
+      );
+
       setDashboardData({
         stats: {
           totalChildren,
@@ -136,32 +173,44 @@ const ParentDashboard = () => {
           totalMessages,
           upcomingAssignments
         },
-        children: Array.isArray(childrenData) ? childrenData.map(child => ({
-          id: child.id || Math.random().toString(36).substr(2, 9),
-          name: child.name || `${child.firstName || ''} ${child.lastName || ''}`.trim() || 'Student',
-          firstName: child.firstName || '',
-          lastName: child.lastName || '',
-          age: child.age || 'N/A',
-          grade: child.grade || 'N/A',
-          profilePicture: child.profilePicture || null,
+        children: childrenData.map(child => ({
+          ...child.student,
           relationship: child.relationship || 'child',
-          recentProgress: child.recentProgress || {
-            lessonsCompleted: 0,
-            averageScore: 0,
-            timeSpent: '0 hours',
-            streak: 0
+          progress: child.progress || [],
+          submissions: child.submissions || [],
+          recentProgress: {
+            completedLessons: child.progress ? child.progress.filter(p => p.completed).length : 0,
+            totalLessons: child.progress ? child.progress.length : 0,
+            averageScore: child.submissions && child.submissions.length > 0 
+              ? Math.round(child.submissions
+                  .filter(s => s.grade !== null && s.grade !== undefined)
+                  .reduce((sum, s) => sum + (s.grade || 0), 0) / 
+                  child.submissions.filter(s => s.grade !== null && s.grade !== undefined).length)
+              : 0
           },
-          recentActivities: child.recentActivities || [],
-          upcomingAssignments: child.upcomingAssignments || []
-        })) : [],
-        messages: Array.isArray(conversationsData) ? conversationsData.slice(0, 5).map(conv => ({
-          id: conv.partnerId,
-          sender: conv.partner?.firstName + ' ' + conv.partner?.lastName || 'Teacher',
-          subject: 'Conversation',
-          preview: (conv.lastMessage?.content || '').substring(0, 100) + ((conv.lastMessage?.content || '').length > 100 ? '...' : ''),
-          timestamp: conv.lastMessage?.createdAt,
-          isRead: true
-        })) : []
+          upcomingAssignments: child.submissions ? child.submissions
+            .filter(sub => 
+              sub.assignment && 
+              new Date(sub.assignment.dueDate) > new Date() &&
+              sub.status !== 'submitted' && 
+              sub.status !== 'graded'
+            )
+            .map(sub => ({
+              id: sub.assignment.id,
+              title: sub.assignment.title,
+              dueDate: sub.assignment.dueDate,
+              subject: sub.assignment.subject || 'General'
+            })) : []
+        })),
+        messages: messagesData.slice(0, 5).map(msg => ({
+          id: msg.id,
+          sender: msg.senderId === user.id ? 'You' : (uniqueTeachers.find(t => t.id === msg.senderId)?.firstName + ' ' + uniqueTeachers.find(t => t.id === msg.senderId)?.lastName || 'Teacher'),
+          subject: msg.subject,
+          preview: msg.content.substring(0, 100) + (msg.content.length > 100 ? '...' : ''),
+          timestamp: msg.createdAt,
+          isRead: msg.isRead
+        })),
+        upcomingEvents: upcomingEvents.slice(0, 5)
       });
 
     } catch (error) {
@@ -394,6 +443,33 @@ const ParentDashboard = () => {
                       </div>
                       <p className="text-sm text-gray-600 mb-1">{message.subject}</p>
                       <p className="text-xs text-gray-500">{message.preview}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Upcoming Events */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Upcoming Events</h3>
+              
+              {dashboardData.upcomingEvents.length === 0 ? (
+                <div className="text-center py-6">
+                  <CalendarDaysIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No upcoming events</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {dashboardData.upcomingEvents.map((event) => (
+                    <div key={event.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                      <div className={`w-3 h-3 rounded-full ${
+                        event.type === 'assignment' ? 'bg-orange-500' :
+                        event.type === 'meeting' ? 'bg-blue-500' : 'bg-green-500'
+                      }`}></div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm text-gray-800">{event.title}</p>
+                        <p className="text-xs text-gray-500">{event.childName} • {event.date}</p>
+                      </div>
                     </div>
                   ))}
                 </div>

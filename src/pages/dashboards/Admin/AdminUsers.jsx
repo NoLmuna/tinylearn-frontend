@@ -12,6 +12,7 @@ import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import DashboardNavbar from '../../../components/ui/DashboardNavbar';
 import CreateUserModal from '../../../components/CreateUserModal';
+import EditUserModal from '../../../components/EditUserModal';
 import apiService from '../../../services/api';
 import toast from 'react-hot-toast';
 
@@ -20,6 +21,8 @@ export default function AdminUsers() {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
 
@@ -99,6 +102,16 @@ export default function AdminUsers() {
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  const handleViewUser = (userId) => {
+    setSelectedUserId(userId);
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleEditUser = (userId) => {
+    setSelectedUserId(userId);
+    setIsEditUserModalOpen(true);
   };
 
   const handleDeleteUser = async (userId) => {
@@ -273,14 +286,16 @@ export default function AdminUsers() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => toast('User details coming soon!', { icon: 'ℹ️' })}
+                          onClick={() => handleViewUser(user.id)}
                           className="text-blue-600 hover:text-blue-900"
+                          title="View User"
                         >
                           <EyeIcon className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => toast('Edit user coming soon!', { icon: 'ℹ️' })}
+                          onClick={() => handleEditUser(user.id)}
                           className="text-green-600 hover:text-green-900"
+                          title="Edit User"
                         >
                           <PencilIcon className="h-4 w-4" />
                         </button>
@@ -329,6 +344,14 @@ export default function AdminUsers() {
         isOpen={isCreateUserModalOpen}
         onClose={() => setIsCreateUserModalOpen(false)}
         onUserCreated={fetchUsers}
+      />
+
+      {/* Edit User Modal */}
+      <EditUserModal
+        isOpen={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        onUserUpdated={fetchUsers}
+        userId={selectedUserId}
       />
     </div>
   );

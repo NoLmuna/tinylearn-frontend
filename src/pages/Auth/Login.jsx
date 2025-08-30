@@ -248,31 +248,6 @@ export default function Login() {
               </PlayfulButton>
             </div>
           </form>
-
-          {/* Account Information */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
-              Need an account?
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
-              All accounts are created by administrators. Please contact your school admin for access.
-            </p>
-          </div>
-
-          {/* Admin Login Link */}
-          <div className="mt-6 text-center">
-            <div className="border-t border-gray-200 pt-4">
-              <p className="text-sm text-gray-600">
-                Administrator?{' '}
-                <Link
-                  to="/admin/login"
-                  className="font-medium text-red-600 hover:text-red-500 transition-colors"
-                >
-                  Secure Admin Login
-                </Link>
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

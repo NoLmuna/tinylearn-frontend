@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext.jsx';
+import { SocketProvider } from './contexts/SocketContext.jsx';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
@@ -18,10 +19,12 @@ import CreateAssignment from './pages/dashboards/Teacher/CreateAssignment.jsx';
 import TeacherLessons from './pages/dashboards/Teacher/TeacherLessons.jsx';
 import TeacherAssignments from './pages/dashboards/Teacher/TeacherAssignments.jsx';
 import TeacherStudents from './pages/dashboards/Teacher/TeacherStudents.jsx';
-import TeacherMessages from './pages/dashboards/Teacher/TeacherMessages.jsx';
+import TeacherMessages from './pages/dashboards/Teacher/TeacherMessagesRedesigned.jsx';
 import GradeAssignment from './pages/dashboards/Teacher/GradeAssignment.jsx';
 import ViewLesson from './pages/dashboards/Teacher/ViewLesson.jsx';
 import ParentDashboard from './pages/dashboards/Parent/ParentDashboard';
+import ParentProgress from './pages/dashboards/Parent/ParentProgress';
+import ParentMessages from './pages/dashboards/Parent/ParentMessagesNew';
 import AdminDashboard from './pages/dashboards/Admin/AdminDashboard';
 import AdminUsers from './pages/dashboards/Admin/AdminUsers';
 import AdminSystem from './pages/dashboards/Admin/AdminSystem';
@@ -32,7 +35,8 @@ import AdminProtectedRoute from './components/AdminProtectedRoute';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <SocketProvider>
+        <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -74,10 +78,14 @@ function App() {
             } 
           />
           <Route 
-            path="/parent" 
+            path="/parent/*" 
             element={
               <ProtectedRoute allowedRoles={['parent']}>
-                <ParentDashboard />
+                <Routes>
+                  <Route path="" element={<ParentDashboard />} />
+                  <Route path="progress" element={<ParentProgress />} />
+                  <Route path="messages" element={<ParentMessages />} />
+                </Routes>
               </ProtectedRoute>
             } 
           />
@@ -138,6 +146,7 @@ function App() {
           }}
         />
       </Router>
+      </SocketProvider>
     </AuthProvider>
   );
 }

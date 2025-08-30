@@ -59,28 +59,28 @@ const TeacherDashboard = () => {
         lessonsRes, 
         assignmentsRes, 
         usersRes, 
-        messagesRes
+        conversationsRes
       ] = await Promise.all([
         api.getLessons(),
         api.getAssignments(),
         api.getUsers(),
-        api.getMessages()
+        api.getConversations()
       ]);
 
       console.log('📚 Lessons response:', lessonsRes);
       console.log('📝 Assignments response:', assignmentsRes);
       console.log('👥 Users response:', usersRes);
-      console.log('💬 Messages response:', messagesRes);
+      console.log('💬 Conversations response:', conversationsRes);
 
       const lessons = lessonsRes.success ? lessonsRes.data.lessons || lessonsRes.data || [] : [];
       const assignments = assignmentsRes.success ? assignmentsRes.data.assignments || assignmentsRes.data || [] : [];
       const allUsers = usersRes.success ? usersRes.data || [] : [];
-      const messages = messagesRes.success ? messagesRes.data.messages || messagesRes.data || [] : [];
+      const conversations = conversationsRes.success ? conversationsRes.data || [] : [];
 
       console.log('✅ Processed lessons:', lessons);
       console.log('✅ Processed assignments:', assignments);
       console.log('✅ Processed users:', allUsers);
-      console.log('✅ Processed messages:', messages);
+      console.log('✅ Processed conversations:', conversations);
 
       // Filter students only
       const students = allUsers.filter(u => u.role === 'student');
@@ -91,7 +91,7 @@ const TeacherDashboard = () => {
       const totalLessons = lessons.length;
       const totalAssignments = assignments.length;
       const pendingReviews = assignments.filter(a => !a.isGraded).length;
-      const unreadMessages = messages.filter(m => !m.isRead).length;
+      const unreadMessages = conversations.filter(c => c.unreadCount > 0).length;
 
       // Generate recent activity (mock data based on real data structure)
       const recentActivity = [
@@ -124,7 +124,7 @@ const TeacherDashboard = () => {
         lessons: lessons.slice(0, 6), // Show recent 6 lessons
         assignments: assignments.slice(0, 5), // Show recent 5 assignments
         students: students.slice(0, 8), // Show 8 students for overview
-        messages: messages.slice(0, 5), // Show recent 5 messages
+        messages: conversations.slice(0, 5), // Show recent 5 conversations
         recentActivity
       });
     } catch (error) {
@@ -604,21 +604,21 @@ const TeacherDashboard = () => {
               
               <div className="space-y-3">
                 {dashboardData.messages.length > 0 ? (
-                  dashboardData.messages.slice(0, 3).map((message) => (
-                    <div key={message.id} className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                  dashboardData.messages.slice(0, 3).map((conversation) => (
+                    <div key={conversation.id || conversation.otherUser?.id} className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="font-medium text-gray-800 text-sm">
-                            {message.senderName || 'Parent'}
+                            {conversation.otherUser ? `${conversation.otherUser.firstName} ${conversation.otherUser.lastName}` : 'Parent'}
                           </div>
                           <div className="text-sm text-gray-600 line-clamp-2">
-                            {message.content || message.subject}
+                            {conversation.lastMessage?.content || 'No messages yet'}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
-                            {message.createdAt ? new Date(message.createdAt).toLocaleDateString() : 'Recently'}
+                            {conversation.lastMessage?.createdAt ? new Date(conversation.lastMessage.createdAt).toLocaleDateString() : 'Recently'}
                           </div>
                         </div>
-                        {!message.isRead && (
+                        {conversation.unreadCount > 0 && (
                           <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
                         )}
                       </div>

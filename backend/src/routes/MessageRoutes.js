@@ -7,25 +7,13 @@ const userGuard = require('../middleware/user-guard');
 // Protected routes - all message routes require authentication
 router.use(userGuard);
 
-// General message retrieval
-router.get('/', MessageController.getMessages);
+// Get all conversations for the current user
+router.get('/conversations', MessageController.getConversations);
 
 // Send message
 router.post('/', MessageController.sendMessage);
 
-// Get messages
-router.get('/received', MessageController.getReceivedMessages);
-router.get('/sent', MessageController.getSentMessages);
-router.get('/stats', MessageController.getMessageStats);
-router.get('/contacts', MessageController.getContacts);
-
-// Conversation with specific user
-router.get('/conversation/:userId', MessageController.getConversation);
-
-// Mark message as read
-router.patch('/:id/read', MessageController.markAsRead);
-
-// Get specific message
-router.get('/:id', MessageController.getMessageById);
+// Get messages with a specific user
+router.get('/:otherUserId', MessageController.getMessages);
 
 module.exports = router;

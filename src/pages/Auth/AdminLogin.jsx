@@ -18,7 +18,6 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  const [securityVerification, setSecurityVerification] = useState('');
   const navigate = useNavigate();
 
   // Redirect if already logged in as admin
@@ -50,12 +49,6 @@ export default function AdminLogin() {
     } else if (form.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-
-    if (!securityVerification.trim()) {
-      newErrors.security = 'Security verification is required';
-    } else if (securityVerification.toLowerCase() !== 'admin') {
-      newErrors.security = 'Invalid security verification';
-    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,13 +64,6 @@ export default function AdminLogin() {
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSecurityChange = (e) => {
-    setSecurityVerification(e.target.value);
-    if (errors.security) {
-      setErrors(prev => ({ ...prev, security: '' }));
     }
   };
 
@@ -217,28 +203,6 @@ export default function AdminLogin() {
               </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-            </div>
-
-            {/* Security Verification */}
-            <div>
-              <label htmlFor="security" className="block text-sm font-bold text-gray-700 mb-2">
-                Security Verification
-              </label>
-              <input
-                id="security"
-                type="text"
-                required
-                value={securityVerification}
-                onChange={handleSecurityChange}
-                className={`appearance-none relative block w-full px-4 py-3 border-2 rounded-xl placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 ${
-                  errors.security ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Type 'admin' to verify"
-              />
-              <p className="mt-1 text-xs text-gray-500">Type "admin" to verify you are an administrator</p>
-              {errors.security && (
-                <p className="mt-1 text-sm text-red-600">{errors.security}</p>
               )}
             </div>
 

@@ -6,7 +6,7 @@ const { sendResponse } = require('../utils/response');
 const createAssignment = async (req, res) => {
     try {
         const { title, description, instructions, lessonId, assignedTo, dueDate, maxPoints, assignmentType, attachments } = req.body;
-        const teacherId = req.user.id;
+        const teacherId = req.user.userId;
 
         // Validate that the user is a teacher
         if (req.user.role !== 'teacher') {
@@ -94,7 +94,7 @@ const getAssignments = async (req, res) => {
 // Get assignments for a teacher
 const getTeacherAssignments = async (req, res) => {
     try {
-        const teacherId = req.user.id;
+        const teacherId = req.user.userId;
         const { page = 1, limit = 10, status = 'all' } = req.query;
 
         const offset = (page - 1) * limit;
@@ -153,7 +153,7 @@ const getTeacherAssignments = async (req, res) => {
 // Get assignments for a student
 const getStudentAssignments = async (req, res) => {
     try {
-        const studentId = req.user.id;
+        const studentId = req.user.userId;
         const { page = 1, limit = 10, status = 'all' } = req.query;
 
         const offset = (page - 1) * limit;
@@ -239,7 +239,7 @@ const getStudentAssignments = async (req, res) => {
 const updateAssignment = async (req, res) => {
     try {
         const { id } = req.params;
-        const teacherId = req.user.id;
+        const teacherId = req.user.userId;
 
         const assignment = await Assignment.findOne({
             where: { id, teacherId }
@@ -269,7 +269,7 @@ const updateAssignment = async (req, res) => {
 const deleteAssignment = async (req, res) => {
     try {
         const { id } = req.params;
-        const teacherId = req.user.id;
+        const teacherId = req.user.userId;
 
         const assignment = await Assignment.findOne({
             where: { id, teacherId }
@@ -292,7 +292,7 @@ const deleteAssignment = async (req, res) => {
 const getAssignmentById = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const userRole = req.user.role;
 
         const assignment = await Assignment.findByPk(id, {

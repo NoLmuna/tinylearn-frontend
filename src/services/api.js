@@ -167,8 +167,19 @@ class ApiService {
     return this.post('/users/create-student', userData);
   }
 
-  async getUsers() {
-    // Use the new endpoint that works for teachers (students) and admins (all users)
+  async getUsers(role = null) {
+    if (role) {
+      return this.get(`/users/by-role?role=${role}`);
+    }
+    // Default to getting all users (admin only)
+    return this.get('/users/all');
+  }
+
+  async getTeachers() {
+    return this.get('/users/parent/teachers');
+  }
+
+  async getStudents() {
     return this.get('/users/by-role?role=student');
   }
 
@@ -178,6 +189,14 @@ class ApiService {
 
   async deleteUser(userId) {
     return this.delete(`/users/${userId}`);
+  }
+
+  async getUserById(userId) {
+    return this.get(`/users/${userId}`);
+  }
+
+  async getSystemStats() {
+    return this.get('/users/stats');
   }
 
   async updateUserStatus(userId, status) {
@@ -271,6 +290,14 @@ class ApiService {
     return this.get(endpoint);
   }
 
+  async getConversations() {
+    return this.get('/messages/conversations');
+  }
+
+  async getMessagesWithUser(otherUserId) {
+    return this.get(`/messages/${otherUserId}`);
+  }
+
   async sendMessage(messageData) {
     return this.post('/messages', messageData);
   }
@@ -290,6 +317,10 @@ class ApiService {
 
   async getParentChildren() {
     return this.get('/users/parent/children');
+  }
+
+  async getParentsForTeacher() {
+    return this.get('/users/teacher/parents');
   }
 
   async linkParentStudent(parentId, studentId, relationship = 'guardian') {

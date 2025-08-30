@@ -1,416 +1,153 @@
-/* eslint-disable no-undef */
-const { Message, User, StudentParent } = require('../models');
-const { sendResponse } = require('../utils/response');
+const { Message, User } = require('../models');
+const send = require('../utils/response');
 const { Op } = require('sequelize');
 
-// Send a message
-const sendMessage = async (req, res) => {
-    try {
-        const { receiverId, subject, content, messageType, priority, attachments, relatedStudentId } = req.body;
-        const senderId = req.user.id;
+const MessageController = {
+    async sendMessage(req, res) {
+        try {
+            const { receiverId, content } = req.body;
+            const senderId = req.user?.userId || req.user?.id;
 
-        // Validate receiver exists
-        const receiver = await User.findByPk(receiverId);
-        if (!receiver) {
-            return sendResponse(res, 404, 'error', 'Receiver not found');
-        }
+            if (!senderId) {
+                return send.sendResponseMessage(res, 401, null, 'User ID not found in token');
+            }
 
-        // Check if sender has permission to message receiver
-        if (req.user.role === 'parent' && receiver.role === 'teacher') {
-            // Parent can only message teachers of their children
-            const hasPermission = await StudentParent.findOne({
-                where: {
-                    parentId: senderId,
-                    studentId: relatedStudentId || { [Op.ne]: null }
-                }
+            if (!receiverId || !content) {
+                return send.sendResponseMessage(res, 400, null, 'Receiver and content are required');
+            }
+
+            // Check if receiver exists
+            const receiver = await User.findByPk(receiverId);
+            if (!receiver) {
+                return send.sendResponseMessage(res, 404, null, 'Receiver not found');
+            }
+
+            // Create the message
+            const message = await Message.create({
+                senderId,
+                receiverId,
+                content
             });
 
-            if (!hasPermission) {
-                return sendResponse(res, 403, 'error', 'You can only message teachers of your children');
+            // Emit real-time message if Socket.IO is available
+            if (req.app.get('io')) {
+                req.app.get('io').emit('newMessage', {
+                    id: message.id,
+                    senderId,
+                    receiverId,
+                    content,
+                    timestamp: message.createdAt
+                });
             }
+
+            return send.sendResponseMessage(res, 201, message, 'Message sent successfully');
+        } catch (error) {
+            console.error('Error sending message:', error);
+            return send.sendResponseMessage(res, 500, null, 'Failed to send message');
         }
+    },
 
-        const message = await Message.create({
-            senderId,
-            receiverId,
-            subject,
-            content,
-            messageType: messageType || 'general',
-            priority: priority || 'medium',
-            attachments: attachments || [],
-            relatedStudentId
-        });
+    async getMessages(req, res) {
+        try {
+            const userId = req.user?.userId || req.user?.id;
+            const { otherUserId } = req.params;
 
-        const messageWithDetails = await Message.findByPk(message.id, {
-            include: [
-                { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ]
-        });
+            if (!userId) {
+                return send.sendResponseMessage(res, 401, null, 'User ID not found in token');
+            }
 
-        sendResponse(res, 201, 'success', 'Message sent successfully', messageWithDetails);
-    } catch (error) {
-        console.error('Send message error:', error);
-        sendResponse(res, 500, 'error', 'Failed to send message', null);
-    }
-};
+            if (!otherUserId) {
+                return send.sendResponseMessage(res, 400, null, 'Other user ID is required');
+            }
 
-// Get all messages (received and sent combined)
-const getMessages = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { page = 1, limit = 10, type = 'received' } = req.query;
-
-        if (type === 'received') {
-            return getReceivedMessages(req, res);
-        } else if (type === 'sent') {
-            return getSentMessages(req, res);
-        } else {
-            // Get both received and sent messages
-            const offset = (page - 1) * limit;
-            
-            const messages = await Message.findAndCountAll({
+            // Get all messages between the two users
+            const messages = await Message.findAll({
                 where: {
                     [Op.or]: [
-                        { receiverId: userId },
-                        { senderId: userId }
+                        { senderId: userId, receiverId: otherUserId },
+                        { senderId: otherUserId, receiverId: userId }
                     ]
                 },
                 include: [
-                    { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                    { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                    { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
+                    {
+                        model: User,
+                        as: 'sender',
+                        attributes: ['id', 'firstName', 'lastName', 'role']
+                    },
+                    {
+                        model: User,
+                        as: 'receiver',
+                        attributes: ['id', 'firstName', 'lastName', 'role']
+                    }
                 ],
-                limit: parseInt(limit),
-                offset: parseInt(offset),
+                order: [['createdAt', 'ASC']]
+            });
+
+            return send.sendResponseMessage(res, 200, messages, 'Messages retrieved successfully');
+        } catch (error) {
+            console.error('Error getting messages:', error);
+            return send.sendResponseMessage(res, 500, null, 'Failed to retrieve messages');
+        }
+    },
+
+    async getConversations(req, res) {
+        try {
+            console.log('🔍 req.user:', req.user);
+            console.log('🔍 req.userData:', req.userData);
+            
+            const userId = req.user?.userId || req.user?.id;
+            console.log('🔍 Extracted userId:', userId);
+
+            if (!userId) {
+                return send.sendResponseMessage(res, 401, null, 'User ID not found in token');
+            }
+
+            // Get all unique conversations for this user
+            const conversations = await Message.findAll({
+                where: {
+                    [Op.or]: [
+                        { senderId: userId },
+                        { receiverId: userId }
+                    ]
+                },
+                include: [
+                    {
+                        model: User,
+                        as: 'sender',
+                        attributes: ['id', 'firstName', 'lastName', 'role']
+                    },
+                    {
+                        model: User,
+                        as: 'receiver',
+                        attributes: ['id', 'firstName', 'lastName', 'role']
+                    }
+                ],
                 order: [['createdAt', 'DESC']]
             });
 
-            // Add metadata to distinguish sent vs received
-            const messagesWithType = messages.rows.map(message => ({
-                ...message.toJSON(),
-                isSent: message.senderId === userId,
-                isReceived: message.receiverId === userId,
-                senderName: message.sender ? `${message.sender.firstName} ${message.sender.lastName}` : 'Unknown',
-                receiverName: message.receiver ? `${message.receiver.firstName} ${message.receiver.lastName}` : 'Unknown'
-            }));
-
-            sendResponse(res, 200, 'success', 'Messages retrieved successfully', {
-                messages: messagesWithType,
-                pagination: {
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    total: messages.count,
-                    pages: Math.ceil(messages.count / limit)
+            // Group by conversation partner
+            const conversationMap = new Map();
+            conversations.forEach(message => {
+                const partnerId = message.senderId === userId ? message.receiverId : message.senderId;
+                const partner = message.senderId === userId ? message.receiver : message.sender;
+                
+                if (!conversationMap.has(partnerId)) {
+                    conversationMap.set(partnerId, {
+                        partnerId,
+                        partner,
+                        lastMessage: message,
+                        unreadCount: 0
+                    });
                 }
             });
+
+            const conversationList = Array.from(conversationMap.values());
+            return send.sendResponseMessage(res, 200, conversationList, 'Conversations retrieved successfully');
+        } catch (error) {
+            console.error('Error getting conversations:', error);
+            return send.sendResponseMessage(res, 500, null, 'Failed to retrieve conversations');
         }
-    } catch (error) {
-        console.error('Get messages error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve messages', null);
     }
 };
 
-// Get received messages
-const getReceivedMessages = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { page = 1, limit = 10, isRead, messageType, priority } = req.query;
-
-        const offset = (page - 1) * limit;
-        const whereClause = { receiverId: userId };
-
-        if (isRead !== undefined) {
-            whereClause.isRead = isRead === 'true';
-        }
-
-        if (messageType && messageType !== 'all') {
-            whereClause.messageType = messageType;
-        }
-
-        if (priority && priority !== 'all') {
-            whereClause.priority = priority;
-        }
-
-        const messages = await Message.findAndCountAll({
-            where: whereClause,
-            include: [
-                { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ],
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-            order: [['createdAt', 'DESC']]
-        });
-
-        sendResponse(res, 200, 'success', 'Messages retrieved successfully', {
-            messages: messages.rows,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total: messages.count,
-                pages: Math.ceil(messages.count / limit)
-            }
-        });
-    } catch (error) {
-        console.error('Get received messages error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve messages', null);
-    }
-};
-
-// Get sent messages
-const getSentMessages = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { page = 1, limit = 10, messageType } = req.query;
-
-        const offset = (page - 1) * limit;
-        const whereClause = { senderId: userId };
-
-        if (messageType && messageType !== 'all') {
-            whereClause.messageType = messageType;
-        }
-
-        const messages = await Message.findAndCountAll({
-            where: whereClause,
-            include: [
-                { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ],
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-            order: [['createdAt', 'DESC']]
-        });
-
-        sendResponse(res, 200, 'success', 'Sent messages retrieved successfully', {
-            messages: messages.rows,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total: messages.count,
-                pages: Math.ceil(messages.count / limit)
-            }
-        });
-    } catch (error) {
-        console.error('Get sent messages error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve sent messages', null);
-    }
-};
-
-// Mark message as read
-const markAsRead = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const message = await Message.findOne({
-            where: { id, receiverId: userId }
-        });
-
-        if (!message) {
-            return sendResponse(res, 404, 'error', 'Message not found');
-        }
-
-        if (!message.isRead) {
-            await message.update({
-                isRead: true,
-                readAt: new Date()
-            });
-        }
-
-        const updatedMessage = await Message.findByPk(id, {
-            include: [
-                { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ]
-        });
-
-        sendResponse(res, 200, 'success', 'Message marked as read', updatedMessage);
-    } catch (error) {
-        console.error('Mark as read error:', error);
-        sendResponse(res, 500, 'error', 'Failed to mark message as read', null);
-    }
-};
-
-// Get message by ID
-const getMessageById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user.id;
-
-        const message = await Message.findByPk(id, {
-            include: [
-                { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ]
-        });
-
-        if (!message) {
-            return sendResponse(res, 404, 'error', 'Message not found');
-        }
-
-        // Check permissions
-        if (message.senderId !== userId && message.receiverId !== userId) {
-            return sendResponse(res, 403, 'error', 'You do not have permission to view this message');
-        }
-
-        // Mark as read if user is the receiver and message is unread
-        if (message.receiverId === userId && !message.isRead) {
-            await message.update({
-                isRead: true,
-                readAt: new Date()
-            });
-        }
-
-        sendResponse(res, 200, 'success', 'Message retrieved successfully', message);
-    } catch (error) {
-        console.error('Get message by ID error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve message', null);
-    }
-};
-
-// Get conversation between two users
-const getConversation = async (req, res) => {
-    try {
-        const { userId: otherUserId } = req.params;
-        const currentUserId = req.user.id;
-        const { page = 1, limit = 20 } = req.query;
-
-        const offset = (page - 1) * limit;
-
-        const messages = await Message.findAndCountAll({
-            where: {
-                [Op.or]: [
-                    { senderId: currentUserId, receiverId: otherUserId },
-                    { senderId: otherUserId, receiverId: currentUserId }
-                ]
-            },
-            include: [
-                { model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'receiver', attributes: ['id', 'firstName', 'lastName', 'role'] },
-                { model: User, as: 'relatedStudent', attributes: ['id', 'firstName', 'lastName'], required: false }
-            ],
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-            order: [['createdAt', 'ASC']]
-        });
-
-        // Mark received messages as read
-        await Message.update(
-            { isRead: true, readAt: new Date() },
-            { 
-                where: { 
-                    senderId: otherUserId, 
-                    receiverId: currentUserId, 
-                    isRead: false 
-                } 
-            }
-        );
-
-        sendResponse(res, 200, 'success', 'Conversation retrieved successfully', {
-            messages: messages.rows,
-            pagination: {
-                page: parseInt(page),
-                limit: parseInt(limit),
-                total: messages.count,
-                pages: Math.ceil(messages.count / limit)
-            }
-        });
-    } catch (error) {
-        console.error('Get conversation error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve conversation', null);
-    }
-};
-
-// Get message statistics
-const getMessageStats = async (req, res) => {
-    try {
-        const userId = req.user.id;
-
-        const stats = {
-            unreadCount: await Message.count({
-                where: { receiverId: userId, isRead: false }
-            }),
-            totalReceived: await Message.count({
-                where: { receiverId: userId }
-            }),
-            totalSent: await Message.count({
-                where: { senderId: userId }
-            }),
-            urgentCount: await Message.count({
-                where: { receiverId: userId, priority: 'urgent', isRead: false }
-            })
-        };
-
-        sendResponse(res, 200, 'success', 'Message statistics retrieved successfully', stats);
-    } catch (error) {
-        console.error('Get message stats error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve message statistics', null);
-    }
-};
-
-// Get available contacts for messaging
-const getContacts = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const userRole = req.user.role;
-
-        let contacts = [];
-
-        if (userRole === 'parent') {
-            // Parents can message teachers of their children
-            await StudentParent.findAll({
-                where: { parentId: userId },
-                include: [
-                    { 
-                        model: User, 
-                        as: 'student', 
-                        attributes: ['id', 'firstName', 'lastName', 'grade']
-                    }
-                ]
-            });
-
-            // Get all teachers (simplified - in real app, you'd get teachers assigned to specific children)
-            contacts = await User.findAll({
-                where: { role: 'teacher', isActive: true },
-                attributes: ['id', 'firstName', 'lastName', 'email']
-            });
-
-        } else if (userRole === 'teacher') {
-            // Teachers can message parents of their students
-            contacts = await User.findAll({
-                where: { role: 'parent', isActive: true },
-                attributes: ['id', 'firstName', 'lastName', 'email']
-            });
-
-        } else if (userRole === 'admin') {
-            // Admins can message everyone
-            contacts = await User.findAll({
-                where: { 
-                    id: { [Op.ne]: userId },
-                    isActive: true 
-                },
-                attributes: ['id', 'firstName', 'lastName', 'email', 'role']
-            });
-        }
-
-        sendResponse(res, 200, 'success', 'Contacts retrieved successfully', contacts);
-    } catch (error) {
-        console.error('Get contacts error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve contacts', null);
-    }
-};
-
-module.exports = {
-    sendMessage,
-    getReceivedMessages,
-    getSentMessages,
-    markAsRead,
-    getMessageById,
-    getConversation,
-    getMessageStats,
-    getContacts,
-    getMessages
-};
+module.exports = MessageController;

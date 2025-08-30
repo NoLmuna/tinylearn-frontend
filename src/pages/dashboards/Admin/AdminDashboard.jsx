@@ -40,13 +40,17 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
+      console.log('🔄 Fetching admin dashboard data...');
       
-      // Fetch all users for statistics
+      // First try to get users
       const usersResponse = await apiService.getUsers();
+      console.log('👥 Users response:', usersResponse);
+      
       if (usersResponse.success) {
         const users = usersResponse.data;
+        console.log('✅ Users data:', users);
         
-        // Calculate statistics
+        // Calculate basic stats from users if available
         const totalUsers = users.length;
         const activeStudents = users.filter(u => u.role === 'student' && u.isActive).length;
         const totalTeachers = users.filter(u => u.role === 'teacher').length;
@@ -59,7 +63,7 @@ export default function AdminDashboard() {
           totalTeachers,
           totalParents,
           totalAdmins,
-          systemUptime: '99.9%' // This would come from system monitoring
+          systemUptime: '99.9%'
         });
 
         // Get recent users (last 10)
@@ -77,9 +81,29 @@ export default function AdminDashboard() {
           }));
         
         setRecentUsers(recent);
+        console.log('✅ Dashboard data set successfully');
+        
+        // Try to get system stats separately
+        try {
+          console.log('🔄 Attempting to fetch system stats...');
+          const statsResponse = await apiService.getSystemStats();
+          console.log('📊 Stats response:', statsResponse);
+          
+          if (statsResponse.success) {
+            console.log('✅ Using backend stats');
+            setStats(statsResponse.data);
+          }
+        } catch (statsError) {
+          console.log('⚠️ Stats endpoint failed, using calculated stats:', statsError);
+          // Already set stats from users above
+        }
+        
+      } else {
+        console.error('❌ Failed to fetch users:', usersResponse);
+        toast.error('Failed to load users data');
       }
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      console.error('❌ Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
       setIsLoading(false);

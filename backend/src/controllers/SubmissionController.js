@@ -2,11 +2,11 @@
 const { Submission, Assignment, User } = require('../models');
 const { sendResponse } = require('../utils/response');
 
-// Create or update a submission
-const createOrUpdateSubmission = async (req, res) => {
+// Create a submission
+const createSubmission = async (req, res) => {
     try {
         const { assignmentId, content, attachments } = req.body;
-        const studentId = req.user.id;
+        const studentId = req.user.userId;
 
         // Validate that the user is a student
         if (req.user.role !== 'student') {
@@ -19,64 +19,94 @@ const createOrUpdateSubmission = async (req, res) => {
             return sendResponse(res, 404, 'error', 'Assignment not found');
         }
 
+        // Check if student is assigned to this assignment
         if (!assignment.assignedTo.includes(studentId)) {
             return sendResponse(res, 403, 'error', 'You are not assigned to this assignment');
         }
 
-        // Check if assignment is still active and not overdue
-        if (!assignment.isActive) {
-            return sendResponse(res, 400, 'error', 'This assignment is no longer active');
-        }
-
-        // Find existing submission or create new one
-        let submission = await Submission.findOne({
+        // Check if submission already exists
+        const existingSubmission = await Submission.findOne({
             where: { assignmentId, studentId }
         });
 
-        if (submission) {
-            // Update existing submission (only if not already graded)
-            if (submission.status === 'graded') {
-                return sendResponse(res, 400, 'error', 'Cannot modify a graded submission');
-            }
-
-            submission = await submission.update({
-                content,
-                attachments: attachments || [],
-                status: 'draft'
-            });
-        } else {
-            // Create new submission
-            submission = await Submission.create({
-                assignmentId,
-                studentId,
-                content,
-                attachments: attachments || [],
-                status: 'draft'
-            });
+        if (existingSubmission) {
+            return sendResponse(res, 409, 'error', 'Submission already exists. Use update endpoint instead.');
         }
+
+        const submission = await Submission.create({
+            assignmentId,
+            studentId,
+            content,
+            attachments: attachments || [],
+            status: 'submitted',
+            submittedAt: new Date()
+        });
 
         const submissionWithDetails = await Submission.findByPk(submission.id, {
             include: [
-                { model: Assignment, as: 'assignment', attributes: ['id', 'title', 'dueDate'] },
+                { model: Assignment, as: 'assignment', attributes: ['id', 'title', 'dueDate', 'maxPoints'] },
                 { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName'] }
             ]
         });
 
-        sendResponse(res, 200, 'success', 'Submission saved successfully', submissionWithDetails);
+        sendResponse(res, 201, 'success', 'Submission created successfully', submissionWithDetails);
     } catch (error) {
-        console.error('Create/Update submission error:', error);
-        sendResponse(res, 500, 'error', 'Failed to save submission');
+        console.error('Create submission error:', error);
+        sendResponse(res, 500, 'error', 'Failed to create submission', null);
     }
 };
 
-// Submit a submission (change status from draft to submitted)
-const submitSubmission = async (req, res) => {
+// Update a submission
+const updateSubmission = async (req, res) => {
     try {
         const { id } = req.params;
-        const studentId = req.user.id;
+        const { content, attachments } = req.body;
+        const studentId = req.user.userId;
 
         const submission = await Submission.findOne({
-            where: { id, studentId },
+            where: { id, studentId }
+        });
+
+        if (!submission) {
+            return sendResponse(res, 404, 'error', 'Submission not found or you do not have permission to edit it');
+        }
+
+        if (submission.status === 'graded') {
+            return sendResponse(res, 400, 'error', 'Cannot update a graded submission');
+        }
+
+        await submission.update({
+            content,
+            attachments: attachments || submission.attachments,
+            submittedAt: new Date()
+        });
+
+        const updatedSubmission = await Submission.findByPk(submission.id, {
+            include: [
+                { model: Assignment, as: 'assignment', attributes: ['id', 'title', 'dueDate', 'maxPoints'] },
+                { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName'] }
+            ]
+        });
+
+        sendResponse(res, 200, 'success', 'Submission updated successfully', updatedSubmission);
+    } catch (error) {
+        console.error('Update submission error:', error);
+        sendResponse(res, 500, 'error', 'Failed to update submission', null);
+    }
+};
+
+// Grade a submission (teacher only)
+const gradeSubmission = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { score, feedback, comments } = req.body;
+        const graderId = req.user.userId;
+
+        if (req.user.role !== 'teacher') {
+            return sendResponse(res, 403, 'error', 'Only teachers can grade submissions');
+        }
+
+        const submission = await Submission.findByPk(id, {
             include: [
                 { model: Assignment, as: 'assignment' }
             ]
@@ -86,78 +116,25 @@ const submitSubmission = async (req, res) => {
             return sendResponse(res, 404, 'error', 'Submission not found');
         }
 
-        if (submission.status !== 'draft') {
-            return sendResponse(res, 400, 'error', 'Submission has already been submitted');
+        // Check if teacher is the one who created the assignment
+        if (submission.assignment.teacherId !== graderId) {
+            return sendResponse(res, 403, 'error', 'You can only grade submissions for your assignments');
         }
 
-        // Check if assignment is still within due date
-        if (new Date(submission.assignment.dueDate) < new Date()) {
-            return sendResponse(res, 400, 'error', 'Assignment due date has passed');
+        if (score > submission.assignment.maxPoints) {
+            return sendResponse(res, 400, 'error', `Score cannot exceed maximum points (${submission.assignment.maxPoints})`);
         }
 
-        const updatedSubmission = await submission.update({
-            status: 'submitted',
-            submittedAt: new Date()
-        });
-
-        const submissionWithDetails = await Submission.findByPk(updatedSubmission.id, {
-            include: [
-                { model: Assignment, as: 'assignment', attributes: ['id', 'title', 'dueDate'] },
-                { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName'] }
-            ]
-        });
-
-        sendResponse(res, 200, 'success', 'Submission submitted successfully', submissionWithDetails);
-    } catch (error) {
-        console.error('Submit submission error:', error);
-        sendResponse(res, 500, 'error', 'Failed to submit submission');
-    }
-};
-
-// Grade a submission (teacher only)
-const gradeSubmission = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { score, feedback } = req.body;
-        const graderId = req.user.id;
-
-        // Validate that the user is a teacher
-        if (req.user.role !== 'teacher') {
-            return sendResponse(res, 403, 'error', 'Only teachers can grade submissions');
-        }
-
-        const submission = await Submission.findByPk(id, {
-            include: [
-                { 
-                    model: Assignment, 
-                    as: 'assignment',
-                    where: { teacherId: graderId }
-                }
-            ]
-        });
-
-        if (!submission) {
-            return sendResponse(res, 404, 'error', 'Submission not found or you do not have permission to grade it');
-        }
-
-        if (submission.status !== 'submitted') {
-            return sendResponse(res, 400, 'error', 'Can only grade submitted assignments');
-        }
-
-        // Validate score
-        if (score < 0 || score > submission.assignment.maxPoints) {
-            return sendResponse(res, 400, 'error', `Score must be between 0 and ${submission.assignment.maxPoints}`);
-        }
-
-        const updatedSubmission = await submission.update({
+        await submission.update({
             score,
             feedback,
+            comments,
             status: 'graded',
             gradedAt: new Date(),
             gradedBy: graderId
         });
 
-        const submissionWithDetails = await Submission.findByPk(updatedSubmission.id, {
+        const gradedSubmission = await Submission.findByPk(submission.id, {
             include: [
                 { model: Assignment, as: 'assignment', attributes: ['id', 'title', 'maxPoints'] },
                 { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName'] },
@@ -165,41 +142,45 @@ const gradeSubmission = async (req, res) => {
             ]
         });
 
-        sendResponse(res, 200, 'success', 'Submission graded successfully', submissionWithDetails);
+        sendResponse(res, 200, 'success', 'Submission graded successfully', gradedSubmission);
     } catch (error) {
         console.error('Grade submission error:', error);
-        sendResponse(res, 500, 'error', 'Failed to grade submission');
+        sendResponse(res, 500, 'error', 'Failed to grade submission', null);
     }
 };
 
-// Get submissions for a specific assignment (teacher only)
-const getAssignmentSubmissions = async (req, res) => {
+// Get submissions for a teacher
+const getTeacherSubmissions = async (req, res) => {
     try {
-        const { assignmentId } = req.params;
-        const teacherId = req.user.id;
-        const { page = 1, limit = 10, status = 'all' } = req.query;
+        const teacherId = req.user.userId;
+        const { page = 1, limit = 10, status = 'all', assignmentId } = req.query;
 
-        // Verify teacher owns the assignment
-        const assignment = await Assignment.findOne({
-            where: { id: assignmentId, teacherId }
-        });
-
-        if (!assignment) {
-            return sendResponse(res, 404, 'error', 'Assignment not found or you do not have permission');
+        if (req.user.role !== 'teacher') {
+            return sendResponse(res, 403, 'error', 'Only teachers can view submissions');
         }
 
         const offset = (page - 1) * limit;
-        const whereClause = { assignmentId };
+        const whereClause = {};
 
         if (status !== 'all') {
             whereClause.status = status;
         }
 
+        if (assignmentId) {
+            whereClause.assignmentId = assignmentId;
+        }
+
+        // Get submissions for assignments created by this teacher
         const submissions = await Submission.findAndCountAll({
             where: whereClause,
             include: [
-                { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName', 'email'] },
-                { model: User, as: 'grader', attributes: ['id', 'firstName', 'lastName'], required: false }
+                { 
+                    model: Assignment, 
+                    as: 'assignment',
+                    where: { teacherId },
+                    attributes: ['id', 'title', 'dueDate', 'maxPoints']
+                },
+                { model: User, as: 'student', attributes: ['id', 'firstName', 'lastName'] }
             ],
             limit: parseInt(limit),
             offset: parseInt(offset),
@@ -208,7 +189,6 @@ const getAssignmentSubmissions = async (req, res) => {
 
         sendResponse(res, 200, 'success', 'Submissions retrieved successfully', {
             submissions: submissions.rows,
-            assignment,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),
@@ -217,22 +197,30 @@ const getAssignmentSubmissions = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Get assignment submissions error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve submissions');
+        console.error('Get teacher submissions error:', error);
+        sendResponse(res, 500, 'error', 'Failed to retrieve submissions', null);
     }
 };
 
-// Get student's own submissions
+// Get submissions for a student
 const getStudentSubmissions = async (req, res) => {
     try {
-        const studentId = req.user.id;
-        const { page = 1, limit = 10, status = 'all' } = req.query;
+        const studentId = req.user.userId;
+        const { page = 1, limit = 10, status = 'all', assignmentId } = req.query;
+
+        if (req.user.role !== 'student') {
+            return sendResponse(res, 403, 'error', 'Only students can view their submissions');
+        }
 
         const offset = (page - 1) * limit;
         const whereClause = { studentId };
 
         if (status !== 'all') {
             whereClause.status = status;
+        }
+
+        if (assignmentId) {
+            whereClause.assignmentId = assignmentId;
         }
 
         const submissions = await Submission.findAndCountAll({
@@ -245,12 +233,11 @@ const getStudentSubmissions = async (req, res) => {
                     include: [
                         { model: User, as: 'teacher', attributes: ['id', 'firstName', 'lastName'] }
                     ]
-                },
-                { model: User, as: 'grader', attributes: ['id', 'firstName', 'lastName'], required: false }
+                }
             ],
             limit: parseInt(limit),
             offset: parseInt(offset),
-            order: [['updatedAt', 'DESC']]
+            order: [['submittedAt', 'DESC']]
         });
 
         sendResponse(res, 200, 'success', 'Submissions retrieved successfully', {
@@ -264,7 +251,7 @@ const getStudentSubmissions = async (req, res) => {
         });
     } catch (error) {
         console.error('Get student submissions error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve submissions');
+        sendResponse(res, 500, 'error', 'Failed to retrieve submissions', null);
     }
 };
 
@@ -272,7 +259,7 @@ const getStudentSubmissions = async (req, res) => {
 const getSubmissionById = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const userRole = req.user.role;
 
         const submission = await Submission.findByPk(id, {
@@ -280,6 +267,7 @@ const getSubmissionById = async (req, res) => {
                 { 
                     model: Assignment, 
                     as: 'assignment',
+                    attributes: ['id', 'title', 'dueDate', 'maxPoints', 'teacherId'],
                     include: [
                         { model: User, as: 'teacher', attributes: ['id', 'firstName', 'lastName'] }
                     ]
@@ -294,24 +282,28 @@ const getSubmissionById = async (req, res) => {
         }
 
         // Check permissions
-        if (userRole === 'student' && submission.studentId !== userId) {
-            return sendResponse(res, 403, 'error', 'You do not have permission to view this submission');
-        } else if (userRole === 'teacher' && submission.assignment.teacherId !== userId) {
+        const canView = (
+            (userRole === 'student' && submission.studentId === userId) ||
+            (userRole === 'teacher' && submission.assignment.teacherId === userId) ||
+            userRole === 'admin'
+        );
+
+        if (!canView) {
             return sendResponse(res, 403, 'error', 'You do not have permission to view this submission');
         }
 
         sendResponse(res, 200, 'success', 'Submission retrieved successfully', submission);
     } catch (error) {
         console.error('Get submission by ID error:', error);
-        sendResponse(res, 500, 'error', 'Failed to retrieve submission');
+        sendResponse(res, 500, 'error', 'Failed to retrieve submission', null);
     }
 };
 
 module.exports = {
-    createOrUpdateSubmission,
-    submitSubmission,
+    createSubmission,
+    updateSubmission,
     gradeSubmission,
-    getAssignmentSubmissions,
+    getTeacherSubmissions,
     getStudentSubmissions,
     getSubmissionById
 };

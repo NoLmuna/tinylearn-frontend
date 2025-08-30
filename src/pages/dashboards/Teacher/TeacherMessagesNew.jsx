@@ -24,7 +24,7 @@ const TeacherMessages = () => {
       
       const [studentsResponse, parentsResponse] = await Promise.all([
         api.getStudents(),
-        api.getParentsForTeacher()
+        api.getUsers('parent')
       ]);
       
       console.log('👨‍🎓 Students response:', studentsResponse);
@@ -72,7 +72,7 @@ const TeacherMessages = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-        <DashboardNavbar role="teacher" currentPage="Messages" />
+        <DashboardNavbar userRole="teacher" />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -85,7 +85,7 @@ const TeacherMessages = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <Toaster position="top-right" />
-      <DashboardNavbar role="teacher" currentPage="Messages" />
+      <DashboardNavbar userRole="teacher" />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

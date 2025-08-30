@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../hooks/useAuth';
+import logo from '../../assets/levelup-logo.png';
 
 /**
  * Dashboard Navigation Component
@@ -53,8 +54,7 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
       navItems: [
         { name: 'Dashboard', path: '/parent' },
         { name: 'Progress', path: '/parent/progress' },
-        { name: 'Messages', path: '/parent/messages' },
-        { name: 'Schedule', path: '/parent/schedule' }
+        { name: 'Messages', path: '/parent/messages' }
       ]
     },
     student: {
@@ -80,8 +80,12 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
           {/* Logo and Brand */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T</span>
+              <div className="w-10 h-10 rounded-full border-2 border-gray-200 overflow-hidden">
+                <img 
+                  src={logo} 
+                  alt="TinyLearn Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-2xl font-bold text-gray-800">TinyLearn</span>
             </div>
@@ -101,10 +105,10 @@ const DashboardNavbar = ({ role, currentPage = 'Dashboard' }) => {
               <button
                 key={item.name}
                 onClick={() => handleNavigation(item)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   item.name === currentPage
-                    ? `bg-gradient-to-r ${config.bgGradient} text-white`
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    ? `bg-gradient-to-r ${config.bgGradient} text-white shadow-md`
+                    : `text-gray-600 hover:text-gray-800 hover:bg-gray-100 hover:shadow-sm`
                 }`}
               >
                 {item.name}
