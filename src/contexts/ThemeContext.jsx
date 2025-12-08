@@ -35,6 +35,7 @@ export function ThemeProvider({ children }) {
  * 
  * @returns {Object} - Theme context value
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
