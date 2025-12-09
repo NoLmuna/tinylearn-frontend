@@ -1,69 +1,56 @@
-import { Link } from 'react-router-dom';
-
 /**
  * About Page Component
- * Information about the project
+ * Detailed information about TinyLearn
  */
 function About() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <Link
-            to="/"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-700 mb-8"
-          >
-            ← Back to Home
-          </Link>
-          
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-2xl shadow-lg p-8 sm:p-12 border border-gray-100">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
             About TinyLearn
           </h1>
           
-          <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Project Structure
-            </h2>
-            <div className="space-y-4 text-gray-600">
-              <p>
-                This starter template includes a well-organized folder structure:
-              </p>
-              <ul className="list-disc list-inside space-y-2 ml-4">
-                <li><code className="bg-gray-100 px-2 py-1 rounded">assets/</code> - Static assets like images, fonts</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">components/</code> - Reusable UI components</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">features/</code> - Feature-specific components and logic</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">pages/</code> - Page-level components for routing</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">layouts/</code> - Layout wrapper components</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">hooks/</code> - Custom React hooks</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">contexts/</code> - React Context providers</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">services/</code> - API services and external integrations</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">utils/</code> - Utility functions and helpers</li>
-                <li><code className="bg-gray-100 px-2 py-1 rounded">styles/</code> - Global styles and CSS files</li>
-              </ul>
-            </div>
-          </div>
+          <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
+            <p>
+              TinyLearn is a modern web application built with the latest technologies
+              to provide a seamless learning experience. We believe that education should
+              be accessible, engaging, and effective for everyone.
+            </p>
+            
+            <p>
+              Our platform combines cutting-edge technology with proven educational methods
+              to create an experience that's both powerful and intuitive. Whether you're
+              starting a new career, expanding your skills, or pursuing a passion, we're
+              here to support your journey.
+            </p>
+            
+            <p>
+              Founded in 2025, TinyLearn has grown to serve thousands of learners worldwide.
+              Our team is dedicated to continuous improvement and innovation, ensuring that
+              you always have access to the best learning tools and resources.
+            </p>
 
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Technologies Used
-            </h2>
-            <div className="space-y-3 text-gray-600">
-              <div className="flex items-center gap-3">
-                <span className="font-semibold">⚛️ React 19</span>
-                <span>- Modern UI library</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-semibold">⚡ Vite</span>
-                <span>- Next generation frontend tooling</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-semibold">🎨 TailwindCSS</span>
-                <span>- Utility-first CSS framework</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-semibold">🛣️ React Router</span>
-                <span>- Client-side routing</span>
-              </div>
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Values</h2>
+              <ul className="space-y-3">
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">•</span>
+                  <span><strong>Accessibility:</strong> Learning should be available to everyone, everywhere</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">•</span>
+                  <span><strong>Quality:</strong> We maintain the highest standards in all our content</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">•</span>
+                  <span><strong>Community:</strong> Learning is better together</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">•</span>
+                  <span><strong>Innovation:</strong> We constantly evolve to meet your needs</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>

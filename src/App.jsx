@@ -1,8 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
-import MainLayout from './layouts/MainLayout';
+import Landing from './pages/Landing';
 import Home from './pages/Home';
+import Features from './pages/Features';
 import About from './pages/About';
-import Dashboard from './pages/Dashboard';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 /**
@@ -12,14 +13,11 @@ import NotFound from './pages/NotFound';
 function App() {
   return (
     <Routes>
-      {/* Routes with MainLayout (includes Navbar) */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Route>
-      
-      {/* 404 Route without layout */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
