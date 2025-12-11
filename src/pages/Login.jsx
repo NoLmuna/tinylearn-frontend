@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/levelup-logo.png';
 
 /**
  * Login Page Component
@@ -58,14 +59,21 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <h1 className="text-4xl font-bold text-blue-600 mb-2">TinyLearn</h1>
+            <div className="flex flex-col items-center justify-center gap-3 mb-4">
+              <img 
+                src={logo}
+                alt="Level Up Learning Center - TinyLearn" 
+                className="h-24 w-24 object-contain"
+              />
+              <h1 className="text-3xl font-black text-black">TinyLearn</h1>
+            </div>
           </Link>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Welcome Back</h2>
+          <h2 className="text-2xl font-bold text-black mb-2">Welcome Back</h2>
           <p className="text-gray-600">Sign in to continue your learning journey</p>
         </div>
 
@@ -91,7 +99,7 @@ function Login() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent outline-none transition-all"
                 placeholder="you@example.com"
               />
             </div>
@@ -108,7 +116,7 @@ function Login() {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent outline-none transition-all"
                 placeholder="Enter your password"
               />
             </div>
@@ -125,7 +133,7 @@ function Login() {
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              <a href="#" className="text-sm font-medium text-[#F4C21A] hover:text-[#e0b318]">
                 Forgot password?
               </a>
             </div>
@@ -134,7 +142,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full px-6 py-3 bg-[#F4C21A] text-black rounded-lg font-bold hover:bg-[#e0b318] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -144,7 +152,7 @@ function Login() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-700">
+              <Link to="/signup" className="font-bold text-[#F4C21A] hover:text-[#e0b318]">
                 Sign up
               </Link>
             </p>

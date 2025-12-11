@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/levelup-logo.png';
 
 /**
  * Dashboard Page Component
@@ -41,21 +42,26 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Navbar */}
       <nav className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">TinyLearn</span>
+          <div className="flex justify-between items-center h-20">
+            <Link to="/" className="flex items-center gap-3">
+              <img 
+                src={logo}
+                alt="Level Up Learning Center - TinyLearn" 
+                className="h-16 w-16 object-contain"
+              />
+              <span className="text-2xl font-black text-black">TinyLearn</span>
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-gray-700">
-                Welcome, <span className="font-semibold">{user?.name || user?.email}</span>
+              <span className="text-black font-semibold">
+                Welcome, <span className="font-bold">{user?.name || user?.email}</span>
               </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors"
               >
                 Logout
               </button>
@@ -68,7 +74,7 @@ function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl sm:text-5xl font-black text-black mb-4">
             Welcome Back, {user?.name || 'Learner'}! 👋
           </h1>
           <p className="text-xl text-gray-600">
@@ -78,16 +84,16 @@ function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-xl transition-shadow">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">My Courses</h3>
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h3 className="text-lg font-bold text-black">My Courses</h3>
+              <div className="w-10 h-10 bg-[#F4C21A] bg-opacity-20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-[#F4C21A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
             </div>
-            <div className="text-3xl font-bold text-blue-600 mb-2">8</div>
+            <div className="text-3xl font-bold text-[#F4C21A] mb-2">8</div>
             <p className="text-sm text-gray-500">Active courses</p>
           </div>
 
