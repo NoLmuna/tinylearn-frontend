@@ -32,7 +32,7 @@ function Navbar() {
               Contact
             </a>
             <Link
-              to="/home"
+              to="/login"
               className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Sign In
@@ -88,7 +88,7 @@ function Navbar() {
               Contact
             </a>
             <Link
-              to="/home"
+              to="/login"
               className="block mx-3 my-2 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
