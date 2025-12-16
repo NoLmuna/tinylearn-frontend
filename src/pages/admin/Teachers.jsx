@@ -5,110 +5,136 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ca
 import { 
   Shield, 
   Users, 
-  BookOpen, 
-  TrendingUp,
-  Activity,
-  Clock,
-  AlertCircle,
-  CheckCircle,
   LogOut,
+  LayoutDashboard,
+  BarChart3,
   Search,
   Plus,
-  MoreVertical,
   Eye,
   Edit,
   Trash2,
-  LayoutDashboard,
-  BarChart3
+  Filter,
+  Download
 } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
 
 /**
- * Admin Dashboard Component
- * Modern administrative control panel with clean UI/UX
+ * Teachers Management Page
+ * Comprehensive teacher management interface
  */
-function Dashboard() {
+function Teachers() {
   const navigate = useNavigate();
+  const [activeNav, setActiveNav] = useState('teachers');
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterSubject, setFilterSubject] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [activeNav, setActiveNav] = useState('dashboard');
 
-  const adminUser = { name: 'Administrator', email: 'admin@tinylearn.com' }; // Mock data
+  const adminUser = { name: 'Administrator', email: 'admin@tinylearn.com' };
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/admin/login');
   };
 
-  // System Overview Analytics
-  const systemStats = [
-    {
-      title: 'Total Teachers',
-      value: '42',
-      change: '+8 this month',
-      trend: 'up',
-      icon: Users,
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      textColor: 'text-indigo-600'
+  // Mock teachers data
+  const teachers = [
+    { 
+      id: 1, 
+      name: 'Sarah Johnson', 
+      email: 'sarah.j@tinylearn.com', 
+      subject: 'Mathematics', 
+      classes: 8, 
+      students: 156,
+      joinDate: '2024-01-15',
+      status: 'active' 
     },
-    {
-      title: 'Active Classes',
-      value: '156',
-      change: '12 today',
-      trend: 'up',
-      icon: BookOpen,
-      color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50',
-      textColor: 'text-emerald-600'
+    { 
+      id: 2, 
+      name: 'Michael Chen', 
+      email: 'michael.c@tinylearn.com', 
+      subject: 'Science', 
+      classes: 6, 
+      students: 132,
+      joinDate: '2024-02-20',
+      status: 'active' 
     },
-    {
-      title: 'System Health',
-      value: '98.5%',
-      change: 'All systems operational',
-      trend: 'stable',
-      icon: Activity,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600'
+    { 
+      id: 3, 
+      name: 'Emily Davis', 
+      email: 'emily.d@tinylearn.com', 
+      subject: 'English', 
+      classes: 7, 
+      students: 145,
+      joinDate: '2024-01-10',
+      status: 'active' 
     },
-    {
-      title: 'Avg. Response Time',
-      value: '124ms',
-      change: '-12ms from last week',
-      trend: 'up',
-      icon: Clock,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-600'
+    { 
+      id: 4, 
+      name: 'James Wilson', 
+      email: 'james.w@tinylearn.com', 
+      subject: 'History', 
+      classes: 5, 
+      students: 98,
+      joinDate: '2024-03-05',
+      status: 'active' 
+    },
+    { 
+      id: 5, 
+      name: 'Lisa Anderson', 
+      email: 'lisa.a@tinylearn.com', 
+      subject: 'Art', 
+      classes: 4, 
+      students: 87,
+      joinDate: '2024-02-28',
+      status: 'active' 
+    },
+    { 
+      id: 6, 
+      name: 'David Martinez', 
+      email: 'david.m@tinylearn.com', 
+      subject: 'Physical Education', 
+      classes: 6, 
+      students: 134,
+      joinDate: '2024-01-20',
+      status: 'active' 
+    },
+    { 
+      id: 7, 
+      name: 'Rachel Thompson', 
+      email: 'rachel.t@tinylearn.com', 
+      subject: 'Music', 
+      classes: 5, 
+      students: 102,
+      joinDate: '2024-03-15',
+      status: 'active' 
+    },
+    { 
+      id: 8, 
+      name: 'Kevin Brown', 
+      email: 'kevin.b@tinylearn.com', 
+      subject: 'Mathematics', 
+      classes: 7, 
+      students: 142,
+      joinDate: '2024-02-01',
+      status: 'active' 
     }
   ];
 
-  // Recent Teachers (mock data)
-  const teachers = [
-    { id: 1, name: 'Sarah Johnson', email: 'sarah.j@tinylearn.com', subject: 'Mathematics', classes: 8, status: 'active' },
-    { id: 2, name: 'Michael Chen', email: 'michael.c@tinylearn.com', subject: 'Science', classes: 6, status: 'active' },
-    { id: 3, name: 'Emily Davis', email: 'emily.d@tinylearn.com', subject: 'English', classes: 7, status: 'active' },
-    { id: 4, name: 'James Wilson', email: 'james.w@tinylearn.com', subject: 'History', classes: 5, status: 'active' },
-    { id: 5, name: 'Lisa Anderson', email: 'lisa.a@tinylearn.com', subject: 'Art', classes: 4, status: 'active' }
-  ];
+  const subjects = ['All', 'Mathematics', 'Science', 'English', 'History', 'Art', 'Physical Education', 'Music'];
 
-  // System Activity Log
-  const activityLog = [
-    { id: 1, type: 'success', message: 'New teacher account created: John Smith', time: '5 mins ago' },
-    { id: 2, type: 'info', message: 'Class schedule updated by Sarah Johnson', time: '23 mins ago' },
-    { id: 3, type: 'warning', message: 'High server load detected - Auto-scaled', time: '1 hour ago' },
-    { id: 4, type: 'success', message: 'Database backup completed successfully', time: '2 hours ago' },
-    { id: 5, type: 'info', message: 'System maintenance scheduled for tonight', time: '3 hours ago' }
-  ];
+  const filteredTeachers = teachers.filter(teacher => {
+    const matchesSearch = teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         teacher.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSubject = filterSubject === 'all' || teacher.subject === filterSubject;
+    return matchesSearch && matchesSubject;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Modern Top Navigation */}
+      {/* Navigation */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-lg bg-white/95">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo Section */}
             <div className="flex items-center gap-8">
               <Link to="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
@@ -122,7 +148,6 @@ function Dashboard() {
                 </div>
               </Link>
 
-              {/* Navigation Links */}
               <div className="hidden md:flex items-center gap-1">
                 <Link
                   to="/admin/dashboard"
@@ -163,7 +188,6 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* Admin Profile & Logout */}
             <div className="flex items-center gap-3">
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
@@ -188,104 +212,140 @@ function Dashboard() {
         </div>
       </nav>
 
-      {/* Main Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8">
-        {/* Welcome Header */}
-        <div>
-          <h2 className="text-4xl font-black text-gray-900 mb-2">
-            Dashboard Overview
-          </h2>
-          <p className="text-lg text-gray-600">
-            Monitor system performance and manage teachers
-          </p>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h2 className="text-4xl font-black text-gray-900 mb-2">Teacher Management</h2>
+          <p className="text-lg text-gray-600">Manage and monitor all teacher accounts</p>
         </div>
 
-        {/* System Stats Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {systemStats.map((stat, index) => (
-            <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${stat.bgColor}`}>
-                    <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
-                  </div>
-                  {stat.trend === 'up' && (
-                    <TrendingUp className="w-5 h-5 text-green-500" />
-                  )}
-                </div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                <p className="text-3xl font-black text-gray-900 mb-2">{stat.value}</p>
-                <p className="text-xs text-gray-500 font-medium">{stat.change}</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Stats Overview */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-gray-600">Total Teachers</p>
+                <Users className="w-5 h-5 text-indigo-600" />
+              </div>
+              <p className="text-3xl font-black text-gray-900">{teachers.length}</p>
+              <p className="text-xs text-green-600 font-semibold mt-1">+2 this month</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-gray-600">Total Classes</p>
+                <LayoutDashboard className="w-5 h-5 text-emerald-600" />
+              </div>
+              <p className="text-3xl font-black text-gray-900">{teachers.reduce((acc, t) => acc + t.classes, 0)}</p>
+              <p className="text-xs text-gray-500 font-semibold mt-1">Across all teachers</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-gray-600">Total Students</p>
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+              <p className="text-3xl font-black text-gray-900">{teachers.reduce((acc, t) => acc + t.students, 0)}</p>
+              <p className="text-xs text-gray-500 font-semibold mt-1">Learning actively</p>
+            </CardContent>
+          </Card>
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-gray-600">Subjects</p>
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+              </div>
+              <p className="text-3xl font-black text-gray-900">{subjects.length - 1}</p>
+              <p className="text-xs text-gray-500 font-semibold mt-1">Different subjects</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Teacher Management Section */}
+        {/* Teachers Table */}
         <Card className="border-none shadow-lg">
           <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                  <Users className="w-6 h-6 text-indigo-600" />
-                  Teacher Management
-                </CardTitle>
-                <p className="text-sm text-gray-600 mt-1">Create and manage teacher accounts</p>
+              <CardTitle className="text-2xl font-black text-gray-900">All Teachers</CardTitle>
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Export
+                </Button>
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Teacher
+                </Button>
               </div>
-              <Button
-                onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create New Teacher
-              </Button>
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
+            {/* Search and Filter */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search teachers by name, email, or subject..."
+                  placeholder="Search by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
+              <div className="flex items-center gap-2">
+                <Filter className="w-5 h-5 text-gray-400" />
+                <select
+                  value={filterSubject}
+                  onChange={(e) => setFilterSubject(e.target.value)}
+                  className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+                >
+                  {subjects.map(subject => (
+                    <option key={subject} value={subject.toLowerCase()}>{subject}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Teachers Table */}
+            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Name</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Email</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Teacher</th>
                     <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Subject</th>
                     <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Classes</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Students</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Join Date</th>
                     <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {teachers.map((teacher) => (
+                  {filteredTeachers.map((teacher) => (
                     <tr key={teacher.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white font-bold">
-                            {teacher.name.charAt(0)}
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white font-bold text-sm">
+                            {teacher.name.split(' ').map(n => n[0]).join('')}
                           </div>
-                          <span className="font-semibold text-gray-900">{teacher.name}</span>
+                          <div>
+                            <p className="font-semibold text-gray-900">{teacher.name}</p>
+                            <p className="text-xs text-gray-500">{teacher.email}</p>
+                          </div>
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-gray-600">{teacher.email}</td>
                       <td className="py-4 px-4">
                         <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold">
                           {teacher.subject}
                         </span>
                       </td>
                       <td className="py-4 px-4 text-gray-900 font-semibold">{teacher.classes}</td>
+                      <td className="py-4 px-4 text-gray-900 font-semibold">{teacher.students}</td>
+                      <td className="py-4 px-4 text-gray-600 text-sm">{teacher.joinDate}</td>
                       <td className="py-4 px-4">
                         <div className="flex items-center justify-end gap-2">
                           <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
@@ -304,49 +364,23 @@ function Dashboard() {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* System Activity Monitor */}
-        <Card className="border-none shadow-lg">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <Activity className="w-6 h-6 text-blue-600" />
-              System Activity Monitor
-            </CardTitle>
-            <p className="text-sm text-gray-600 mt-1">Real-time system behavior and events</p>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              {activityLog.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    activity.type === 'success' ? 'bg-green-100' :
-                    activity.type === 'warning' ? 'bg-yellow-100' :
-                    'bg-blue-100'
-                  }`}>
-                    {activity.type === 'success' && <CheckCircle className="w-5 h-5 text-green-600" />}
-                    {activity.type === 'warning' && <AlertCircle className="w-5 h-5 text-yellow-600" />}
-                    {activity.type === 'info' && <Activity className="w-5 h-5 text-blue-600" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {filteredTeachers.length === 0 && (
+              <div className="text-center py-12">
+                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 font-semibold">No teachers found</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Create Teacher Modal (Simple placeholder) */}
+      {/* Create Teacher Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-2xl shadow-2xl">
             <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl font-black text-gray-900">Create New Teacher</CardTitle>
-              <p className="text-sm text-gray-600 mt-1">Add a new teacher to the system</p>
+              <CardTitle className="text-2xl font-black text-gray-900">Add New Teacher</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -355,7 +389,7 @@ function Dashboard() {
                   <input
                     type="text"
                     className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Enter first name"
+                    placeholder="John"
                   />
                 </div>
                 <div>
@@ -363,7 +397,7 @@ function Dashboard() {
                   <input
                     type="text"
                     className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Enter last name"
+                    placeholder="Doe"
                   />
                 </div>
               </div>
@@ -377,11 +411,12 @@ function Dashboard() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="e.g., Mathematics"
-                />
+                <select className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                  <option>Select Subject</option>
+                  {subjects.slice(1).map(subject => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
               </div>
               <div className="flex gap-3 pt-4">
                 <Button
@@ -395,7 +430,7 @@ function Dashboard() {
                   onClick={() => setShowCreateModal(false)}
                   className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
                 >
-                  Create Teacher
+                  Add Teacher
                 </Button>
               </div>
             </CardContent>
@@ -406,4 +441,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Teachers;

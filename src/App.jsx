@@ -22,6 +22,8 @@ import TeacherDashboard from './pages/teacher/Dashboard';
 // Admin Pages
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
+import AdminTeachers from './pages/admin/Teachers';
+import AdminReports from './pages/admin/Reports';
 
 /**
  * App Component
@@ -53,6 +55,8 @@ function App() {
       {/* Admin Routes - Separate Login */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/teachers" element={<AdminTeachers />} />
+      <Route path="/admin/reports" element={<AdminReports />} />
       
       {/* 404 Not Found */}
       <Route path="*" element={<NotFound />} />
