@@ -1,31 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import logo from '../assets/levelup-logo.png';
+import logo from '../../assets/levelup-logo.png';
 
 /**
- * Dashboard Page Component
- * User dashboard after successful login
+ * Student Dashboard Component
+ * Main dashboard for students after login
  */
 function Dashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({ name: 'Student User', email: 'student@example.com' }); // Mock user
+  const [loading, setLoading] = useState(false); // Set to false to skip loading
 
-  useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
+  // Authentication check removed for front-end preview
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   const userData = localStorage.getItem('user');
 
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+  //   if (!token) {
+  //     navigate('/login');
+  //     return;
+  //   }
 
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-    setLoading(false);
-  }, [navigate]);
+  //   if (userData) {
+  //     setUser(JSON.parse(userData));
+  //   }
+  //   setLoading(false);
+  // }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
