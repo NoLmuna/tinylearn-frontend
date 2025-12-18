@@ -17,6 +17,8 @@ import {
   Download
 } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
+import AdminCreateTeacher from '../../components/admin/adminCreateTeacher.jsx';
+import { useAdminTeachers } from '../../hooks/adminHooks.jsx';
 
 /**
  * Teachers Management Page
@@ -36,89 +38,25 @@ function Teachers() {
     navigate('/admin/login');
   };
 
-  // Mock teachers data
-  const teachers = [
-    { 
-      id: 1, 
-      name: 'Sarah Johnson', 
-      email: 'sarah.j@tinylearn.com', 
-      subject: 'Mathematics', 
-      classes: 8, 
-      students: 156,
-      joinDate: '2024-01-15',
-      status: 'active' 
-    },
-    { 
-      id: 2, 
-      name: 'Michael Chen', 
-      email: 'michael.c@tinylearn.com', 
-      subject: 'Science', 
-      classes: 6, 
-      students: 132,
-      joinDate: '2024-02-20',
-      status: 'active' 
-    },
-    { 
-      id: 3, 
-      name: 'Emily Davis', 
-      email: 'emily.d@tinylearn.com', 
-      subject: 'English', 
-      classes: 7, 
-      students: 145,
-      joinDate: '2024-01-10',
-      status: 'active' 
-    },
-    { 
-      id: 4, 
-      name: 'James Wilson', 
-      email: 'james.w@tinylearn.com', 
-      subject: 'History', 
-      classes: 5, 
-      students: 98,
-      joinDate: '2024-03-05',
-      status: 'active' 
-    },
-    { 
-      id: 5, 
-      name: 'Lisa Anderson', 
-      email: 'lisa.a@tinylearn.com', 
-      subject: 'Art', 
-      classes: 4, 
-      students: 87,
-      joinDate: '2024-02-28',
-      status: 'active' 
-    },
-    { 
-      id: 6, 
-      name: 'David Martinez', 
-      email: 'david.m@tinylearn.com', 
-      subject: 'Physical Education', 
-      classes: 6, 
-      students: 134,
-      joinDate: '2024-01-20',
-      status: 'active' 
-    },
-    { 
-      id: 7, 
-      name: 'Rachel Thompson', 
-      email: 'rachel.t@tinylearn.com', 
-      subject: 'Music', 
-      classes: 5, 
-      students: 102,
-      joinDate: '2024-03-15',
-      status: 'active' 
-    },
-    { 
-      id: 8, 
-      name: 'Kevin Brown', 
-      email: 'kevin.b@tinylearn.com', 
-      subject: 'Mathematics', 
-      classes: 7, 
-      students: 142,
-      joinDate: '2024-02-01',
-      status: 'active' 
-    }
-  ];
+  // Fetch teachers from backend
+  const {
+    data: teachersResponse,
+    isLoading: teachersLoading,
+    isError: teachersError,
+  } = useAdminTeachers();
+
+  const apiTeachers = Array.isArray(teachersResponse?.data) ? teachersResponse.data : [];
+
+  const teachers = apiTeachers.map((t) => ({
+    id: t.id || t._id,
+    name: `${t.firstName} ${t.lastName}`,
+    email: t.email,
+    subject: t.subjectSpecialty || 'N/A',
+    classes: 0,
+    students: 0,
+    joinDate: t.createdAt ? new Date(t.createdAt).toISOString().slice(0, 10) : '',
+    status: t.accountStatus,
+  }));
 
   const subjects = ['All', 'Mathematics', 'Science', 'English', 'History', 'Art', 'Physical Education', 'Music'];
 
@@ -378,63 +316,7 @@ function Teachers() {
       {/* Create Teacher Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl font-black text-gray-900">Add New Teacher</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="John"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="teacher@tinylearn.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
-                <select className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                  <option>Select Subject</option>
-                  {subjects.slice(1).map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
-                >
-                  Add Teacher
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <AdminCreateTeacher onCancel={() => setShowCreateModal(false)} />
         </div>
       )}
     </div>

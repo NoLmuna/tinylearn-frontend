@@ -17,7 +17,8 @@ function Login() {
     password: ''
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  const loginMutation = useLogin();
 
   // Informational role display only
   const roles = [
@@ -55,30 +56,26 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    try {
+      const data = await loginMutation.mutateAsync(formData);
 
-    // Simulate loading for UI/UX preview
-    setTimeout(() => {
-      // Mock authentication - for UI/UX testing only
-      // TODO: Replace with actual backend API call when ready
-      
-      // For now, route to student dashboard as default
-      // You can manually test other dashboards by changing the URL
-      const mockRole = 'student'; // Change to 'parent', 'teacher', or 'student' for testing
-      
-      // Store mock data
-      localStorage.setItem('token', 'mock-token');
-      localStorage.setItem('user', JSON.stringify({ 
-        name: 'Test User', 
-        email: formData.email 
-      }));
-      localStorage.setItem('userRole', mockRole);
-      
-      // Navigate to dashboard
-      navigate(`/${mockRole}/dashboard`);
-      
-      setLoading(false);
-    }, 1000);
+      const role = data?.role ?? localStorage.getItem('userRole') ?? 'student';
+      navigate(`/${role}/dashboard`);
+    } catch (err) {
+      // Zod validation error
+      if (err?.name === 'ZodError') {
+        const first = err.errors?.[0];
+        setError(first?.message ?? 'Please check your input and try again.');
+        return;
+      }
+
+      // Axios / API error
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        'Unable to sign in. Please check your email and password.';
+      setError(message);
+    }
   };
 
   return (
@@ -194,11 +191,11 @@ function Login() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={loginMutation.isPending}
                 size="lg"
                 className="w-full mt-6 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg py-6 rounded-xl"
               >
-                {loading ? (
+                {loginMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

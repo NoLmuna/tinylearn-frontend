@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card';
 import { Shield, AlertCircle } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
+import { useAdminLogin } from '../../hooks/adminHooks.jsx';
 
 /**
  * Admin Login Page Component
@@ -16,7 +17,8 @@ function Login() {
     password: ''
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  const adminLoginMutation = useAdminLogin();
 
   const handleChange = (e) => {
     setFormData({
@@ -29,36 +31,29 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     try {
-      // API call to backend admin endpoint
-      const response = await fetch('http://localhost:3000/api/auth/admin/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
+      const data = await adminLoginMutation.mutateAsync(formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store admin token with role identifier
-        localStorage.setItem('adminToken', data.token);
-        localStorage.setItem('adminUser', JSON.stringify(data.user));
-        localStorage.setItem('userRole', 'admin');
-        
-        // Redirect to admin dashboard
+      // Redirect to admin dashboard on success
+      if (data) {
         navigate('/admin/dashboard');
-      } else {
-        setError(data.message || 'Invalid admin credentials. Please try again.');
       }
     } catch (err) {
-      setError('Unable to connect to server. Please try again later.');
+      // Zod validation error
+      if (err?.name === 'ZodError') {
+        const first = err.errors?.[0];
+        setError(first?.message ?? 'Please check your input and try again.');
+        return;
+      }
+
+      // Axios / API error
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        'Unable to connect to server. Please try again later.';
+      setError(message);
       console.error('Admin login error:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -152,11 +147,11 @@ function Login() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={adminLoginMutation.isPending}
                 size="lg"
                 className="w-full mt-6 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                {loading ? (
+                {adminLoginMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
