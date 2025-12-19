@@ -18,6 +18,9 @@ import ParentDashboard from './pages/parent/Dashboard';
 
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/Dashboard';
+import TeacherUsers from './pages/teacher/Users';
+import TeacherMaterials from './pages/teacher/Materials';
+import TeacherMessages from './pages/teacher/Messages';
 
 // Admin Pages
 import AdminLogin from './pages/admin/Login';
@@ -51,6 +54,9 @@ function App() {
       
       {/* Teacher Routes */}
       <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+      <Route path="/teacher/users" element={<TeacherUsers />} />
+      <Route path="/teacher/materials" element={<TeacherMaterials />} />
+      <Route path="/teacher/messages" element={<TeacherMessages />} />
       
       {/* Admin Routes - Separate Login */}
       <Route path="/admin/login" element={<AdminLogin />} />

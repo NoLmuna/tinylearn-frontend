@@ -41,8 +41,6 @@ function Teachers() {
   // Fetch teachers from backend
   const {
     data: teachersResponse,
-    isLoading: teachersLoading,
-    isError: teachersError,
   } = useAdminTeachers();
 
   const apiTeachers = Array.isArray(teachersResponse?.data) ? teachersResponse.data : [];

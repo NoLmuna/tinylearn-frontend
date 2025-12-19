@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { GraduationCap, Users, BookOpen, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { GraduationCap, Users, BookOpen, AlertCircle, ArrowLeft } from 'lucide-react';
 import logo from '../assets/levelup-logo.png';
 import { useLogin } from '../hooks/authHooks.jsx';
 
@@ -18,29 +18,27 @@ function Login() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [hoveredRole, setHoveredRole] = useState(null);
 
-  // Informational role display only
+  // Informational role display
   const roles = [
     {
       id: 'student',
       title: 'Student',
       icon: GraduationCap,
-      color: 'from-blue-500 to-blue-600',
-      description: 'Access your courses and learning materials'
+      color: 'bg-blue-500'
     },
     {
       id: 'parent',
       title: 'Parent',
       icon: Users,
-      color: 'from-green-500 to-green-600',
-      description: 'Monitor your child\'s progress'
+      color: 'bg-green-500'
     },
     {
       id: 'teacher',
       title: 'Teacher',
       icon: BookOpen,
-      color: 'from-purple-500 to-purple-600',
-      description: 'Manage classes and student progress'
+      color: 'bg-indigo-500'
     }
   ];
 
@@ -91,77 +89,80 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF9E6] via-[#F9F9F9] to-[#FFE5B4] flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden py-12">
-      {/* Playful background elements */}
-      <div className="absolute top-20 left-10 text-6xl opacity-10 animate-bounce">🎓</div>
-      <div className="absolute top-40 right-20 text-5xl opacity-10 animate-bounce" style={{ animationDelay: '0.5s' }}>📚</div>
-      <div className="absolute bottom-20 left-1/4 text-4xl opacity-10 animate-bounce" style={{ animationDelay: '1s' }}>✏️</div>
-      <div className="absolute top-60 right-10 text-5xl opacity-10 animate-bounce" style={{ animationDelay: '1.5s' }}>🌟</div>
-
-      <div className="max-w-5xl w-full relative z-10">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-[#FFF9E6] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+      {/* Subtle decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-40 h-40 bg-[#F4C21A]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-500/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="max-w-lg w-full relative z-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block mb-6">
-            <div className="flex flex-col items-center justify-center gap-3">
-              <img 
-                src={logo}
-                alt="Level Up Learning Center - TinyLearn" 
-                className="h-24 w-24 object-contain"
-              />
-              <h1 className="text-4xl font-black text-black">Welcome to TinyLearn! 🎉</h1>
-            </div>
+        <div className="text-center mb-10">
+          <Link to="/" className="inline-block group">
+            <img 
+              src={logo}
+              alt="Level Up Learning Center" 
+              className="h-24 w-24 object-contain mx-auto mb-5 transition-transform group-hover:scale-105"
+            />
           </Link>
-          <p className="text-xl text-gray-700 font-medium">Sign in to your account</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">Welcome Back!</h1>
+          <p className="text-lg text-gray-600">Sign in to continue your learning journey</p>
         </div>
 
-        <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-4 border-[#F4C21A]">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
-            <CardDescription className="text-center text-base">
-              Enter your credentials to access your dashboard
-            </CardDescription>
+        <Card className="bg-white shadow-2xl border border-gray-200 rounded-2xl overflow-hidden">
+          <CardHeader className="text-center pb-8 pt-10 bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
+            <CardTitle className="text-3xl font-bold text-gray-900 mb-2">Sign In</CardTitle>
+            <p className="text-sm text-gray-600 font-medium">For Students, Parents & Teachers</p>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="px-8 pt-8 pb-10">
             {/* Informational Role Display */}
             <div className="mb-8">
-              <p className="block text-sm font-bold text-gray-700 mb-4 text-center">
-                For Students, Parents & Teachers
-              </p>
               <div className="grid grid-cols-3 gap-4">
                 {roles.map((role) => {
                   const Icon = role.icon;
+                  const isHovered = hoveredRole === role.id;
                   return (
                     <div
                       key={role.id}
-                      className="p-4 rounded-2xl border-2 border-gray-200 bg-white"
+                      onMouseEnter={() => setHoveredRole(role.id)}
+                      onMouseLeave={() => setHoveredRole(null)}
+                      className={`
+                        flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-default
+                        ${isHovered 
+                          ? 'border-[#F4C21A] bg-[#F4C21A]/5 shadow-md scale-105' 
+                          : 'border-gray-200 bg-white hover:bg-gray-50'
+                        }
+                      `}
                     >
-                      <div className={`w-12 h-12 mx-auto mb-2 rounded-xl flex items-center justify-center bg-gradient-to-br ${role.color}`}>
+                      <div className={`
+                        w-12 h-12 mb-2.5 rounded-xl flex items-center justify-center transition-all duration-200
+                        ${role.color} ${isHovered ? 'scale-110 shadow-lg' : 'shadow-md'}
+                      `}>
                         <Icon className="w-6 h-6 text-white" />
                       </div>
-                      <p className="text-sm font-bold text-gray-900 text-center">{role.title}</p>
+                      <p className="text-sm font-bold text-gray-900">{role.title}</p>
                     </div>
                   );
                 })}
               </div>
-              <p className="text-xs text-gray-500 text-center mt-3">
-                Your account type will be automatically detected
-              </p>
             </div>
 
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start gap-3">
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3.5 rounded-r-lg flex items-start gap-3 shadow-sm">
                   <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium">{error}</span>
+                  <span className="text-sm font-medium leading-relaxed">{error}</span>
                 </div>
               )}
 
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-bold text-gray-900 mb-2">
                   Email Address
                 </label>
                 <input
@@ -171,16 +172,21 @@ function Login() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent transition duration-200 text-base"
-                  placeholder={`Enter your email`}
+                  className="w-full px-4 py-3.5 bg-white border-2 border-gray-300 text-gray-900 text-base rounded-xl focus:outline-none focus:ring-4 focus:ring-[#F4C21A]/20 focus:border-[#F4C21A] transition-all duration-200 placeholder-gray-400"
+                  placeholder="your.email@example.com"
                 />
               </div>
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
-                  Password
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="password" className="block text-sm font-bold text-gray-900">
+                    Password
+                  </label>
+                  <a href="#" className="text-xs font-semibold text-[#F4C21A] hover:text-[#d4a617] transition-colors">
+                    Forgot?
+                  </a>
+                </div>
                 <input
                   type="password"
                   id="password"
@@ -188,27 +194,19 @@ function Login() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent transition duration-200 text-base"
+                  className="w-full px-4 py-3.5 bg-white border-2 border-gray-300 text-gray-900 text-base rounded-xl focus:outline-none focus:ring-4 focus:ring-[#F4C21A]/20 focus:border-[#F4C21A] transition-all duration-200 placeholder-gray-400"
                   placeholder="Enter your password"
                 />
-              </div>
-
-              {/* Forgot Password */}
-              <div className="text-right">
-                <a href="#" className="text-sm text-[#F4C21A] hover:underline font-semibold">
-                  Forgot Password?
-                </a>
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
                 disabled={loginMutation.isPending}
-                size="lg"
-                className="w-full mt-6 shadow-xl hover:shadow-2xl transition-all duration-300 text-lg py-6 rounded-xl"
+                className="w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold text-lg shadow-lg hover:shadow-xl active:shadow-md transition-all duration-200 border-none py-4 rounded-xl mt-6 focus:outline-none focus:ring-4 focus:ring-[#F4C21A]/40"
               >
                 {loginMutation.isPending ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center justify-center gap-3">
                     <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -216,34 +214,27 @@ function Login() {
                     Signing in...
                   </span>
                 ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    🎓
-                    Sign In to Your Dashboard
-                  </span>
+                  'Sign In to Dashboard'
                 )}
               </Button>
             </form>
-
-            {/* Admin Login Link */}
-            <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-              <Link 
-                to="/admin/login" 
-                className="text-sm text-gray-600 hover:text-[#F4C21A] transition-colors font-medium flex items-center justify-center gap-2"
-              >
-                <span>🔐</span>
-                Administrator Login
-              </Link>
-            </div>
           </CardContent>
         </Card>
 
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
+        {/* Footer Links */}
+        <div className="mt-8 flex items-center justify-between">
           <Link 
             to="/" 
-            className="text-gray-600 hover:text-[#F4C21A] transition-colors font-medium text-lg"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-[#F4C21A] transition-colors font-medium text-sm group"
           >
-            ← Back to Home
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            Back to Home
+          </Link>
+          <Link 
+            to="/admin/login" 
+            className="text-xs text-gray-500 hover:text-gray-700 transition-colors font-medium px-3 py-1.5 rounded-md hover:bg-gray-100"
+          >
+            Admin Access
           </Link>
         </div>
       </div>
