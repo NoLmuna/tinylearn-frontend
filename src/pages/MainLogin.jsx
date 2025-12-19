@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { GraduationCap, Users, BookOpen, AlertCircle } from 'lucide-react';
 import logo from '../assets/levelup-logo.png';
+import { useLogin } from '../hooks/authHooks.jsx';
 
 /**
  * Main Login Page Component
@@ -17,8 +18,6 @@ function Login() {
     password: ''
   });
   const [error, setError] = useState('');
-
-  const loginMutation = useLogin();
 
   // Informational role display only
   const roles = [
@@ -45,6 +44,8 @@ function Login() {
     }
   ];
 
+  const loginMutation = useLogin();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -56,25 +57,36 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     try {
       const data = await loginMutation.mutateAsync(formData);
-
-      const role = data?.role ?? localStorage.getItem('userRole') ?? 'student';
-      navigate(`/${role}/dashboard`);
+      
+      if (data?.data) {
+        const userRole = data.data.role;
+        // Navigate based on role
+        if (userRole === 'student') {
+          navigate('/student/dashboard');
+        } else if (userRole === 'parent') {
+          navigate('/parent/dashboard');
+        } else if (userRole === 'teacher') {
+          navigate('/teacher/dashboard');
+        } else {
+          navigate('/login');
+        }
+      }
     } catch (err) {
-      // Zod validation error
       if (err?.name === 'ZodError') {
         const first = err.errors?.[0];
-        setError(first?.message ?? 'Please check your input and try again.');
+        setError(first?.message ?? 'Please check the form fields.');
         return;
       }
 
-      // Axios / API error
       const message =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
-        'Unable to sign in. Please check your email and password.';
+        'Invalid credentials. Please try again.';
       setError(message);
+      console.error('Login error:', err);
     }
   };
 

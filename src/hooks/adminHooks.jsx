@@ -60,6 +60,38 @@ export function useAdminLogin() {
   });
 }
 
+// User login hook for Students, Parents, and Teachers (hits /users/login)
+export function useUserLogin() {
+  const { login } = useAdmin();
+
+  return useMutation({
+    mutationKey: ['user-login'],
+    mutationFn: async (rawData) => {
+      const data = adminLoginSchema.parse(rawData);
+
+      const response = await api.post('/users/login', data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      // Backend returns: { success: true, data: { id, firstName, lastName, email, role, accountStatus, token }, message }
+      if (data?.data) {
+        const payload = {
+          token: data.data.token,
+          role: data.data.role,
+          user: {
+            id: data.data.id,
+            firstName: data.data.firstName,
+            lastName: data.data.lastName,
+            email: data.data.email,
+          },
+        };
+
+        login(payload);
+      }
+    },
+  });
+}
+
 // Create teacher as admin
 export function useCreateTeacher() {
   const queryClient = useQueryClient();
