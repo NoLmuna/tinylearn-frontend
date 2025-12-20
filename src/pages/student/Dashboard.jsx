@@ -1,31 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { BookOpen, FileCheck, Award, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
 
 /**
  * Student Dashboard Component
- * Main dashboard for students after login
+ * Simple, child-friendly dashboard focused on Lessons and Assignments
  */
 function Dashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: 'Student User', email: 'student@example.com' }); // Mock user
-  const [loading, setLoading] = useState(false); // Set to false to skip loading
+  const [user, setUser] = useState({ name: 'Alex', email: 'student@example.com' });
+  const [loading, setLoading] = useState(false);
 
-  // Authentication check removed for front-end preview
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   const userData = localStorage.getItem('user');
+  // Mock data for lessons
+  const lessons = [
+    { id: 1, title: 'Fun with Numbers', teacher: 'Ms. Smith', progress: 75, icon: '🔢', color: 'bg-blue-500', lessons: 8, completed: 6 },
+    { id: 2, title: 'Reading Adventures', teacher: 'Mr. Johnson', progress: 60, icon: '📚', color: 'bg-green-500', lessons: 10, completed: 6 },
+    { id: 3, title: 'Science Explorers', teacher: 'Ms. Davis', progress: 40, icon: '🔬', color: 'bg-purple-500', lessons: 12, completed: 5 },
+    { id: 4, title: 'Art & Creativity', teacher: 'Ms. Brown', progress: 90, icon: '🎨', color: 'bg-pink-500', lessons: 6, completed: 5 },
+  ];
 
-  //   if (!token) {
-  //     navigate('/login');
-  //     return;
-  //   }
-
-  //   if (userData) {
-  //     setUser(JSON.parse(userData));
-  //   }
-  //   setLoading(false);
-  // }, [navigate]);
+  // Mock data for assignments
+  const assignments = [
+    { id: 1, title: 'Math Practice Sheet', subject: 'Fun with Numbers', dueDate: 'Tomorrow', status: 'pending', icon: '🔢', urgent: true },
+    { id: 2, title: 'Read Chapter 5', subject: 'Reading Adventures', dueDate: 'Friday', status: 'pending', icon: '📚', urgent: false },
+    { id: 3, title: 'Draw Your Family', subject: 'Art & Creativity', dueDate: 'Next Week', status: 'completed', icon: '🎨', urgent: false },
+    { id: 4, title: 'Science Quiz', subject: 'Science Explorers', dueDate: 'Monday', status: 'pending', icon: '🔬', urgent: false },
+  ];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -35,33 +36,36 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 flex items-center justify-center">
+        <div className="text-2xl text-gray-600 font-semibold">Loading your dashboard...</div>
       </div>
     );
   }
 
+  const pendingAssignments = assignments.filter(a => a.status === 'pending').length;
+
   return (
-    <div className="min-h-screen bg-[#F9F9F9]">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50">
       {/* Navbar */}
-      <nav className="bg-white shadow-md sticky top-0 z-50">
+      <nav className="bg-white shadow-md sticky top-0 z-50 border-b-4 border-[#F4C21A]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-3 group">
               <img 
                 src={logo}
-                alt="Level Up Learning Center - TinyLearn" 
-                className="h-16 w-16 object-contain"
+                alt="TinyLearn" 
+                className="h-14 w-14 object-contain transition-transform group-hover:scale-110"
               />
-              <span className="text-2xl font-black text-black">TinyLearn</span>
+              <span className="text-2xl font-black text-gray-900">TinyLearn</span>
             </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-black font-semibold">
-                Welcome, <span className="font-bold">{user?.name || user?.email}</span>
-              </span>
+            <div className="flex items-center gap-6">
+              <div className="text-right">
+                <p className="text-sm text-gray-600 font-medium">Welcome back!</p>
+                <p className="text-lg font-bold text-gray-900">{user?.name}</p>
+              </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors"
+                className="px-6 py-2.5 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 active:bg-gray-700 transition-all shadow-md hover:shadow-lg"
               >
                 Logout
               </button>
@@ -71,95 +75,148 @@ function Dashboard() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Welcome Section */}
-        <div className="mb-12">
-          <h1 className="text-4xl sm:text-5xl font-black text-black mb-4">
-            Welcome Back, {user?.name || 'Learner'}! 👋
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Banner */}
+        <div className="bg-gradient-to-r from-[#F4C21A] to-[#FFD700] rounded-3xl shadow-2xl p-8 mb-8 text-center">
+          <h1 className="text-4xl sm:text-5xl font-black text-gray-900 mb-3">
+            Hi {user?.name}! 👋
           </h1>
-          <p className="text-xl text-gray-600">
-            Ready to continue your learning journey?
+          <p className="text-xl text-gray-800 font-semibold">
+            Let's learn something awesome today!
           </p>
+          {pendingAssignments > 0 && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-white/90 px-4 py-2 rounded-full shadow-md">
+              <AlertCircle className="w-5 h-5 text-orange-600" />
+              <span className="font-bold text-gray-900">
+                You have {pendingAssignments} assignment{pendingAssignments > 1 ? 's' : ''} to complete
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-black">My Courses</h3>
-              <div className="w-10 h-10 bg-[#F4C21A] bg-opacity-20 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#F4C21A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
+        {/* My Lessons Section */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <BookOpen className="w-7 h-7 text-white" />
             </div>
-            <div className="text-3xl font-bold text-[#F4C21A] mb-2">8</div>
-            <p className="text-sm text-gray-500">Active courses</p>
+            <h2 className="text-3xl font-black text-gray-900">My Lessons</h2>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Achievements</h3>
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-green-600 mb-2">24</div>
-            <p className="text-sm text-gray-500">Badges earned</p>
-          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {lessons.map((lesson) => (
+              <div
+                key={lesson.id}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 overflow-hidden border-2 border-gray-100 hover:border-[#F4C21A] cursor-pointer group"
+              >
+                <div className="p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className={`w-16 h-16 ${lesson.color} rounded-2xl flex items-center justify-center text-3xl shadow-md group-hover:scale-110 transition-transform`}>
+                      {lesson.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{lesson.title}</h3>
+                      <p className="text-sm text-gray-600 font-medium">Teacher: {lesson.teacher}</p>
+                    </div>
+                  </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Study Time</h3>
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-purple-600 mb-2">12h</div>
-            <p className="text-sm text-gray-500">This week</p>
-          </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-semibold text-gray-700">Your Progress</span>
+                      <span className="font-bold text-gray-900">{lesson.completed} of {lesson.lessons} lessons</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className={`${lesson.color} h-3 rounded-full transition-all duration-500`}
+                        style={{ width: `${lesson.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Progress</h3>
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-orange-600 mb-2">85%</div>
-            <p className="text-sm text-gray-500">Overall completion</p>
-          </div>
-        </div>
-
-        {/* Recent Courses */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Continue Learning</h2>
-          <div className="space-y-4">
-            {[
-              { name: 'React Fundamentals', progress: 75, color: 'blue' },
-              { name: 'JavaScript Advanced', progress: 45, color: 'green' },
-              { name: 'TailwindCSS Mastery', progress: 90, color: 'purple' },
-            ].map((course, index) => (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-gray-900">{course.name}</h3>
-                  <span className="text-sm text-gray-600">{course.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className={`bg-${course.color}-600 h-2 rounded-full transition-all`}
-                    style={{ width: `${course.progress}%` }}
-                  ></div>
+                  <button className="mt-5 w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg">
+                    Continue Learning →
+                  </button>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* My Assignments Section */}
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <FileCheck className="w-7 h-7 text-white" />
+            </div>
+            <h2 className="text-3xl font-black text-gray-900">My Assignments</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {assignments.map((assignment) => (
+              <div
+                key={assignment.id}
+                className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 border-2 ${
+                  assignment.status === 'completed' 
+                    ? 'border-green-300 bg-green-50/50' 
+                    : assignment.urgent 
+                    ? 'border-orange-300 bg-orange-50/50' 
+                    : 'border-gray-100 hover:border-[#F4C21A]'
+                } cursor-pointer overflow-hidden`}
+              >
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start gap-4">
+                      <div className="text-4xl">{assignment.icon}</div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">{assignment.title}</h3>
+                        <p className="text-sm text-gray-600 font-medium">{assignment.subject}</p>
+                      </div>
+                    </div>
+                    {assignment.status === 'completed' && (
+                      <div className="bg-green-500 rounded-full p-2 shadow-md">
+                        <CheckCircle2 className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <Clock className="w-5 h-5 text-gray-600" />
+                    <span className={`text-sm font-semibold ${
+                      assignment.urgent ? 'text-orange-700' : 'text-gray-700'
+                    }`}>
+                      Due: {assignment.dueDate}
+                    </span>
+                    {assignment.urgent && (
+                      <span className="ml-auto bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                        URGENT
+                      </span>
+                    )}
+                  </div>
+
+                  {assignment.status === 'completed' ? (
+                    <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-lg">
+                      View Submission ✓
+                    </button>
+                  ) : (
+                    <button className="w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg">
+                      Start Assignment →
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Encouragement Section */}
+        <div className="mt-10 bg-white rounded-3xl shadow-xl p-8 border-4 border-[#F4C21A] text-center">
+          <div className="flex justify-center mb-4">
+            <Award className="w-16 h-16 text-[#F4C21A]" />
+          </div>
+          <h3 className="text-2xl font-black text-gray-900 mb-2">Keep up the great work!</h3>
+          <p className="text-lg text-gray-700 font-medium">
+            You're doing amazing! Every lesson completed is a step closer to becoming a super learner! 🌟
+          </p>
         </div>
       </div>
     </div>

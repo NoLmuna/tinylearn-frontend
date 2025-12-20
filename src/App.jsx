@@ -15,6 +15,8 @@ import StudentDashboard from './pages/student/Dashboard';
 
 // Parent Pages
 import ParentDashboard from './pages/parent/Dashboard';
+import ParentProgress from './pages/parent/StudentProgress';
+import ParentMessages from './pages/parent/Messages';
 
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/Dashboard';
@@ -51,6 +53,8 @@ function App() {
       
       {/* Parent Routes */}
       <Route path="/parent/dashboard" element={<ParentDashboard />} />
+      <Route path="/parent/progress" element={<ParentProgress />} />
+      <Route path="/parent/messages" element={<ParentMessages />} />
       
       {/* Teacher Routes */}
       <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
