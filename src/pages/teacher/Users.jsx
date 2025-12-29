@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { BookOpen, Users, MessageCircle, LogOut, Search, Plus, Filter, Eye, Edit, Trash2, TrendingUp, Bell, Mail, Phone, Award, Target, Calendar, User } from 'lucide-react';
+import { BookOpen, Users, MessageCircle, LogOut, Search, Plus, Filter, Eye, Edit, Trash2, TrendingUp, Bell, Mail, Phone, Award, Target, Calendar, User, X, CheckCircle, AlertCircle } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
+import { useCreateStudent, useCreateParent, useAssignedStudents } from '../../hooks/teacherHooks';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Teacher Users Management Page
@@ -11,16 +13,158 @@ import logo from '../../assets/levelup-logo.png';
  */
 function TeacherUsers() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createUserType, setCreateUserType] = useState('student');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    grade: '',
+    age: '',
+    phoneNumber: '',
+    relationship: '',
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Hooks
+  const createStudent = useCreateStudent();
+  const createParent = useCreateParent();
+  const { data: assignedStudentsData } = useAssignedStudents();
 
   const teacherUser = { name: 'Sarah Johnson', subject: 'Mathematics' };
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error for this field
+    if (formErrors[name]) {
+      setFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.firstName.trim()) {
+      errors.firstName = 'First name is required';
+    }
+    if (!formData.lastName.trim()) {
+      errors.lastName = 'Last name is required';
+    }
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (!formData.password.trim()) {
+      errors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+
+    if (createUserType === 'student') {
+      if (formData.age && (isNaN(formData.age) || formData.age < 1 || formData.age > 18)) {
+        errors.age = 'Age must be between 1 and 18';
+      }
+    }
+
+    if (createUserType === 'parent') {
+      if (formData.phoneNumber && !/^\+?[\d\s-()]+$/.test(formData.phoneNumber)) {
+        errors.phoneNumber = 'Please enter a valid phone number';
+      }
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const submitData = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      };
+
+      if (createUserType === 'student') {
+        if (formData.grade) submitData.grade = formData.grade;
+        if (formData.age) submitData.age = parseInt(formData.age);
+        
+        await createStudent.mutateAsync(submitData);
+        setSuccessMessage('Student created successfully!');
+      } else {
+        if (formData.phoneNumber) submitData.phoneNumber = formData.phoneNumber.trim();
+        if (formData.relationship) submitData.relationship = formData.relationship.trim();
+        
+        await createParent.mutateAsync(submitData);
+        setSuccessMessage('Parent created successfully!');
+      }
+
+      // Reset form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        grade: '',
+        age: '',
+        phoneNumber: '',
+        relationship: '',
+      });
+      setFormErrors({});
+
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ['assigned-students'] });
+
+      // Close modal after 2 seconds
+      setTimeout(() => {
+        setShowCreateModal(false);
+        setSuccessMessage('');
+      }, 2000);
+    } catch (error) {
+      console.error('Creation error:', error);
+      setFormErrors({ submit: error.response?.data?.message || 'Creation failed. Please try again.' });
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowCreateModal(false);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      grade: '',
+      age: '',
+      phoneNumber: '',
+      relationship: '',
+    });
+    setFormErrors({});
+    setSuccessMessage('');
   };
 
   // Enhanced mock users data with more details
@@ -364,91 +508,225 @@ function TeacherUsers() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100">
+            <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between">
               <CardTitle className="text-2xl font-black">Add New User</CardTitle>
+              <button
+                onClick={handleCloseModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">User Type</label>
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Success Message */}
+                {successMessage && (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <p className="text-sm font-semibold text-green-800">{successMessage}</p>
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {formErrors.submit && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                    <p className="text-sm font-semibold text-red-800">{formErrors.submit}</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">User Type</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setCreateUserType('student')}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        createUserType === 'student'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <p className="font-bold text-gray-900">Student</p>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCreateUserType('parent')}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        createUserType === 'parent'
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <p className="font-bold text-gray-900">Parent</p>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
-                  <button
-                    onClick={() => setCreateUserType('student')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      createUserType === 'student'
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <p className="font-bold text-gray-900">Student</p>
-                  </button>
-                  <button
-                    onClick={() => setCreateUserType('parent')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      createUserType === 'parent'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <p className="font-bold text-gray-900">Parent</p>
-                  </button>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">First Name *</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                        formErrors.firstName ? 'border-red-300' : 'border-gray-200'
+                      }`}
+                      placeholder="John"
+                    />
+                    {formErrors.firstName && (
+                      <p className="text-xs text-red-600 mt-1">{formErrors.firstName}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Last Name *</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                        formErrors.lastName ? 'border-red-300' : 'border-gray-200'
+                      }`}
+                      placeholder="Doe"
+                    />
+                    {formErrors.lastName && (
+                      <p className="text-xs text-red-600 mt-1">{formErrors.lastName}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
                   <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="John"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      formErrors.email ? 'border-red-300' : 'border-gray-200'
+                    }`}
+                    placeholder="user@example.com"
                   />
+                  {formErrors.email && (
+                    <p className="text-xs text-red-600 mt-1">{formErrors.email}</p>
+                  )}
                 </div>
+
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Password *</label>
                   <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Doe"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      formErrors.password ? 'border-red-300' : 'border-gray-200'
+                    }`}
+                    placeholder="Minimum 6 characters"
                   />
+                  {formErrors.password && (
+                    <p className="text-xs text-red-600 mt-1">{formErrors.password}</p>
+                  )}
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="user@example.com"
-                />
-              </div>
+                {createUserType === 'student' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Grade</label>
+                      <select
+                        name="grade"
+                        value={formData.grade}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="">Select Grade</option>
+                        <option value="5th Grade">5th Grade</option>
+                        <option value="6th Grade">6th Grade</option>
+                        <option value="7th Grade">7th Grade</option>
+                        <option value="8th Grade">8th Grade</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Age</label>
+                      <input
+                        type="number"
+                        name="age"
+                        value={formData.age}
+                        onChange={handleInputChange}
+                        min="1"
+                        max="18"
+                        className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                          formErrors.age ? 'border-red-300' : 'border-gray-200'
+                        }`}
+                        placeholder="1-18"
+                      />
+                      {formErrors.age && (
+                        <p className="text-xs text-red-600 mt-1">{formErrors.age}</p>
+                      )}
+                    </div>
+                  </>
+                )}
 
-              {createUserType === 'student' && (
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Grade</label>
-                  <select className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option>Select Grade</option>
-                    <option>5th Grade</option>
-                    <option>6th Grade</option>
-                    <option>7th Grade</option>
-                  </select>
+                {createUserType === 'parent' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                          formErrors.phoneNumber ? 'border-red-300' : 'border-gray-200'
+                        }`}
+                        placeholder="+1234567890"
+                      />
+                      {formErrors.phoneNumber && (
+                        <p className="text-xs text-red-600 mt-1">{formErrors.phoneNumber}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Relationship</label>
+                      <select
+                        name="relationship"
+                        value={formData.relationship}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="">Select Relationship</option>
+                        <option value="mother">Mother</option>
+                        <option value="father">Father</option>
+                        <option value="guardian">Guardian</option>
+                        <option value="grandmother">Grandmother</option>
+                        <option value="grandfather">Grandfather</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    onClick={handleCloseModal}
+                    variant="outline"
+                    className="flex-1"
+                    disabled={createStudent.isPending || createParent.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
+                    disabled={createStudent.isPending || createParent.isPending}
+                  >
+                    {createStudent.isPending || createParent.isPending ? 'Creating...' : 'Add User'}
+                  </Button>
                 </div>
-              )}
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
-                >
-                  Add User
-                </Button>
-              </div>
+              </form>
             </CardContent>
           </Card>
         </div>
