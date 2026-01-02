@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { BookOpen, Users, MessageCircle, LogOut, Upload, Plus, FileText, Video, Image, File, TrendingUp, Bell, Eye, Edit, Trash2, Download } from 'lucide-react';
+import { BookOpen, Users, MessageCircle, LogOut, Upload, Plus, FileText, Video, Image, File, TrendingUp, Bell, Eye, Edit, Trash2, Download, Archive, RotateCcw } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
+import CreateLesson from '../../components/teacher/createLessons';
+import EditLesson from '../../components/teacher/editLessons';
+import { useTeacherLessons, useArchiveLesson, useRestoreLesson } from '../../hooks/teacherHooks';
 
 /**
  * Teacher Learning Materials Page
@@ -13,23 +16,56 @@ function TeacherMaterials() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('modules');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showCreateLessonModal, setShowCreateLessonModal] = useState(false);
+  const [showEditLessonModal, setShowEditLessonModal] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
   const [showCreateAssignmentModal, setShowCreateAssignmentModal] = useState(false);
 
   const teacherUser = { name: 'Sarah Johnson', subject: 'Mathematics' };
+
+  // Hooks
+  const { data: lessonsData, isLoading: isLoadingLessons } = useTeacherLessons(showArchived);
+  const archiveLesson = useArchiveLesson();
+  const restoreLesson = useRestoreLesson();
 
   const handleLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
 
-  // Mock materials data
-  const modules = [
-    { id: 1, title: 'Introduction to Algebra', type: 'pdf', size: '2.5 MB', uploaded: '2024-01-15', views: 124, downloads: 45 },
-    { id: 2, title: 'Quadratic Equations Explained', type: 'video', size: '45 MB', uploaded: '2024-01-18', views: 98, downloads: 32 },
-    { id: 3, title: 'Geometry Fundamentals', type: 'pdf', size: '3.2 MB', uploaded: '2024-01-20', views: 87, downloads: 28 },
-    { id: 4, title: 'Trigonometry Basics', type: 'pdf', size: '2.8 MB', uploaded: '2024-01-22', views: 65, downloads: 21 },
-    { id: 5, title: 'Statistics and Probability', type: 'pdf', size: '4.1 MB', uploaded: '2024-01-25', views: 54, downloads: 18 }
-  ];
+  const handleEdit = (lesson) => {
+    setSelectedLesson(lesson);
+    setShowEditLessonModal(true);
+  };
+
+  const handleArchive = async (lesson) => {
+    if (!window.confirm(`Are you sure you want to archive "${lesson.title}"? This will deactivate the lesson.`)) {
+      return;
+    }
+
+    try {
+      await archiveLesson.mutateAsync(lesson._id || lesson.id);
+    } catch (error) {
+      console.error('Archive error:', error);
+      alert(error.response?.data?.message || 'Failed to archive lesson. Please try again.');
+    }
+  };
+
+  const handleRestore = async (lesson) => {
+    if (!window.confirm(`Are you sure you want to restore "${lesson.title}"? This will reactivate the lesson.`)) {
+      return;
+    }
+
+    try {
+      await restoreLesson.mutateAsync(lesson._id || lesson.id);
+    } catch (error) {
+      console.error('Restore error:', error);
+      alert(error.response?.data?.message || 'Failed to restore lesson. Please try again.');
+    }
+  };
+
+  const lessons = lessonsData?.data?.lessons || [];
 
   const assignments = [
     { id: 1, title: 'Algebra Practice Set 1', module: 'Introduction to Algebra', dueDate: '2024-02-10', submissions: 45, totalStudents: 124, status: 'active' },
@@ -134,8 +170,8 @@ function TeacherMaterials() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Total Modules</p>
-                  <p className="text-4xl font-black text-gray-900">{modules.length}</p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Total Lessons</p>
+                  <p className="text-4xl font-black text-gray-900">{lessons.length}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-indigo-50">
                   <BookOpen className="w-8 h-8 text-indigo-600" />
@@ -160,8 +196,8 @@ function TeacherMaterials() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Total Views</p>
-                  <p className="text-4xl font-black text-gray-900">{modules.reduce((acc, m) => acc + m.views, 0)}</p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">Active Lessons</p>
+                  <p className="text-4xl font-black text-gray-900">{lessons.filter(l => l.isActive !== false).length}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-green-50">
                   <Eye className="w-8 h-8 text-green-600" />
@@ -196,59 +232,140 @@ function TeacherMaterials() {
           <Card className="border-none shadow-lg">
             <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-2xl font-black">Learning Modules</CardTitle>
-                <Button
-                  onClick={() => setShowUploadModal(true)}
-                  className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Module
-                </Button>
+                <CardTitle className="text-2xl font-black">Learning Lessons</CardTitle>
+                <div className="flex gap-3">
+                  <Button
+                    variant={showArchived ? "default" : "outline"}
+                    onClick={() => setShowArchived(!showArchived)}
+                    className={showArchived ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}
+                  >
+                    <Archive className="w-4 h-4 mr-2" />
+                    {showArchived ? 'Hide Archived' : 'Show Archived'}
+                  </Button>
+                  <Button
+                    onClick={() => setShowCreateLessonModal(true)}
+                    className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Lesson
+                  </Button>
+                  <Button
+                    onClick={() => setShowUploadModal(true)}
+                    variant="outline"
+                    className="border-2 border-indigo-500 text-indigo-600 hover:bg-indigo-50"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Module
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="space-y-4">
-                {modules.map((module) => (
-                  <div key={module.id} className="border-2 border-gray-100 rounded-xl p-5 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="p-3 rounded-xl bg-gray-50">
-                          {getFileIcon(module.type)}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-gray-900 mb-1">{module.title}</h3>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span>{module.size}</span>
-                            <span>•</span>
-                            <span>Uploaded {module.uploaded}</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Eye className="w-4 h-4" />
-                              {module.views} views
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <Download className="w-4 h-4" />
-                              {module.downloads} downloads
-                            </span>
+              {isLoadingLessons ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Loading lessons...</p>
+                </div>
+              ) : lessons.length === 0 ? (
+                <div className="text-center py-8">
+                  <BookOpen className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600">No lessons found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {lessons.map((lesson) => (
+                    <div key={lesson._id || lesson.id} className={`border-2 rounded-xl p-5 hover:border-indigo-200 transition-all ${!lesson.isActive ? 'opacity-60 bg-gray-50 border-gray-200' : 'border-gray-100 hover:bg-indigo-50/30'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                          {lesson.imageUrl ? (
+                            <img 
+                              src={lesson.imageUrl} 
+                              alt={lesson.title}
+                              className="w-16 h-16 object-cover rounded-xl"
+                            />
+                          ) : (
+                            <div className="p-3 rounded-xl bg-gray-50">
+                              <BookOpen className="w-8 h-8 text-indigo-600" />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className={`font-bold ${!lesson.isActive ? 'text-gray-500' : 'text-gray-900'}`}>{lesson.title}</h3>
+                              {!lesson.isActive && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
+                                  <Archive className="w-3 h-3" />
+                                  Archived
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <span className="capitalize">{lesson.category}</span>
+                              <span>•</span>
+                              <span className="capitalize">{lesson.difficulty}</span>
+                              <span>•</span>
+                              <span>{lesson.ageGroup}</span>
+                              {lesson.duration && (
+                                <>
+                                  <span>•</span>
+                                  <span>{lesson.duration} min</span>
+                                </>
+                              )}
+                              {lesson.createdAt && (
+                                <>
+                                  <span>•</span>
+                                  <span>Created {new Date(lesson.createdAt).toLocaleDateString()}</span>
+                                </>
+                              )}
+                            </div>
+                            {lesson.description && (
+                              <p className="text-sm text-gray-500 mt-1 line-clamp-1">{lesson.description}</p>
+                            )}
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="hover:bg-indigo-50 hover:text-indigo-600">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="hover:bg-blue-50 hover:text-blue-600"
+                            onClick={() => navigate(`/teacher/lessons/${lesson._id || lesson.id}`)}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="hover:bg-indigo-50 hover:text-indigo-600"
+                            onClick={() => handleEdit(lesson)}
+                            disabled={!lesson.isActive}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          {lesson.isActive ? (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="hover:bg-red-50 hover:text-red-600"
+                              onClick={() => handleArchive(lesson)}
+                              disabled={archiveLesson.isPending}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="hover:bg-green-50 hover:text-green-600"
+                              onClick={() => handleRestore(lesson)}
+                              disabled={restoreLesson.isPending}
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
@@ -328,6 +445,22 @@ function TeacherMaterials() {
           </Card>
         )}
       </div>
+
+      {/* Create Lesson Modal */}
+      <CreateLesson 
+        isOpen={showCreateLessonModal} 
+        onClose={() => setShowCreateLessonModal(false)} 
+      />
+
+      {/* Edit Lesson Modal */}
+      <EditLesson 
+        isOpen={showEditLessonModal} 
+        onClose={() => {
+          setShowEditLessonModal(false);
+          setSelectedLesson(null);
+        }}
+        lesson={selectedLesson}
+      />
 
       {/* Upload Module Modal */}
       {showUploadModal && (

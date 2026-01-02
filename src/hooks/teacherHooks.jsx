@@ -145,12 +145,265 @@ export function useCreateParent() {
 }
 
 // Get assigned students hook
-export function useAssignedStudents() {
+export function useAssignedStudents(includeArchived = false) {
   return useQuery({
-    queryKey: ['assigned-students'],
+    queryKey: ['assigned-students', includeArchived],
     queryFn: async () => {
-      const response = await api.get('/teachers/students');
+      const response = await api.get('/teachers/students', {
+        params: { includeArchived: includeArchived }
+      });
       return response.data;
+    },
+  });
+}
+
+// Get assigned parents hook
+export function useAssignedParents(includeArchived = false) {
+  return useQuery({
+    queryKey: ['assigned-parents', includeArchived],
+    queryFn: async () => {
+      const response = await api.get('/teachers/parents', {
+        params: { includeArchived: includeArchived }
+      });
+      return response.data;
+    },
+  });
+}
+
+// Get student by ID hook
+export function useStudentById(studentId) {
+  return useQuery({
+    queryKey: ['student', studentId],
+    queryFn: async () => {
+      const response = await api.get(`/students/${studentId}`);
+      return response.data;
+    },
+    enabled: !!studentId,
+  });
+}
+
+// Get parent by ID hook
+export function useParentById(parentId) {
+  return useQuery({
+    queryKey: ['parent', parentId],
+    queryFn: async () => {
+      const response = await api.get(`/parents/${parentId}`);
+      return response.data;
+    },
+    enabled: !!parentId,
+  });
+}
+
+// Update student hook
+export function useUpdateStudent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['update-student'],
+    mutationFn: async ({ studentId, data }) => {
+      const response = await api.put(`/students/${studentId}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-students'] });
+      queryClient.invalidateQueries({ queryKey: ['student'] });
+    },
+  });
+}
+
+// Update parent hook
+export function useUpdateParent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['update-parent'],
+    mutationFn: async ({ parentId, data }) => {
+      const response = await api.put(`/parents/${parentId}`, data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-parents'] });
+      queryClient.invalidateQueries({ queryKey: ['parent'] });
+    },
+  });
+}
+
+// Archive student hook (set isActive to false)
+export function useArchiveStudent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['archive-student'],
+    mutationFn: async (studentId) => {
+      const response = await api.put(`/teachers/students/${studentId}/archive`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-students'] });
+      queryClient.invalidateQueries({ queryKey: ['student'] });
+    },
+  });
+}
+
+// Archive parent hook (set isActive to false)
+export function useArchiveParent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['archive-parent'],
+    mutationFn: async (parentId) => {
+      const response = await api.put(`/teachers/parents/${parentId}/archive`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-parents'] });
+      queryClient.invalidateQueries({ queryKey: ['parent'] });
+    },
+  });
+}
+
+// Restore student hook (set isActive to true)
+export function useRestoreStudent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['restore-student'],
+    mutationFn: async (studentId) => {
+      const response = await api.put(`/teachers/students/${studentId}/restore`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-students'] });
+      queryClient.invalidateQueries({ queryKey: ['student'] });
+    },
+  });
+}
+
+// Restore parent hook (set isActive to true)
+export function useRestoreParent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['restore-parent'],
+    mutationFn: async (parentId) => {
+      const response = await api.put(`/teachers/parents/${parentId}/restore`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assigned-parents'] });
+      queryClient.invalidateQueries({ queryKey: ['parent'] });
+    },
+  });
+}
+
+// Create lesson hook
+export function useCreateLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['create-lesson'],
+    mutationFn: async (lessonData) => {
+      // Check if lessonData is FormData (file upload) or regular object
+      const config = lessonData instanceof FormData
+        ? {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        : {};
+      
+      const response = await api.post('/lessons', lessonData, config);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    },
+  });
+}
+
+// Get teacher lessons hook
+export function useTeacherLessons(includeArchived = false) {
+  return useQuery({
+    queryKey: ['teacher-lessons', includeArchived],
+    queryFn: async () => {
+      const response = await api.get('/teachers/lessons', {
+        params: includeArchived ? { includeArchived: 'true' } : {}
+      });
+      return response.data;
+    },
+  });
+}
+
+// Get lesson by ID hook
+export function useLessonById(lessonId) {
+  return useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: async () => {
+      const response = await api.get(`/lessons/${lessonId}`);
+      return response.data;
+    },
+    enabled: !!lessonId,
+  });
+}
+
+// Update lesson hook
+export function useUpdateLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['update-lesson'],
+    mutationFn: async ({ lessonId, lessonData }) => {
+      // Check if lessonData is FormData (file upload) or regular object
+      const config = lessonData instanceof FormData
+        ? {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        : {};
+      
+      const response = await api.put(`/lessons/${lessonId}`, lessonData, config);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lesson', variables.lessonId] });
+    },
+  });
+}
+
+// Archive lesson hook (set isActive to false)
+export function useArchiveLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['archive-lesson'],
+    mutationFn: async (lessonId) => {
+      const response = await api.put(`/lessons/${lessonId}/archive`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    },
+  });
+}
+
+// Restore lesson hook (set isActive to true)
+export function useRestoreLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['restore-lesson'],
+    mutationFn: async (lessonId) => {
+      const response = await api.put(`/lessons/${lessonId}/restore`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
     },
   });
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BookOpen, FileCheck, Award, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
+import { useStudentLessons } from '../../hooks/studentHooks';
 
 /**
  * Student Dashboard Component
@@ -10,15 +11,63 @@ import logo from '../../assets/levelup-logo.png';
 function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: 'Alex', email: 'student@example.com' });
-  const [loading, setLoading] = useState(false);
+  
+  // Fetch lessons from API
+  const { data: lessonsData, isLoading: isLoadingLessons } = useStudentLessons();
+  const rawLessons = lessonsData?.data?.lessons || [];
 
-  // Mock data for lessons
-  const lessons = [
-    { id: 1, title: 'Fun with Numbers', teacher: 'Ms. Smith', progress: 75, icon: '🔢', color: 'bg-blue-500', lessons: 8, completed: 6 },
-    { id: 2, title: 'Reading Adventures', teacher: 'Mr. Johnson', progress: 60, icon: '📚', color: 'bg-green-500', lessons: 10, completed: 6 },
-    { id: 3, title: 'Science Explorers', teacher: 'Ms. Davis', progress: 40, icon: '🔬', color: 'bg-purple-500', lessons: 12, completed: 5 },
-    { id: 4, title: 'Art & Creativity', teacher: 'Ms. Brown', progress: 90, icon: '🎨', color: 'bg-pink-500', lessons: 6, completed: 5 },
-  ];
+  // Transform lessons for display
+  const getCategoryIcon = (category) => {
+    const icons = {
+      math: '🔢',
+      reading: '📚',
+      science: '🔬',
+      art: '🎨',
+      music: '🎵',
+      physical: '⚽',
+      social: '🌍',
+    };
+    return icons[category] || '📖';
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      math: 'bg-blue-500',
+      reading: 'bg-green-500',
+      science: 'bg-purple-500',
+      art: 'bg-pink-500',
+      music: 'bg-yellow-500',
+      physical: 'bg-orange-500',
+      social: 'bg-indigo-500',
+    };
+    return colors[category] || 'bg-gray-500';
+  };
+
+  const lessons = rawLessons.map((lesson) => {
+    const chapters = lesson.content || [];
+    const completedChapters = chapters.filter(ch => ch.isSeen === true).length;
+    const totalChapters = chapters.length;
+    const progress = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
+    
+    const teacherName = lesson.teacherId && typeof lesson.teacherId === 'object'
+      ? `${lesson.teacherId.firstName} ${lesson.teacherId.lastName}`
+      : 'Teacher';
+
+    return {
+      id: lesson._id || lesson.id,
+      title: lesson.title,
+      teacher: teacherName,
+      progress: progress,
+      icon: getCategoryIcon(lesson.category),
+      color: getCategoryColor(lesson.category),
+      lessons: totalChapters,
+      completed: completedChapters,
+      category: lesson.category,
+      difficulty: lesson.difficulty,
+      ageGroup: lesson.ageGroup,
+      _raw: lesson
+    };
+  });
 
   // Mock data for assignments
   const assignments = [
@@ -34,10 +83,16 @@ function Dashboard() {
     navigate('/');
   };
 
-  if (loading) {
+  if (isLoadingLessons) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 flex items-center justify-center">
-        <div className="text-2xl text-gray-600 font-semibold">Loading your dashboard...</div>
+        <div className="text-center">
+          <div className="w-20 h-20 mx-auto mb-4 bg-[#F4C21A] rounded-2xl flex items-center justify-center animate-pulse">
+            <BookOpen className="w-10 h-10 text-white" />
+          </div>
+          <div className="text-2xl text-gray-600 font-semibold">Loading your dashboard...</div>
+          <p className="text-gray-500 mt-2">Fetching your lessons...</p>
+        </div>
       </div>
     );
   }
@@ -103,43 +158,65 @@ function Dashboard() {
             <h2 className="text-3xl font-black text-gray-900">My Lessons</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {lessons.map((lesson) => (
-              <div
-                key={lesson.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 overflow-hidden border-2 border-gray-100 hover:border-[#F4C21A] cursor-pointer group"
-              >
-                <div className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className={`w-16 h-16 ${lesson.color} rounded-2xl flex items-center justify-center text-3xl shadow-md group-hover:scale-110 transition-transform`}>
-                      {lesson.icon}
+          {lessons.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+              <BookOpen className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No lessons available</h3>
+              <p className="text-gray-600">Your teacher hasn't assigned any lessons yet. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-6">
+              {lessons.map((lesson) => (
+                <div
+                  key={lesson.id}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-200 overflow-hidden border-2 border-gray-100 hover:border-[#F4C21A] cursor-pointer group"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`w-16 h-16 ${lesson.color} rounded-2xl flex items-center justify-center text-3xl shadow-md group-hover:scale-110 transition-transform`}>
+                        {lesson.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-1">{lesson.title}</h3>
+                        <p className="text-sm text-gray-600 font-medium">Teacher: {lesson.teacher}</p>
+                        <div className="flex gap-2 mt-1">
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full capitalize">
+                            {lesson.category}
+                          </span>
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full capitalize">
+                            {lesson.difficulty}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{lesson.title}</h3>
-                      <p className="text-sm text-gray-600 font-medium">Teacher: {lesson.teacher}</p>
-                    </div>
-                  </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-semibold text-gray-700">Your Progress</span>
-                      <span className="font-bold text-gray-900">{lesson.completed} of {lesson.lessons} lessons</span>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-semibold text-gray-700">Your Progress</span>
+                        <span className="font-bold text-gray-900">{lesson.completed} of {lesson.lessons} chapters</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          className={`${lesson.color} h-3 rounded-full transition-all duration-500`}
+                          style={{ width: `${lesson.progress}%` }}
+                        ></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`${lesson.color} h-3 rounded-full transition-all duration-500`}
-                        style={{ width: `${lesson.progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
 
-                  <button className="mt-5 w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg">
-                    Continue Learning →
-                  </button>
+                    <button 
+                      onClick={() => {
+                        // Navigate to lesson - first chapter will be marked as seen automatically
+                        navigate(`/student/lessons/${lesson.id}`);
+                      }}
+                      className="mt-5 w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg"
+                    >
+                      {lesson.progress > 0 ? 'Continue Learning →' : 'Start Learning →'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* My Assignments Section */}

@@ -12,6 +12,7 @@ import MainLogin from './pages/MainLogin';
 
 // Student Pages
 import StudentDashboard from './pages/student/Dashboard';
+import StudentSpecLesson from './pages/student/SpecLesson';
 
 // Parent Pages
 import ParentDashboard from './pages/parent/Dashboard';
@@ -21,7 +22,9 @@ import ParentMessages from './pages/parent/Messages';
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/Dashboard';
 import TeacherUsers from './pages/teacher/Users';
+import TeacherSpecUser from './pages/teacher/SpecUser';
 import TeacherMaterials from './pages/teacher/Materials';
+import TeacherSpecLessons from './pages/teacher/SpecLessons';
 import TeacherMessages from './pages/teacher/Messages';
 
 // Admin Pages
@@ -50,6 +53,7 @@ function App() {
       {/* Student Routes */}
       <Route path="/student/dashboard" element={<StudentDashboard />} />
       <Route path="/dashboard" element={<StudentDashboard />} /> {/* Legacy route */}
+      <Route path="/student/lessons/:id" element={<StudentSpecLesson />} />
       
       {/* Parent Routes */}
       <Route path="/parent/dashboard" element={<ParentDashboard />} />
@@ -59,7 +63,9 @@ function App() {
       {/* Teacher Routes */}
       <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
       <Route path="/teacher/users" element={<TeacherUsers />} />
+      <Route path="/teacher/users/:type/:id" element={<TeacherSpecUser />} />
       <Route path="/teacher/materials" element={<TeacherMaterials />} />
+      <Route path="/teacher/lessons/:id" element={<TeacherSpecLessons />} />
       <Route path="/teacher/messages" element={<TeacherMessages />} />
       
       {/* Admin Routes - Separate Login */}

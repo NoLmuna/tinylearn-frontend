@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { BookOpen, Users, MessageCircle, LogOut, Search, Plus, Filter, Eye, Edit, Trash2, TrendingUp, Bell, Mail, Phone, Award, Target, Calendar, User, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { BookOpen, Users, MessageCircle, LogOut, Search, Plus, Filter, Eye, Edit, Trash2, TrendingUp, Bell, Mail, Phone, Award, Target, Calendar, User, Archive, RotateCcw } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
-import { useCreateStudent, useCreateParent, useAssignedStudents } from '../../hooks/teacherHooks';
-import { useQueryClient } from '@tanstack/react-query';
+import { useAssignedStudents, useAssignedParents, useArchiveStudent, useArchiveParent, useRestoreStudent, useRestoreParent } from '../../hooks/teacherHooks';
+import CreateStudentAndParent from '../../components/teacher/createStudentandParents';
 
 /**
  * Teacher Users Management Page
@@ -13,28 +13,18 @@ import { useQueryClient } from '@tanstack/react-query';
  */
 function TeacherUsers() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createUserType, setCreateUserType] = useState('student');
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    grade: '',
-    age: '',
-    phoneNumber: '',
-    relationship: '',
-  });
-  const [formErrors, setFormErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   // Hooks
-  const createStudent = useCreateStudent();
-  const createParent = useCreateParent();
-  const { data: assignedStudentsData } = useAssignedStudents();
+  const { data: assignedStudentsData, isLoading: isLoadingStudents } = useAssignedStudents(showArchived);
+  const { data: assignedParentsData, isLoading: isLoadingParents } = useAssignedParents(showArchived);
+  const archiveStudent = useArchiveStudent();
+  const archiveParent = useArchiveParent();
+  const restoreStudent = useRestoreStudent();
+  const restoreParent = useRestoreParent();
 
   const teacherUser = { name: 'Sarah Johnson', subject: 'Mathematics' };
 
@@ -43,140 +33,115 @@ function TeacherUsers() {
     navigate('/login');
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error for this field
-    if (formErrors[name]) {
-      setFormErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  const validateForm = () => {
-    const errors = {};
-    
-    if (!formData.firstName.trim()) {
-      errors.firstName = 'First name is required';
-    }
-    if (!formData.lastName.trim()) {
-      errors.lastName = 'Last name is required';
-    }
-    if (!formData.email.trim()) {
-      errors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    if (!formData.password.trim()) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
-    }
-
-    if (createUserType === 'student') {
-      if (formData.age && (isNaN(formData.age) || formData.age < 1 || formData.age > 18)) {
-        errors.age = 'Age must be between 1 and 18';
-      }
-    }
-
-    if (createUserType === 'parent') {
-      if (formData.phoneNumber && !/^\+?[\d\s-()]+$/.test(formData.phoneNumber)) {
-        errors.phoneNumber = 'Please enter a valid phone number';
-      }
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
+  const handleArchive = async (user) => {
+    if (!window.confirm(`Are you sure you want to archive ${user.name}? This will deactivate their account.`)) {
       return;
     }
 
     try {
-      const submitData = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.trim().toLowerCase(),
-        password: formData.password,
-      };
-
-      if (createUserType === 'student') {
-        if (formData.grade) submitData.grade = formData.grade;
-        if (formData.age) submitData.age = parseInt(formData.age);
-        
-        await createStudent.mutateAsync(submitData);
-        setSuccessMessage('Student created successfully!');
+      if (user.type === 'student') {
+        await archiveStudent.mutateAsync(user.id);
       } else {
-        if (formData.phoneNumber) submitData.phoneNumber = formData.phoneNumber.trim();
-        if (formData.relationship) submitData.relationship = formData.relationship.trim();
-        
-        await createParent.mutateAsync(submitData);
-        setSuccessMessage('Parent created successfully!');
+        await archiveParent.mutateAsync(user.id);
       }
-
-      // Reset form
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        grade: '',
-        age: '',
-        phoneNumber: '',
-        relationship: '',
-      });
-      setFormErrors({});
-
-      // Refresh data
-      queryClient.invalidateQueries({ queryKey: ['assigned-students'] });
-
-      // Close modal after 2 seconds
-      setTimeout(() => {
-        setShowCreateModal(false);
-        setSuccessMessage('');
-      }, 2000);
     } catch (error) {
-      console.error('Creation error:', error);
-      setFormErrors({ submit: error.response?.data?.message || 'Creation failed. Please try again.' });
+      console.error('Archive error:', error);
+      alert(error.response?.data?.message || 'Failed to archive user. Please try again.');
     }
   };
 
-  const handleCloseModal = () => {
-    setShowCreateModal(false);
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      grade: '',
-      age: '',
-      phoneNumber: '',
-      relationship: '',
-    });
-    setFormErrors({});
-    setSuccessMessage('');
+  const handleRestore = async (user) => {
+    if (!window.confirm(`Are you sure you want to restore ${user.name}? This will reactivate their account.`)) {
+      return;
+    }
+
+    try {
+      if (user.type === 'student') {
+        await restoreStudent.mutateAsync(user.id);
+      } else {
+        await restoreParent.mutateAsync(user.id);
+      }
+    } catch (error) {
+      console.error('Restore error:', error);
+      alert(error.response?.data?.message || 'Failed to restore user. Please try again.');
+    }
   };
 
-  // Enhanced mock users data with more details
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john.doe@example.com', type: 'student', grade: '5th Grade', parent: 'Jane Doe', status: 'active', performance: 92, attendance: 95, lastActive: '2 hours ago', color: 'from-blue-400 to-cyan-500' },
-    { id: 2, name: 'Emily Smith', email: 'emily.smith@example.com', type: 'student', grade: '5th Grade', parent: 'Robert Smith', status: 'active', performance: 88, attendance: 98, lastActive: '1 hour ago', color: 'from-purple-400 to-pink-500' },
-    { id: 3, name: 'Jane Doe', email: 'jane.doe@example.com', type: 'parent', children: 'John Doe', phone: '+1234567890', status: 'active', engagement: 'High', lastContact: 'Yesterday', color: 'from-green-400 to-emerald-500' },
-    { id: 4, name: 'Michael Brown', email: 'michael.brown@example.com', type: 'student', grade: '6th Grade', parent: 'Sarah Brown', status: 'active', performance: 85, attendance: 92, lastActive: '5 hours ago', color: 'from-orange-400 to-red-500' },
-    { id: 5, name: 'Robert Smith', email: 'robert.smith@example.com', type: 'parent', children: 'Emily Smith', phone: '+1234567891', status: 'active', engagement: 'Very High', lastContact: 'Today', color: 'from-teal-400 to-cyan-500' },
-    { id: 6, name: 'Lisa Wilson', email: 'lisa.wilson@example.com', type: 'student', grade: '5th Grade', parent: 'David Wilson', status: 'active', performance: 95, attendance: 100, lastActive: '30 mins ago', color: 'from-indigo-400 to-purple-500' },
-    { id: 7, name: 'Sarah Brown', email: 'sarah.brown@example.com', type: 'parent', children: 'Michael Brown', phone: '+1234567892', status: 'active', engagement: 'Medium', lastContact: '2 days ago', color: 'from-pink-400 to-rose-500' }
-  ];
+  // Transform API data to match UI structure
+  const transformUsers = () => {
+    const users = [];
+    const colors = [
+      'from-blue-400 to-cyan-500',
+      'from-purple-400 to-pink-500',
+      'from-green-400 to-emerald-500',
+      'from-orange-400 to-red-500',
+      'from-teal-400 to-cyan-500',
+      'from-indigo-400 to-purple-500',
+      'from-pink-400 to-rose-500',
+      'from-yellow-400 to-orange-500',
+      'from-red-400 to-pink-500',
+      'from-cyan-400 to-blue-500'
+    ];
+
+    // Add students
+    if (assignedStudentsData?.data) {
+      assignedStudentsData.data.forEach((student, index) => {
+        const studentId = student._id || student.id;
+        const parentNames = student.parents && student.parents.length > 0
+          ? student.parents.map(p => `${p.firstName} ${p.lastName}`).join(', ')
+          : 'No parent assigned';
+        
+        users.push({
+          id: studentId,
+          name: `${student.firstName} ${student.lastName}`,
+          email: student.email,
+          type: 'student',
+          grade: student.grade || 'N/A',
+          parent: parentNames,
+          status: student.accountStatus || 'active',
+          isActive: student.isActive !== false,
+          performance: 85, // Mock for now - can be calculated from actual data later
+          attendance: 95, // Mock for now - can be calculated from actual data later
+          lastActive: student.lastLogin 
+            ? new Date(student.lastLogin).toLocaleDateString()
+            : 'Never',
+          color: colors[index % colors.length],
+          _raw: student
+        });
+      });
+    }
+
+    // Add parents
+    if (assignedParentsData?.data) {
+      assignedParentsData.data.forEach((parent, index) => {
+        const parentId = parent._id || parent.id;
+        const childrenNames = parent.children && parent.children.length > 0
+          ? parent.children.map(c => `${c.firstName} ${c.lastName}`).join(', ')
+          : 'No children';
+        
+        users.push({
+          id: parentId,
+          name: `${parent.firstName} ${parent.lastName}`,
+          email: parent.email,
+          type: 'parent',
+          children: childrenNames,
+          phone: parent.phoneNumber || 'N/A',
+          status: parent.accountStatus || 'active',
+          isActive: parent.isActive !== false,
+          engagement: 'High', // Mock for now - can be calculated from actual data later
+          lastContact: parent.lastLogin 
+            ? new Date(parent.lastLogin).toLocaleDateString()
+            : 'Never',
+          color: colors[(index + (assignedStudentsData?.data?.length || 0)) % colors.length],
+          _raw: parent
+        });
+      });
+    }
+
+    return users;
+  };
+
+  const users = transformUsers();
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -341,6 +306,14 @@ function TeacherUsers() {
                   </select>
                 </div>
                 <Button
+                  variant={showArchived ? "default" : "outline"}
+                  onClick={() => setShowArchived(!showArchived)}
+                  className={showArchived ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}
+                >
+                  <Archive className="w-4 h-4 mr-2" />
+                  {showArchived ? 'Hide Archived' : 'Show Archived'}
+                </Button>
+                <Button
                   onClick={() => setShowCreateModal(true)}
                   className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
                 >
@@ -352,20 +325,46 @@ function TeacherUsers() {
           </CardContent>
         </Card>
 
+        {/* Loading State */}
+        {(isLoadingStudents || isLoadingParents) && (
+          <Card className="border-none shadow-lg">
+            <CardContent className="text-center py-16">
+              <div className="w-20 h-20 mx-auto mb-4 bg-indigo-50 rounded-2xl flex items-center justify-center animate-pulse">
+                <Users className="w-10 h-10 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Loading users...</h3>
+              <p className="text-gray-600">Please wait while we fetch the data</p>
+            </CardContent>
+          </Card>
+        )}
+
         {/* User Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers.map((user) => (
-            <Card key={user.id} className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
+        {!(isLoadingStudents || isLoadingParents) && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredUsers.map((user) => (
+            <Card key={user.id} className={`border-none shadow-lg hover:shadow-xl transition-shadow duration-300 ${!user.isActive ? 'opacity-60 bg-gray-50' : ''}`}>
               <CardContent className="p-6">
                 {/* Header with Avatar */}
                 <div className="flex items-center gap-4 mb-4">
-                  <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${user.type === 'student' ? 'from-blue-400 to-blue-600' : 'from-green-400 to-green-600'} flex items-center justify-center text-white font-bold text-lg shadow-md`}>
+                  <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${!user.isActive ? 'from-gray-400 to-gray-600' : user.type === 'student' ? 'from-blue-400 to-blue-600' : 'from-green-400 to-green-600'} flex items-center justify-center text-white font-bold text-lg shadow-md`}>
                     {user.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 text-lg mb-1">{user.name}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className={`font-bold text-lg ${!user.isActive ? 'text-gray-500' : 'text-gray-900'}`}>{user.name}</h3>
+                      {!user.isActive && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
+                          <Archive className="w-3 h-3" />
+                          Archived
+                        </span>
+                      )}
+                    </div>
                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                      user.type === 'student' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                      !user.isActive 
+                        ? 'bg-gray-100 text-gray-600' 
+                        : user.type === 'student' 
+                          ? 'bg-blue-100 text-blue-700' 
+                          : 'bg-green-100 text-green-700'
                     }`}>
                       <User className="w-3 h-3" />
                       {user.type === 'student' ? 'Student' : 'Parent'}
@@ -456,30 +455,69 @@ function TeacherUsers() {
 
                 {/* Last Active */}
                 <div className="flex items-center gap-2 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-200">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className={`w-2 h-2 rounded-full ${!user.isActive ? 'bg-gray-400' : 'bg-green-500'}`}></div>
                   <span>
-                    {user.type === 'student' ? `Active ${user.lastActive}` : `Contacted ${user.lastContact}`}
+                    {!user.isActive 
+                      ? 'Archived' 
+                      : user.type === 'student' 
+                        ? `Active ${user.lastActive}` 
+                        : `Contacted ${user.lastContact}`
+                    }
                   </span>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+                    onClick={() => navigate(`/teacher/users/${user.type}/${user.id}`)}
+                    disabled={!user.isActive}
+                  >
                     <Eye className="w-4 h-4 mr-1" />
                     View
                   </Button>
-                  <Button variant="outline" size="sm" className="flex-1 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300"
+                    onClick={() => navigate(`/teacher/users/${user.type}/${user.id}`)}
+                    disabled={!user.isActive}
+                  >
                     <Edit className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="hover:bg-red-50 hover:text-red-600 hover:border-red-300">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  {user.isActive ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                      onClick={() => handleArchive(user)}
+                      disabled={archiveStudent.isPending || archiveParent.isPending}
+                      title="Archive user (deactivate account)"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 hover:bg-green-50 hover:text-green-600 hover:border-green-300"
+                      onClick={() => handleRestore(user)}
+                      disabled={restoreStudent.isPending || restoreParent.isPending}
+                      title="Restore user (reactivate account)"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-1" />
+                      Restore
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Empty State */}
         {filteredUsers.length === 0 && (
@@ -504,233 +542,11 @@ function TeacherUsers() {
         )}
       </div>
 
-      {/* Create User Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between">
-              <CardTitle className="text-2xl font-black">Add New User</CardTitle>
-              <button
-                onClick={handleCloseModal}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </CardHeader>
-            <CardContent className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Success Message */}
-                {successMessage && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <p className="text-sm font-semibold text-green-800">{successMessage}</p>
-                  </div>
-                )}
-
-                {/* Error Message */}
-                {formErrors.submit && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 text-red-600" />
-                    <p className="text-sm font-semibold text-red-800">{formErrors.submit}</p>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">User Type</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setCreateUserType('student')}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        createUserType === 'student'
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <p className="font-bold text-gray-900">Student</p>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCreateUserType('parent')}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        createUserType === 'parent'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <p className="font-bold text-gray-900">Parent</p>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">First Name *</label>
-                    <input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                        formErrors.firstName ? 'border-red-300' : 'border-gray-200'
-                      }`}
-                      placeholder="John"
-                    />
-                    {formErrors.firstName && (
-                      <p className="text-xs text-red-600 mt-1">{formErrors.firstName}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Last Name *</label>
-                    <input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                        formErrors.lastName ? 'border-red-300' : 'border-gray-200'
-                      }`}
-                      placeholder="Doe"
-                    />
-                    {formErrors.lastName && (
-                      <p className="text-xs text-red-600 mt-1">{formErrors.lastName}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.email ? 'border-red-300' : 'border-gray-200'
-                    }`}
-                    placeholder="user@example.com"
-                  />
-                  {formErrors.email && (
-                    <p className="text-xs text-red-600 mt-1">{formErrors.email}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Password *</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.password ? 'border-red-300' : 'border-gray-200'
-                    }`}
-                    placeholder="Minimum 6 characters"
-                  />
-                  {formErrors.password && (
-                    <p className="text-xs text-red-600 mt-1">{formErrors.password}</p>
-                  )}
-                </div>
-
-                {createUserType === 'student' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Grade</label>
-                      <select
-                        name="grade"
-                        value={formData.grade}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      >
-                        <option value="">Select Grade</option>
-                        <option value="5th Grade">5th Grade</option>
-                        <option value="6th Grade">6th Grade</option>
-                        <option value="7th Grade">7th Grade</option>
-                        <option value="8th Grade">8th Grade</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Age</label>
-                      <input
-                        type="number"
-                        name="age"
-                        value={formData.age}
-                        onChange={handleInputChange}
-                        min="1"
-                        max="18"
-                        className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                          formErrors.age ? 'border-red-300' : 'border-gray-200'
-                        }`}
-                        placeholder="1-18"
-                      />
-                      {formErrors.age && (
-                        <p className="text-xs text-red-600 mt-1">{formErrors.age}</p>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {createUserType === 'parent' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                          formErrors.phoneNumber ? 'border-red-300' : 'border-gray-200'
-                        }`}
-                        placeholder="+1234567890"
-                      />
-                      {formErrors.phoneNumber && (
-                        <p className="text-xs text-red-600 mt-1">{formErrors.phoneNumber}</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">Relationship</label>
-                      <select
-                        name="relationship"
-                        value={formData.relationship}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      >
-                        <option value="">Select Relationship</option>
-                        <option value="mother">Mother</option>
-                        <option value="father">Father</option>
-                        <option value="guardian">Guardian</option>
-                        <option value="grandmother">Grandmother</option>
-                        <option value="grandfather">Grandfather</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </>
-                )}
-
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    type="button"
-                    onClick={handleCloseModal}
-                    variant="outline"
-                    className="flex-1"
-                    disabled={createStudent.isPending || createParent.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
-                    disabled={createStudent.isPending || createParent.isPending}
-                  >
-                    {createStudent.isPending || createParent.isPending ? 'Creating...' : 'Add User'}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Create Student & Parent Modal */}
+      <CreateStudentAndParent 
+        isOpen={showCreateModal} 
+        onClose={() => setShowCreateModal(false)} 
+      />
     </div>
   );
 }
