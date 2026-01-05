@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BookOpen, FileCheck, Award, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import logo from '../../assets/levelup-logo.png';
-import { useStudentLessons } from '../../hooks/studentHooks';
+import { useStudentLessons, useStudentAssignments } from '../../hooks/studentHooks';
 
 /**
  * Student Dashboard Component
@@ -12,9 +12,11 @@ function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: 'Alex', email: 'student@example.com' });
   
-  // Fetch lessons from API
+  // Fetch lessons and assignments from API
   const { data: lessonsData, isLoading: isLoadingLessons } = useStudentLessons();
+  const { data: assignmentsData, isLoading: isLoadingAssignments } = useStudentAssignments();
   const rawLessons = lessonsData?.data?.lessons || [];
+  const rawAssignments = assignmentsData?.data?.assignments || [];
 
   // Transform lessons for display
   const getCategoryIcon = (category) => {
@@ -69,13 +71,54 @@ function Dashboard() {
     };
   });
 
-  // Mock data for assignments
-  const assignments = [
-    { id: 1, title: 'Math Practice Sheet', subject: 'Fun with Numbers', dueDate: 'Tomorrow', status: 'pending', icon: '🔢', urgent: true },
-    { id: 2, title: 'Read Chapter 5', subject: 'Reading Adventures', dueDate: 'Friday', status: 'pending', icon: '📚', urgent: false },
-    { id: 3, title: 'Draw Your Family', subject: 'Art & Creativity', dueDate: 'Next Week', status: 'completed', icon: '🎨', urgent: false },
-    { id: 4, title: 'Science Quiz', subject: 'Science Explorers', dueDate: 'Monday', status: 'pending', icon: '🔬', urgent: false },
-  ];
+  // Transform assignments for display
+  const getAssignmentIcon = (type) => {
+    const icons = {
+      homework: '📝',
+      quiz: '📋',
+      project: '🎨',
+      reading: '📚',
+      practice: '✏️',
+    };
+    return icons[type] || '📄';
+  };
+
+  const formatDueDate = (dueDate, isOverdue) => {
+    if (!dueDate) return 'No due date';
+    const date = new Date(dueDate);
+    const now = new Date();
+    const diffTime = date - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (isOverdue) return 'Overdue';
+    if (diffDays < 0) return 'Overdue';
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays <= 7) return `In ${diffDays} days`;
+    return date.toLocaleDateString();
+  };
+
+  const assignments = rawAssignments.map((assignment) => {
+    const assignmentId = assignment._id || assignment.id;
+    const submission = assignment.submission;
+    const isOverdue = assignment.isOverdue || false;
+    const dueDate = formatDueDate(assignment.dueDate, isOverdue);
+    const status = submission?.status || 'pending';
+    const isCompleted = status === 'graded' || status === 'submitted';
+    const lessonTitle = assignment.lessonId?.title || 'No lesson linked';
+    
+    return {
+      id: assignmentId,
+      title: assignment.title,
+      subject: lessonTitle,
+      dueDate: dueDate,
+      status: isCompleted ? 'completed' : 'pending',
+      icon: getAssignmentIcon(assignment.assignmentType),
+      urgent: isOverdue || (assignment.daysUntilDue !== undefined && assignment.daysUntilDue <= 1 && assignment.daysUntilDue >= 0),
+      _raw: assignment,
+      submission: submission
+    };
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -83,7 +126,7 @@ function Dashboard() {
     navigate('/');
   };
 
-  if (isLoadingLessons) {
+  if (isLoadingLessons || isLoadingAssignments) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
@@ -271,12 +314,18 @@ function Dashboard() {
                   </div>
 
                   {assignment.status === 'completed' ? (
-                    <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-lg">
+                    <button 
+                      onClick={() => navigate(`/student/assignments/${assignment.id}`)}
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-lg"
+                    >
                       View Submission ✓
                     </button>
                   ) : (
-                    <button className="w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg">
-                      Start Assignment →
+                    <button 
+                      onClick={() => navigate(`/student/assignments/${assignment.id}`)}
+                      className="w-full bg-[#F4C21A] hover:bg-[#d4a617] active:bg-[#c09615] text-black font-bold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg text-lg"
+                    >
+                      {assignment.submission?.status === 'draft' ? 'Continue Assignment →' : 'Start Assignment →'}
                     </button>
                   )}
                 </div>

@@ -347,6 +347,18 @@ export function useLessonById(lessonId) {
   });
 }
 
+// Get assignment by ID hook (for teachers)
+export function useAssignmentById(assignmentId) {
+  return useQuery({
+    queryKey: ['assignment', assignmentId],
+    queryFn: async () => {
+      const response = await api.get(`/assignments/${assignmentId}`);
+      return response.data;
+    },
+    enabled: !!assignmentId,
+  });
+}
+
 // Update lesson hook
 export function useUpdateLesson() {
   const queryClient = useQueryClient();
@@ -404,6 +416,72 @@ export function useRestoreLesson() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['teacher-lessons'] });
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
+    },
+  });
+}
+
+// Create assignment hook
+export function useCreateAssignment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['create-assignment'],
+    mutationFn: async (assignmentData) => {
+      const response = await api.post('/assignments', assignmentData);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['teacher-assignments'] });
+    },
+  });
+}
+
+// Get teacher assignments hook
+export function useTeacherAssignments() {
+  return useQuery({
+    queryKey: ['teacher-assignments'],
+    queryFn: async () => {
+      const response = await api.get('/assignments/teacher');
+      return response.data;
+    },
+  });
+}
+
+// Get teacher submissions hook
+export function useTeacherSubmissions(filters = {}) {
+  return useQuery({
+    queryKey: ['teacher-submissions', filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
+          params.append(key, filters[key]);
+        }
+      });
+      const queryString = params.toString();
+      const response = await api.get(`/submissions/teacher${queryString ? `?${queryString}` : ''}`);
+      return response.data;
+    },
+  });
+}
+
+// Grade submission hook
+export function useGradeSubmission() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['grade-submission'],
+    mutationFn: async ({ submissionId, score, feedback }) => {
+      const response = await api.patch(`/submissions/${submissionId}/grade`, {
+        score,
+        feedback
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['teacher-submissions'] });
+      queryClient.invalidateQueries({ queryKey: ['teacher-assignments'] });
     },
   });
 }

@@ -13,6 +13,7 @@ import MainLogin from './pages/MainLogin';
 // Student Pages
 import StudentDashboard from './pages/student/Dashboard';
 import StudentSpecLesson from './pages/student/SpecLesson';
+import StudentSpecAssignment from './pages/student/SpecAssignment';
 
 // Parent Pages
 import ParentDashboard from './pages/parent/Dashboard';
@@ -26,6 +27,7 @@ import TeacherSpecUser from './pages/teacher/SpecUser';
 import TeacherMaterials from './pages/teacher/Materials';
 import TeacherSpecLessons from './pages/teacher/SpecLessons';
 import TeacherMessages from './pages/teacher/Messages';
+import ViewSubmissions from './pages/teacher/ViewSubmissions';
 
 // Admin Pages
 import AdminLogin from './pages/admin/Login';
@@ -54,6 +56,7 @@ function App() {
       <Route path="/student/dashboard" element={<StudentDashboard />} />
       <Route path="/dashboard" element={<StudentDashboard />} /> {/* Legacy route */}
       <Route path="/student/lessons/:id" element={<StudentSpecLesson />} />
+      <Route path="/student/assignments/:id" element={<StudentSpecAssignment />} />
       
       {/* Parent Routes */}
       <Route path="/parent/dashboard" element={<ParentDashboard />} />
@@ -66,6 +69,7 @@ function App() {
       <Route path="/teacher/users/:type/:id" element={<TeacherSpecUser />} />
       <Route path="/teacher/materials" element={<TeacherMaterials />} />
       <Route path="/teacher/lessons/:id" element={<TeacherSpecLessons />} />
+      <Route path="/teacher/assignments/:assignmentId/submissions" element={<ViewSubmissions />} />
       <Route path="/teacher/messages" element={<TeacherMessages />} />
       
       {/* Admin Routes - Separate Login */}

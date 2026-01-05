@@ -6,7 +6,8 @@ import { BookOpen, Users, MessageCircle, LogOut, Upload, Plus, FileText, Video, 
 import logo from '../../assets/levelup-logo.png';
 import CreateLesson from '../../components/teacher/createLessons';
 import EditLesson from '../../components/teacher/editLessons';
-import { useTeacherLessons, useArchiveLesson, useRestoreLesson } from '../../hooks/teacherHooks';
+import CreateAssignment from '../../components/teacher/createAssignment';
+import { useTeacherLessons, useArchiveLesson, useRestoreLesson, useTeacherAssignments } from '../../hooks/teacherHooks';
 
 /**
  * Teacher Learning Materials Page
@@ -26,6 +27,7 @@ function TeacherMaterials() {
 
   // Hooks
   const { data: lessonsData, isLoading: isLoadingLessons } = useTeacherLessons(showArchived);
+  const { data: assignmentsData, isLoading: isLoadingAssignments } = useTeacherAssignments();
   const archiveLesson = useArchiveLesson();
   const restoreLesson = useRestoreLesson();
 
@@ -66,13 +68,7 @@ function TeacherMaterials() {
   };
 
   const lessons = lessonsData?.data?.lessons || [];
-
-  const assignments = [
-    { id: 1, title: 'Algebra Practice Set 1', module: 'Introduction to Algebra', dueDate: '2024-02-10', submissions: 45, totalStudents: 124, status: 'active' },
-    { id: 2, title: 'Quadratic Equations Quiz', module: 'Quadratic Equations Explained', dueDate: '2024-02-12', submissions: 32, totalStudents: 124, status: 'active' },
-    { id: 3, title: 'Geometry Problem Set', module: 'Geometry Fundamentals', dueDate: '2024-02-15', submissions: 28, totalStudents: 124, status: 'active' },
-    { id: 4, title: 'Trigonometry Assignment', module: 'Trigonometry Basics', dueDate: '2024-02-18', submissions: 0, totalStudents: 124, status: 'draft' }
-  ];
+  const assignments = assignmentsData?.data?.assignments || [];
 
   const getFileIcon = (type) => {
     switch (type) {
@@ -184,7 +180,7 @@ function TeacherMaterials() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">Active Assignments</p>
-                  <p className="text-4xl font-black text-gray-900">{assignments.filter(a => a.status === 'active').length}</p>
+                  <p className="text-4xl font-black text-gray-900">{assignments.filter(a => a.isActive !== false).length}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-blue-50">
                   <FileText className="w-8 h-8 text-blue-600" />
@@ -386,61 +382,102 @@ function TeacherMaterials() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Title</th>
-                      <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Linked Module</th>
-                      <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Due Date</th>
-                      <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Submissions</th>
-                      <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Status</th>
-                      <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {assignments.map((assignment) => (
-                      <tr key={assignment.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                        <td className="py-4 px-4 font-semibold text-gray-900">{assignment.title}</td>
-                        <td className="py-4 px-4 text-sm text-gray-600">{assignment.module}</td>
-                        <td className="py-4 px-4 text-sm text-gray-600">{assignment.dueDate}</td>
-                        <td className="py-4 px-4">
-                          <div className="text-sm">
-                            <span className="font-semibold text-gray-900">{assignment.submissions}</span>
-                            <span className="text-gray-600"> / {assignment.totalStudents}</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div
-                              className="bg-gradient-to-r from-indigo-500 to-blue-600 h-2 rounded-full transition-all"
-                              style={{ width: `${(assignment.submissions / assignment.totalStudents) * 100}%` }}
-                            />
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                            assignment.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {assignment.status === 'active' ? 'Active' : 'Draft'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="hover:bg-indigo-50 hover:text-indigo-600">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </td>
+              {isLoadingAssignments ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Loading assignments...</p>
+                </div>
+              ) : assignments.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600">No assignments found</p>
+                  <p className="text-sm text-gray-500 mt-2">Create your first assignment to get started</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Title</th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Linked Lesson</th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Due Date</th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Submissions</th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Type</th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Status</th>
+                        <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {assignments.map((assignment) => {
+                        const assignmentId = assignment._id || assignment.id;
+                        const submissionStats = assignment.submissionStats || {};
+                        const totalAssigned = submissionStats.total || 0;
+                        const submitted = submissionStats.submitted || 0;
+                        const dueDate = assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'N/A';
+                        const lessonTitle = assignment.lessonId?.title || 'No lesson linked';
+                        const isActive = assignment.isActive !== false;
+                        const progressPercentage = totalAssigned > 0 ? (submitted / totalAssigned) * 100 : 0;
+
+                        return (
+                          <tr key={assignmentId} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${!isActive ? 'opacity-60 bg-gray-50' : ''}`}>
+                            <td className="py-4 px-4 font-semibold text-gray-900">{assignment.title}</td>
+                            <td className="py-4 px-4 text-sm text-gray-600">{lessonTitle}</td>
+                            <td className="py-4 px-4 text-sm text-gray-600">{dueDate}</td>
+                            <td className="py-4 px-4">
+                              <div className="text-sm">
+                                <span className="font-semibold text-gray-900">{submitted}</span>
+                                <span className="text-gray-600"> / {totalAssigned}</span>
+                              </div>
+                              {totalAssigned > 0 && (
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className="bg-gradient-to-r from-indigo-500 to-blue-600 h-2 rounded-full transition-all"
+                                    style={{ width: `${progressPercentage}%` }}
+                                  />
+                                </div>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className="px-2 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 capitalize">
+                                {assignment.assignmentType || 'homework'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                              }`}>
+                                {isActive ? 'Active' : 'Archived'}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="hover:bg-blue-50 hover:text-blue-600"
+                                  onClick={() => navigate(`/teacher/assignments/${assignmentId}/submissions`)}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="hover:bg-indigo-50 hover:text-indigo-600"
+                                  disabled={!isActive}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
@@ -519,79 +556,10 @@ function TeacherMaterials() {
       )}
 
       {/* Create Assignment Modal */}
-      {showCreateAssignmentModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl font-black">Create Assignment</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Assignment Title</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  placeholder="e.g., Algebra Practice Set 1"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Link to Module</label>
-                <select className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <option value="">Select a module</option>
-                  {modules.map((module) => (
-                    <option key={module.id} value={module.id}>{module.title}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Instructions</label>
-                <textarea
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  rows="4"
-                  placeholder="Assignment instructions for students..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Due Date</label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Total Points</label>
-                  <input
-                    type="number"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="100"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => setShowCreateAssignmentModal(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => setShowCreateAssignmentModal(false)}
-                  className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Assignment
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <CreateAssignment 
+        isOpen={showCreateAssignmentModal} 
+        onClose={() => setShowCreateAssignmentModal(false)} 
+      />
     </div>
   );
 }
