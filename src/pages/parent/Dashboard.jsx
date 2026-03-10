@@ -1,109 +1,137 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Users, BookOpen, MessageCircle, TrendingUp, ChevronRight, Award, Clock, Bell } from 'lucide-react';
-import logo from '../../assets/levelup-logo.png';
+﻿/* eslint-disable */
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAdmin } from "../../contexts/adminContext";
+import {
+  Users,
+  BookOpen,
+  MessageCircle,
+  TrendingUp,
+  ChevronRight,
+  Award,
+  Clock,
+  Bell,
+} from "lucide-react";
+import logo from "../../assets/levelup-logo.png";
+import {
+  useParentChildren,
+  useParentChildProgress,
+  useParentConversations,
+} from "../../hooks/parentHooks";
 
 /**
  * Parent Dashboard Component
- * Overview page with summaries of progress, activity, and messages
+ * Overview page with real backend data for progress, activity, and messages
  */
 function Dashboard() {
   const navigate = useNavigate();
   const [selectedChild, setSelectedChild] = useState(0);
-  
-  const parentUser = { name: 'Sarah Johnson', email: 'sarah.j@example.com' };
 
-  // Mock children data - summary only
-  const children = [
-    {
-      id: 1,
-      name: 'Emma Johnson',
-      grade: '5th Grade',
-      avatar: '👧',
-      overallProgress: 69,
-      activeLessons: 4,
-      pendingAssignments: 2,
-      completedThisWeek: 3,
-      averageScore: 92
-    },
-    {
-      id: 2,
-      name: 'Noah Johnson',
-      grade: '3rd Grade',
-      avatar: '👦',
-      overallProgress: 86,
-      activeLessons: 3,
-      pendingAssignments: 1,
-      completedThisWeek: 2,
-      averageScore: 96
-    }
-  ];
+  const { user, logout } = useAdmin();
+  const firstName = user?.firstName ?? "Parent";
 
-  // Mock recent activity
-  const recentActivity = [
-    { child: 'Emma', activity: 'Completed Math Practice Problems', subject: 'Mathematics', time: '2 hours ago', type: 'success' },
-    { child: 'Noah', activity: 'Started Plant Growth Journal', subject: 'Science', time: '5 hours ago', type: 'info' },
-    { child: 'Emma', activity: 'New message from Ms. Smith', subject: 'Mathematics', time: '1 day ago', type: 'message' },
-    { child: 'Noah', activity: 'Scored 100% on Addition Worksheet', subject: 'Mathematics', time: '1 day ago', type: 'achievement' },
-  ];
+  // Real backend data
+  const { data: childrenData, isLoading: isLoadingChildren } =
+    useParentChildren();
+  const { data: progressData, isLoading: isLoadingProgress } =
+    useParentChildProgress();
+  const { data: conversationsData } = useParentConversations();
 
-  // Mock unread messages
-  const unreadMessages = [
-    { teacher: 'Ms. Smith', subject: 'Mathematics', preview: 'Emma is doing great in class! She showed excellent...', time: '2 hours ago' },
-    { teacher: 'Mr. Davis', subject: 'Reading', preview: 'Please encourage Noah to read 20 minutes daily...', time: '1 day ago' },
-  ];
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/');
+  const rawChildren = childrenData?.data ?? [];
+  const rawProgress = Array.isArray(progressData?.data)
+    ? progressData.data
+    : (progressData?.data?.progress ?? []);
+  const conversations = conversationsData?.data ?? [];
+
+  // Build child entries from backend data
+  const children = rawChildren.map((child, idx) => {
+    const childProgress = rawProgress.filter(
+      (p) => (p.studentId?._id || p.studentId) === (child._id || child.id),
+    );
+    const completedLessons = childProgress.filter(
+      (p) => p.status === "completed",
+    ).length;
+    const totalLessons = childProgress.length;
+    const overallProgress =
+      totalLessons > 0
+        ? Math.round((completedLessons / totalLessons) * 100)
+        : 0;
+
+    return {
+      id: child._id || child.id,
+      name: `${child.firstName} ${child.lastName}`,
+      grade: child.grade ?? "",
+      activeLessons: childProgress.filter((p) => p.status === "in-progress")
+        .length,
+      completedThisWeek: completedLessons,
+      overallProgress,
+    };
+  });
+
+  // Unread conversations count
+  const unreadCount = conversations.filter((c) => c.unreadCount > 0).length;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
-  const currentChild = children[selectedChild];
-  const totalUnread = unreadMessages.length;
+  const currentChild = children[selectedChild] ?? null;
+
+  const isLoading = isLoadingChildren || isLoadingProgress;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50/30">
-      {/* Top Navigation */}
-      <nav className="bg-white border-b-2 border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen bg-slate-50">
+      {/* Top Navigation - Professional & Clean */}
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/parent/dashboard" className="flex items-center gap-3 group">
-              <img src={logo} alt="TinyLearn" className="h-14 w-14 object-contain transition-transform group-hover:scale-110" />
+          <div className="flex justify-between items-center h-16">
+            <Link to="/parent/dashboard" className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="TinyLearn"
+                className="h-8 w-8 object-contain"
+              />
               <div>
-                <h1 className="text-2xl font-black text-gray-900">TinyLearn</h1>
-                <p className="text-xs text-gray-600 font-semibold">Parent Portal</p>
+                <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+                  TinyLearn
+                </h1>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                  Parent Portal
+                </p>
               </div>
             </Link>
             <div className="flex items-center gap-6">
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-2">
                 <Link
                   to="/parent/dashboard"
-                  className="px-4 py-2 bg-[#F4C21A] text-gray-900 rounded-lg font-semibold"
+                  className="px-3 py-1.5 bg-slate-100 text-slate-800 rounded-md text-sm font-medium transition-colors"
                 >
                   Dashboard
                 </Link>
                 <Link
                   to="/parent/progress"
-                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+                  className="px-3 py-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-md text-sm font-medium transition-colors"
                 >
                   Student Progress
                 </Link>
                 <Link
                   to="/parent/messages"
-                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors relative"
+                  className="px-3 py-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-md text-sm font-medium transition-colors relative"
                 >
                   Messages
-                  {totalUnread > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                      {totalUnread}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {unreadCount}
                     </span>
                   )}
                 </Link>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
+                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
               >
-                Logout
+                Sign Out
               </button>
             </div>
           </div>
@@ -111,197 +139,209 @@ function Dashboard() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">
-            Welcome back, {parentUser.name.split(' ')[0]}!
+        <div className="mb-10 border-b border-slate-200 pb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 mb-1">
+            Welcome back, {firstName}
           </h2>
-          <p className="text-lg text-gray-600">
-            Here's a quick overview of your children's progress
+          <p className="text-sm text-slate-500">
+            Overview of your children's academic progress and recent
+            communications.
           </p>
         </div>
 
-        {/* Child Selector */}
-        <div className="flex gap-4 mb-8">
-          {children.map((child, index) => (
-            <button
-              key={child.id}
-              onClick={() => setSelectedChild(index)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-semibold transition-all shadow-md ${
-                selectedChild === index
-                  ? 'bg-[#F4C21A] text-gray-900 shadow-lg scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <span className="text-3xl">{child.avatar}</span>
-              <div className="text-left">
-                <p className="font-bold">{child.name}</p>
-                <p className="text-xs opacity-80">{child.grade}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-600">Overall Progress</p>
-              <TrendingUp className="w-6 h-6 text-blue-500" />
-            </div>
-            <p className="text-4xl font-black text-blue-600 mb-1">{currentChild.overallProgress}%</p>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div 
-                className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${currentChild.overallProgress}%` }}
-              ></div>
-            </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-600">Active Lessons</p>
-              <BookOpen className="w-6 h-6 text-green-500" />
-            </div>
-            <p className="text-4xl font-black text-green-600">{currentChild.activeLessons}</p>
-            <p className="text-xs text-gray-500 mt-1">Subjects in progress</p>
+        ) : children.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-lg border border-slate-200 shadow-sm">
+            <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p className="text-lg font-medium text-slate-700 mb-1">
+              No students registered
+            </p>
+            <p className="text-sm text-slate-500">
+              Please contact the school administration to link your child's
+              account.
+            </p>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-600">Pending Work</p>
-              <Clock className="w-6 h-6 text-orange-500" />
+        ) : (
+          <>
+            {/* Child Selector */}
+            <div className="flex gap-3 mb-8 flex-wrap">
+              {children.map((child, index) => (
+                <button
+                  key={child.id}
+                  onClick={() => setSelectedChild(index)}
+                  className={`flex items-center gap-3 px-5 py-3 rounded-lg border text-sm font-medium transition-all ${
+                    selectedChild === index
+                      ? "border-slate-800 bg-slate-800 text-white shadow-sm"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  <div className="text-left">
+                    <p className="font-semibold">{child.name}</p>
+                  </div>
+                </button>
+              ))}
             </div>
-            <p className="text-4xl font-black text-orange-600">{currentChild.pendingAssignments}</p>
-            <p className="text-xs text-gray-500 mt-1">Assignments due</p>
-          </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-600">Average Score</p>
-              <Award className="w-6 h-6 text-purple-500" />
-            </div>
-            <p className="text-4xl font-black text-purple-600">{currentChild.averageScore}</p>
-            <p className="text-xs text-gray-500 mt-1">Out of 100</p>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Recent Activity */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                  <Bell className="w-6 h-6 text-white" />
+            {/* Quick Stats */}
+            {currentChild && (
+              <div className="grid md:grid-cols-3 gap-5 mb-10">
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Overall Completion
+                    </p>
+                    <TrendingUp className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <p className="text-3xl font-bold text-slate-800">
+                      {currentChild.overallProgress}%
+                    </p>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-1.5">
+                    <div
+                      className="bg-slate-800 h-1.5 rounded-full"
+                      style={{ width: `${currentChild.overallProgress}%` }}
+                    />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
-              </div>
-              <Link 
-                to="/parent/progress"
-                className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-              >
-                View All <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                    <div className={`w-2.5 h-2.5 rounded-full mt-2 flex-shrink-0 ${
-                      activity.type === 'success' ? 'bg-green-500' :
-                      activity.type === 'message' ? 'bg-blue-500' :
-                      activity.type === 'achievement' ? 'bg-yellow-500' :
-                      'bg-purple-500'
-                    }`}></div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-gray-900">{activity.child}</p>
-                      <p className="text-sm text-gray-700">{activity.activity}</p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
-          {/* Unread Messages */}
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                  <MessageCircle className="w-6 h-6 text-white" />
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Active Lessons
+                    </p>
+                    <BookOpen className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <p className="text-3xl font-bold text-slate-800">
+                    {currentChild.activeLessons}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Currently in progress
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Unread Messages</h3>
-                {totalUnread > 0 && (
-                  <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                    {totalUnread}
-                  </span>
-                )}
-              </div>
-              <Link 
-                to="/parent/messages"
-                className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-              >
-                View All <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <div className="space-y-4">
-                {unreadMessages.map((message, index) => (
-                  <div key={index} className="p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="font-bold text-gray-900">{message.teacher}</p>
-                      <p className="text-xs text-gray-500">{message.time}</p>
-                    </div>
-                    <p className="text-xs text-gray-600 font-medium mb-1">{message.subject}</p>
-                    <p className="text-sm text-gray-700">{message.preview}</p>
-                  </div>
-                ))}
-                {unreadMessages.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="font-medium">No unread messages</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="mt-8 bg-gradient-to-r from-[#F4C21A] to-[#FFD700] rounded-2xl shadow-xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link
-              to="/parent/progress"
-              className="flex items-center gap-4 bg-white/90 hover:bg-white p-5 rounded-xl transition-all shadow-md hover:shadow-lg group"
-            >
-              <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <BookOpen className="w-7 h-7 text-white" />
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Completed Tasks
+                    </p>
+                    <Award className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <p className="text-3xl font-bold text-slate-800">
+                    {currentChild.completedThisWeek}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Successfully finished
+                  </p>
+                </div>
               </div>
+            )}
+
+            {/* Communications Preview */}
+            <div className="grid lg:grid-cols-2 gap-8">
               <div>
-                <p className="font-bold text-gray-900">View Detailed Progress</p>
-                <p className="text-sm text-gray-600">See all lessons and assignments</p>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    Recent Communications
+                  </h3>
+                  <Link
+                    to="/parent/messages"
+                    className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center gap-1"
+                  >
+                    View All <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+                <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                  {conversations.length === 0 ? (
+                    <div className="text-center py-12 text-slate-500">
+                      <MessageCircle className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                      <p className="text-sm font-medium">No recent messages</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-100">
+                      {conversations.slice(0, 4).map((conv) => {
+                        const other = conv.partner ?? {};
+                        const otherId = conv.partnerId?.toString();
+                        return (
+                          <Link
+                            key={otherId}
+                            to="/parent/messages"
+                            className="block p-4 hover:bg-slate-50 transition-colors"
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="font-semibold text-sm text-slate-800">
+                                {other.firstName} {other.lastName}
+                              </p>
+                              {conv.unreadCount > 0 && (
+                                <span className="text-[10px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-full">
+                                  {conv.unreadCount} new
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-slate-500 truncate">
+                              {conv.lastMessage?.content ?? ""}
+                            </p>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
-              <ChevronRight className="w-6 h-6 text-gray-400 ml-auto" />
-            </Link>
-            <Link
-              to="/parent/messages"
-              className="flex items-center gap-4 bg-white/90 hover:bg-white p-5 rounded-xl transition-all shadow-md hover:shadow-lg group"
-            >
-              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <MessageCircle className="w-7 h-7 text-white" />
-              </div>
+
+              {/* Quick Actions */}
               <div>
-                <p className="font-bold text-gray-900">Message Teachers</p>
-                <p className="text-sm text-gray-600">Start a new conversation</p>
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-slate-800">
+                    Quick Actions
+                  </h3>
+                </div>
+                <div className="grid gap-3">
+                  <Link
+                    to="/parent/progress"
+                    className="flex items-center p-4 bg-white rounded-lg border border-slate-200 hover:border-slate-300 shadow-sm transition-colors group"
+                  >
+                    <div className="w-10 h-10 bg-slate-100 rounded-md flex items-center justify-center mr-4 group-hover:bg-slate-200 transition-colors">
+                      <BookOpen className="w-5 h-5 text-slate-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-slate-800">
+                        Academic Progress
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Detailed lesson and assignment tracing
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
+                  </Link>
+                  <Link
+                    to="/parent/messages"
+                    className="flex items-center p-4 bg-white rounded-lg border border-slate-200 hover:border-slate-300 shadow-sm transition-colors group"
+                  >
+                    <div className="w-10 h-10 bg-slate-100 rounded-md flex items-center justify-center mr-4 group-hover:bg-slate-200 transition-colors">
+                      <MessageCircle className="w-5 h-5 text-slate-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-slate-800">
+                        Contact Faculty
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Send direct messages to teachers
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
+                  </Link>
+                </div>
               </div>
-              <ChevronRight className="w-6 h-6 text-gray-400 ml-auto" />
-            </Link>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,176 +1,156 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, Clock, AlertCircle, Award, ChevronDown, ChevronUp } from 'lucide-react';
-import logo from '../../assets/levelup-logo.png';
+﻿import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAdmin } from "../../contexts/adminContext";
+import {
+  BookOpen,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Award,
+  ChevronDown,
+  ChevronUp,
+  Users,
+} from "lucide-react";
+import logo from "../../assets/levelup-logo.png";
+import {
+  useParentChildren,
+  useParentChildProgress,
+  useParentChildAssignments,
+} from "../../hooks/parentHooks";
 
 /**
  * Student Progress Page
- * Detailed read-only view of lessons and assignments
+ * Detailed view of lessons and assignments using real backend data
  */
 function StudentProgress() {
   const navigate = useNavigate();
   const [selectedChild, setSelectedChild] = useState(0);
   const [expandedLesson, setExpandedLesson] = useState(null);
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
 
-  // Mock children data
-  const children = [
-    {
-      id: 1,
-      name: 'Emma Johnson',
-      grade: '5th Grade',
-      avatar: '👧',
-      lessons: [
-        { 
-          id: 1, 
-          subject: 'Mathematics', 
-          completed: 8, 
-          total: 10, 
-          progress: 80, 
-          teacher: 'Ms. Smith', 
-          color: 'bg-blue-500',
-          recentTopics: ['Fractions', 'Decimals', 'Percentages'],
-          nextLesson: 'Algebra Basics'
-        },
-        { 
-          id: 2, 
-          subject: 'Reading', 
-          completed: 6, 
-          total: 8, 
-          progress: 75, 
-          teacher: 'Mr. Davis', 
-          color: 'bg-green-500',
-          recentTopics: ['Chapter Analysis', 'Character Development', 'Story Structure'],
-          nextLesson: 'Poetry Introduction'
-        },
-        { 
-          id: 3, 
-          subject: 'Science', 
-          completed: 5, 
-          total: 12, 
-          progress: 42, 
-          teacher: 'Ms. Brown', 
-          color: 'bg-purple-500',
-          recentTopics: ['Plant Biology', 'Photosynthesis', 'Ecosystems'],
-          nextLesson: 'Animal Classification'
-        },
-        { 
-          id: 4, 
-          subject: 'Art', 
-          completed: 4, 
-          total: 5, 
-          progress: 80, 
-          teacher: 'Ms. Taylor', 
-          color: 'bg-pink-500',
-          recentTopics: ['Color Theory', 'Watercolors', 'Perspective Drawing'],
-          nextLesson: 'Abstract Art'
-        },
-      ],
-      assignments: [
-        { id: 1, title: 'Math Practice Problems', subject: 'Mathematics', status: 'completed', dueDate: 'Dec 15, 2025', completedDate: 'Dec 14, 2025', score: 95, feedback: 'Excellent work! Great understanding of fractions.' },
-        { id: 2, title: 'Book Report: Chapter 5', subject: 'Reading', status: 'pending', dueDate: 'Dec 22, 2025', score: null, description: 'Write a summary and analysis of Chapter 5' },
-        { id: 3, title: 'Science Experiment: Plant Growth', subject: 'Science', status: 'pending', dueDate: 'Dec 25, 2025', score: null, description: 'Document plant growth over 2 weeks' },
-        { id: 4, title: 'Art Project: Watercolor Landscape', subject: 'Art', status: 'completed', dueDate: 'Dec 18, 2025', completedDate: 'Dec 17, 2025', score: 88, feedback: 'Beautiful use of colors!' },
-        { id: 5, title: 'Reading Comprehension Quiz', subject: 'Reading', status: 'completed', dueDate: 'Dec 12, 2025', completedDate: 'Dec 11, 2025', score: 92, feedback: 'Good analysis of the text.' },
-        { id: 6, title: 'Math Homework: Decimals', subject: 'Mathematics', status: 'completed', dueDate: 'Dec 10, 2025', completedDate: 'Dec 10, 2025', score: 98, feedback: 'Perfect score! Keep it up!' },
-      ],
-      overallProgress: 69
-    },
-    {
-      id: 2,
-      name: 'Noah Johnson',
-      grade: '3rd Grade',
-      avatar: '👦',
-      lessons: [
-        { 
-          id: 1, 
-          subject: 'Mathematics', 
-          completed: 9, 
-          total: 10, 
-          progress: 90, 
-          teacher: 'Ms. Smith', 
-          color: 'bg-blue-500',
-          recentTopics: ['Addition', 'Subtraction', 'Word Problems'],
-          nextLesson: 'Multiplication Basics'
-        },
-        { 
-          id: 2, 
-          subject: 'Reading', 
-          completed: 7, 
-          total: 8, 
-          progress: 88, 
-          teacher: 'Mr. Davis', 
-          color: 'bg-green-500',
-          recentTopics: ['Short Stories', 'Vocabulary', 'Reading Fluency'],
-          nextLesson: 'Story Writing'
-        },
-        { 
-          id: 3, 
-          subject: 'Science', 
-          completed: 8, 
-          total: 10, 
-          progress: 80, 
-          teacher: 'Ms. Brown', 
-          color: 'bg-purple-500',
-          recentTopics: ['Weather', 'Seasons', 'Water Cycle'],
-          nextLesson: 'Simple Machines'
-        },
-      ],
-      assignments: [
-        { id: 1, title: 'Addition Worksheet', subject: 'Mathematics', status: 'completed', dueDate: 'Dec 16, 2025', completedDate: 'Dec 15, 2025', score: 100, feedback: 'Perfect! Amazing work!' },
-        { id: 2, title: 'Reading Comprehension', subject: 'Reading', status: 'completed', dueDate: 'Dec 19, 2025', completedDate: 'Dec 18, 2025', score: 92, feedback: 'Great understanding!' },
-        { id: 3, title: 'Plant Growth Journal', subject: 'Science', status: 'pending', dueDate: 'Dec 28, 2025', score: null, description: 'Draw and describe plant observations' },
-        { id: 4, title: 'Spelling Test', subject: 'Reading', status: 'completed', dueDate: 'Dec 13, 2025', completedDate: 'Dec 13, 2025', score: 85, feedback: 'Good job!' },
-      ],
-      overallProgress: 86
-    }
-  ];
+  const { logout } = useAdmin();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/');
+  const { data: childrenData, isLoading: isLoadingChildren } =
+    useParentChildren();
+  const { data: progressData, isLoading: isLoadingProgress } =
+    useParentChildProgress();
+  const { data: assignmentsData, isLoading: isLoadingAssignments } =
+    useParentChildAssignments();
+
+  const rawChildren = childrenData?.data ?? [];
+  const rawProgress = Array.isArray(progressData?.data)
+    ? progressData.data
+    : (progressData?.data?.progress ?? []);
+  const rawAssignments = Array.isArray(assignmentsData?.data)
+    ? assignmentsData.data
+    : (assignmentsData?.data?.assignments ?? []);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
-  const currentChild = children[selectedChild];
+  const currentChild = rawChildren[selectedChild] ?? null;
+  const currentChildId = currentChild?._id || currentChild?.id;
+
+  // Filter progress and assignments by selected child
+  const childProgress = rawProgress.filter(
+    (p) => (p.studentId?._id || p.studentId) === currentChildId,
+  );
+
+  // Group progress by lesson title/subject for display
+  const lessonGroups = childProgress.reduce((acc, p) => {
+    const key = p.lessonId?.title || p.lessonId || "Unknown Lesson";
+    if (!acc[key]) {
+      acc[key] = { title: key, chapters: [] };
+    }
+    acc[key].chapters.push(p);
+    return acc;
+  }, {});
+
+  const lessonList = Object.values(lessonGroups).map((group) => {
+    const total = group.chapters.length;
+    const completed = group.chapters.filter(
+      (c) => c.status === "completed",
+    ).length;
+    return {
+      title: group.title,
+      total,
+      completed,
+      progress: total > 0 ? Math.round((completed / total) * 100) : 0,
+    };
+  });
+
+  const overallProgress =
+    lessonList.length > 0
+      ? Math.round(
+          lessonList.reduce((sum, l) => sum + l.progress, 0) /
+            lessonList.length,
+        )
+      : 0;
+
+  const childAssignments = rawAssignments.filter(
+    (a) => (a.studentId?._id || a.studentId) === currentChildId,
+  );
+
+  const filteredAssignments = childAssignments.filter((a) => {
+    if (assignmentFilter === "completed")
+      return a.status === "completed" || a.status === "graded";
+    if (assignmentFilter === "pending")
+      return a.status === "pending" || a.status === "submitted";
+    return true;
+  });
+
+  const isLoading =
+    isLoadingChildren || isLoadingProgress || isLoadingAssignments;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50/30">
+    <div className="min-h-screen bg-slate-50">
       {/* Top Navigation */}
-      <nav className="bg-white border-b-2 border-gray-200 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/parent/dashboard" className="flex items-center gap-3 group">
-              <img src={logo} alt="TinyLearn" className="h-14 w-14 object-contain transition-transform group-hover:scale-110" />
+          <div className="flex justify-between items-center h-16">
+            <Link to="/parent/dashboard" className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="TinyLearn"
+                className="h-8 w-8 object-contain"
+              />
               <div>
-                <h1 className="text-2xl font-black text-gray-900">TinyLearn</h1>
-                <p className="text-xs text-gray-600 font-semibold">Parent Portal</p>
+                <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+                  TinyLearn
+                </h1>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                  Parent Portal
+                </p>
               </div>
             </Link>
             <div className="flex items-center gap-6">
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-2">
                 <Link
                   to="/parent/dashboard"
-                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+                  className="px-3 py-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-md text-sm font-medium transition-colors"
                 >
                   Dashboard
                 </Link>
                 <Link
                   to="/parent/progress"
-                  className="px-4 py-2 bg-[#F4C21A] text-gray-900 rounded-lg font-semibold"
+                  className="px-3 py-1.5 bg-slate-100 text-slate-800 rounded-md text-sm font-medium transition-colors"
                 >
                   Student Progress
                 </Link>
                 <Link
                   to="/parent/messages"
-                  className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-semibold transition-colors"
+                  className="px-3 py-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-md text-sm font-medium transition-colors"
                 >
                   Messages
                 </Link>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
+                className="px-4 py-2 border border-slate-300 text-slate-700 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors"
               >
-                Logout
+                Sign Out
               </button>
             </div>
           </div>
@@ -178,218 +158,308 @@ function StudentProgress() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Student Progress</h2>
-          <p className="text-lg text-gray-600">
-            Track your child's learning journey and view completed assignments
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="mb-10 border-b border-slate-200 pb-6">
+          <h2 className="text-2xl font-semibold text-slate-800 mb-1">
+            Student Progress
+          </h2>
+          <p className="text-sm text-slate-500">
+            Track your child's learning journey and scheduled assignments
           </p>
         </div>
 
-        {/* Child Selector */}
-        <div className="flex gap-4 mb-8">
-          {children.map((child, index) => (
-            <button
-              key={child.id}
-              onClick={() => setSelectedChild(index)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-semibold transition-all shadow-md ${
-                selectedChild === index
-                  ? 'bg-[#F4C21A] text-gray-900 shadow-lg scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              <span className="text-3xl">{child.avatar}</span>
-              <div className="text-left">
-                <p className="font-bold">{child.name}</p>
-                <p className="text-xs opacity-80">{child.grade}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Overall Progress Summary */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-gray-200 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Overall Progress</h3>
-              <p className="text-gray-600">All subjects combined</p>
-            </div>
-            <div className="text-right">
-              <p className="text-5xl font-black text-blue-600 mb-1">{currentChild.overallProgress}%</p>
-              <p className="text-sm text-gray-600">Complete</p>
-            </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-40">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4">
-            <div 
-              className="bg-gradient-to-r from-blue-500 to-blue-600 h-4 rounded-full transition-all duration-500"
-              style={{ width: `${currentChild.overallProgress}%` }}
-            ></div>
+        ) : rawChildren.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-lg border border-slate-200 shadow-sm">
+            <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p className="text-lg font-medium text-slate-700 mb-1">
+              No students registered
+            </p>
+            <p className="text-sm text-slate-500">
+              Please contact the school administration to link your child's
+              account.
+            </p>
           </div>
-        </div>
-
-        {/* Lessons Progress Section */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <BookOpen className="w-7 h-7 text-white" />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900">Lessons by Subject</h3>
-          </div>
-
-          <div className="space-y-4">
-            {currentChild.lessons.map((lesson) => (
-              <div key={lesson.id} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        ) : (
+          <>
+            {/* Child Selector */}
+            <div className="flex gap-3 mb-8 flex-wrap">
+              {rawChildren.map((child, index) => (
                 <button
-                  onClick={() => setExpandedLesson(expandedLesson === lesson.id ? null : lesson.id)}
-                  className="w-full p-6 hover:bg-gray-50 transition-colors"
+                  key={child._id || child.id}
+                  onClick={() => {
+                    setSelectedChild(index);
+                    setExpandedLesson(null);
+                  }}
+                  className={`flex items-center gap-3 px-5 py-3 rounded-lg border text-sm font-medium transition-all ${
+                    selectedChild === index
+                      ? "border-slate-800 bg-slate-800 text-white shadow-sm"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className={`w-4 h-4 ${lesson.color} rounded-full`}></div>
-                      <div className="text-left flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <h4 className="text-xl font-bold text-gray-900">{lesson.subject}</h4>
-                          <span className="text-sm font-semibold text-gray-600">Teacher: {lesson.teacher}</span>
-                        </div>
-                        <div className="flex items-center gap-4 mt-3">
-                          <div className="flex-1 max-w-md">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-semibold text-gray-700">Progress</span>
-                              <span className="text-sm font-bold text-gray-900">{lesson.completed}/{lesson.total} lessons</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className={`${lesson.color} h-2.5 rounded-full transition-all duration-500`}
-                                style={{ width: `${lesson.progress}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          <div className="text-2xl font-black text-gray-900">{lesson.progress}%</div>
-                        </div>
-                      </div>
-                    </div>
-                    {expandedLesson === lesson.id ? (
-                      <ChevronUp className="w-6 h-6 text-gray-600 ml-4" />
-                    ) : (
-                      <ChevronDown className="w-6 h-6 text-gray-600 ml-4" />
+                  <Users className="w-4 h-4" />
+                  <div className="text-left">
+                    <p className="font-semibold">
+                      {child.firstName} {child.lastName}
+                    </p>
+                    {child.grade && (
+                      <p className="text-xs opacity-80 font-normal">
+                        {child.grade}
+                      </p>
                     )}
                   </div>
                 </button>
-                
-                {expandedLesson === lesson.id && (
-                  <div className="px-6 pb-6 border-t border-gray-100 pt-4">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h5 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-500" />
-                          Recent Topics Covered
-                        </h5>
-                        <ul className="space-y-2">
-                          {lesson.recentTopics.map((topic, idx) => (
-                            <li key={idx} className="text-gray-700 pl-7 relative">
-                              <span className="absolute left-0 top-1.5 w-2 h-2 bg-green-500 rounded-full"></span>
-                              {topic}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h5 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                          <Clock className="w-5 h-5 text-blue-500" />
-                          Coming Up Next
-                        </h5>
-                        <p className="text-gray-700 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
-                          {lesson.nextLesson}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Assignments Section */}
-        <div>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <Award className="w-7 h-7 text-white" />
+              ))}
             </div>
-            <h3 className="text-3xl font-bold text-gray-900">All Assignments</h3>
-          </div>
 
-          {/* Assignment Filters */}
-          <div className="flex gap-3 mb-6">
-            <button className="px-5 py-2 bg-[#F4C21A] text-gray-900 rounded-xl font-semibold">
-              All ({currentChild.assignments.length})
-            </button>
-            <button className="px-5 py-2 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 border border-gray-200">
-              Completed ({currentChild.assignments.filter(a => a.status === 'completed').length})
-            </button>
-            <button className="px-5 py-2 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 border border-gray-200">
-              Pending ({currentChild.assignments.filter(a => a.status === 'pending').length})
-            </button>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {currentChild.assignments.map((assignment) => (
-              <div
-                key={assignment.id}
-                className={`bg-white rounded-2xl shadow-lg border-2 p-6 ${
-                  assignment.status === 'completed' 
-                    ? 'border-green-300' 
-                    : 'border-orange-300'
-                }`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h4 className="text-lg font-bold text-gray-900 mb-1">{assignment.title}</h4>
-                    <p className="text-sm text-gray-600 font-medium">{assignment.subject}</p>
-                  </div>
-                  {assignment.status === 'completed' ? (
-                    <div className="bg-green-500 rounded-full p-2 shadow-md">
-                      <CheckCircle className="w-6 h-6 text-white" />
-                    </div>
-                  ) : (
-                    <div className="bg-orange-500 rounded-full p-2 shadow-md">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                  )}
+            {/* Overall Progress */}
+            <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8 mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-1">
+                    Overall Progress
+                  </h3>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                    All lessons combined
+                  </p>
                 </div>
-
-                {assignment.status === 'completed' ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                      <span className="text-sm font-semibold text-gray-700">Score:</span>
-                      <span className="text-2xl font-bold text-green-600">{assignment.score}/100</span>
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-xs font-semibold text-gray-600 mb-1">Teacher Feedback:</p>
-                      <p className="text-sm text-gray-800">{assignment.feedback}</p>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>Due: {assignment.dueDate}</span>
-                      <span>Completed: {assignment.completedDate}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="p-3 bg-orange-50 rounded-lg border-l-4 border-orange-500">
-                      <p className="text-sm font-semibold text-orange-800 mb-1">Due Date: {assignment.dueDate}</p>
-                      <p className="text-sm text-gray-700">{assignment.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2 text-orange-700">
-                      <AlertCircle className="w-4 h-4" />
-                      <span className="text-xs font-semibold">Awaiting submission</span>
-                    </div>
-                  </div>
-                )}
+                <div className="text-right flex items-baseline gap-2">
+                  <p className="text-4xl font-bold text-slate-800">
+                    {overallProgress}%
+                  </p>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Complete
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div
+                  className="bg-slate-800 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${overallProgress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Lessons Progress */}
+            <div className="mb-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-slate-100 rounded-md flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-slate-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-slate-800">
+                  Course Materials
+                </h3>
+              </div>
+
+              {lessonList.length === 0 ? (
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8 text-center text-sm text-slate-500">
+                  <p>No lesson data available for this student yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {lessonList.map((lesson, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+                    >
+                      <button
+                        onClick={() =>
+                          setExpandedLesson(expandedLesson === idx ? null : idx)
+                        }
+                        className="w-full p-6 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 flex-1 text-left">
+                            <div className="w-4 h-4 bg-blue-500 rounded-full" />
+                            <div className="flex-1">
+                              <h4 className="text-xl font-bold text-gray-900 mb-3">
+                                {lesson.title}
+                              </h4>
+                              <div className="flex items-center gap-4">
+                                <div className="flex-1 max-w-md">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-sm font-semibold text-gray-700">
+                                      Progress
+                                    </span>
+                                    <span className="text-sm font-bold text-gray-900">
+                                      {lesson.completed}/{lesson.total} chapters
+                                    </span>
+                                  </div>
+                                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div
+                                      className="bg-blue-500 h-2.5 rounded-full transition-all duration-500"
+                                      style={{ width: `${lesson.progress}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="text-2xl font-black text-gray-900">
+                                  {lesson.progress}%
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {expandedLesson === idx ? (
+                            <ChevronUp className="w-6 h-6 text-gray-600 ml-4" />
+                          ) : (
+                            <ChevronDown className="w-6 h-6 text-gray-600 ml-4" />
+                          )}
+                        </div>
+                      </button>
+                      {expandedLesson === idx && (
+                        <div className="px-6 pb-6 border-t border-gray-100 pt-4">
+                          <p className="text-gray-700">
+                            {lesson.completed} of {lesson.total} chapters
+                            completed.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Assignments */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Award className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900">
+                  Assignments
+                </h3>
+              </div>
+
+              <div className="flex gap-3 mb-6 flex-wrap">
+                {[
+                  { label: `All (${childAssignments.length})`, value: "all" },
+                  {
+                    label: `Completed (${childAssignments.filter((a) => a.status === "completed" || a.status === "graded").length})`,
+                    value: "completed",
+                  },
+                  {
+                    label: `Pending (${childAssignments.filter((a) => a.status === "pending" || a.status === "submitted").length})`,
+                    value: "pending",
+                  },
+                ].map((f) => (
+                  <button
+                    key={f.value}
+                    onClick={() => setAssignmentFilter(f.value)}
+                    className={`px-5 py-2 rounded-xl font-semibold transition-colors ${
+                      assignmentFilter === f.value
+                        ? "bg-[#F4C21A] text-gray-900"
+                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {filteredAssignments.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow p-8 text-center text-gray-500">
+                  No assignments found for this filter.
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {filteredAssignments.map((assignment) => {
+                    const isDone =
+                      assignment.status === "completed" ||
+                      assignment.status === "graded";
+                    return (
+                      <div
+                        key={assignment._id}
+                        className={`bg-white rounded-2xl shadow-lg border-2 p-6 ${isDone ? "border-green-300" : "border-orange-300"}`}
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h4 className="text-lg font-bold text-gray-900 mb-1">
+                              {assignment.title}
+                            </h4>
+                            {assignment.lessonId?.title && (
+                              <p className="text-sm text-gray-600 font-medium">
+                                {assignment.lessonId.title}
+                              </p>
+                            )}
+                          </div>
+                          {isDone ? (
+                            <div className="bg-green-500 rounded-full p-2 shadow-md">
+                              <CheckCircle className="w-6 h-6 text-white" />
+                            </div>
+                          ) : (
+                            <div className="bg-orange-500 rounded-full p-2 shadow-md">
+                              <Clock className="w-6 h-6 text-white" />
+                            </div>
+                          )}
+                        </div>
+
+                        {isDone ? (
+                          <div className="space-y-3">
+                            {assignment.grade != null && (
+                              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <span className="text-sm font-semibold text-gray-700">
+                                  Score:
+                                </span>
+                                <span className="text-2xl font-bold text-green-600">
+                                  {assignment.grade}/100
+                                </span>
+                              </div>
+                            )}
+                            {assignment.feedback && (
+                              <div className="p-3 bg-gray-50 rounded-lg">
+                                <p className="text-xs font-semibold text-gray-600 mb-1">
+                                  Teacher Feedback:
+                                </p>
+                                <p className="text-sm text-gray-800">
+                                  {assignment.feedback}
+                                </p>
+                              </div>
+                            )}
+                            {assignment.dueDate && (
+                              <p className="text-xs text-gray-500">
+                                Due:{" "}
+                                {new Date(
+                                  assignment.dueDate,
+                                ).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {assignment.dueDate && (
+                              <div className="p-3 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+                                <p className="text-sm font-semibold text-orange-800">
+                                  Due:{" "}
+                                  {new Date(
+                                    assignment.dueDate,
+                                  ).toLocaleDateString()}
+                                </p>
+                                {assignment.description && (
+                                  <p className="text-sm text-gray-700 mt-1">
+                                    {assignment.description}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-orange-700">
+                              <AlertCircle className="w-4 h-4" />
+                              <span className="text-xs font-semibold capitalize">
+                                {assignment.status}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,42 +1,95 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import logo from '../assets/levelup-logo.png';
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import logo from "../assets/levelup-logo.png";
 
-/**
- * Navbar Component
- * Modern navigation bar with responsive design
- */
-function Navbar() {
+export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+
+  useEffect(() => {
+    const sections = ["home", "features", "about", "contact"];
+
+    const handleScroll = () => {
+      // Offset by roughly a third of the window height
+      // so it activates comfortably when you scroll to it
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
+
+      let current = "";
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            current = section;
+          }
+        }
+      }
+
+      // Default to "home" when at the very top of the page
+      if (window.scrollY < 50) {
+        current = "home";
+      }
+
+      if (current && current !== activeSection) {
+        setActiveSection(current);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Run once on load to establish the current position
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [activeSection]);
+
+  const navLinks = [
+    { name: "Home", id: "home" },
+    { name: "Features", id: "features" },
+    { name: "About", id: "about" },
+    { name: "Contact", id: "contact" },
+  ];
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <img 
+    <nav className="fixed top-0 z-50 w-full shadow-md bg-white/90 backdrop-blur-md">
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          <Link
+            to="/"
+            className="flex items-center gap-3"
+            onClick={() => setActiveSection("home")}
+          >
+            <img
               src={logo}
-              alt="Level Up Learning Center - TinyLearn" 
-              className="h-16 w-16 object-contain"
+              alt="TinyLearn"
+              className="object-contain w-16 h-16"
             />
             <span className="text-2xl font-black text-black">TinyLearn</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="/#home" className="text-black hover:text-[#F4C21A] font-semibold transition-colors">
-              Home
-            </a>
-            <a href="/#features" className="text-black hover:text-[#F4C21A] font-semibold transition-colors">
-              Features
-            </a>
-            <a href="/#about" className="text-black hover:text-[#F4C21A] font-semibold transition-colors">
-              About
-            </a>
-            <a href="/#contact" className="text-black hover:text-[#F4C21A] font-semibold transition-colors">
-              Contact
-            </a>
+          <div className="items-center hidden space-x-8 md:flex">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={"/#" + link.id}
+                onClick={() => setActiveSection(link.id)}
+                className={`font-semibold transition-all duration-300 relative group ${
+                  activeSection === link.id
+                    ? "text-[#F4C21A]"
+                    : "text-black hover:text-[#F4C21A]"
+                }`}
+              >
+                {link.name}
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-[#F4C21A] rounded-full transition-all duration-300 ${
+                    activeSection === link.id
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </a>
+            ))}
             <Link
               to="/login"
               className="px-6 py-2 bg-[#F4C21A] text-black rounded-xl font-bold hover:bg-[#e0b318] transition-colors shadow-md"
@@ -45,54 +98,56 @@ function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-md text-black hover:bg-gray-100"
+            className="p-2 text-black rounded-md md:hidden hover:bg-gray-100"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               {isMobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
+        <div className="bg-white border-t border-gray-200 md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <a
-              href="/#home"
-              className="block px-3 py-2 rounded-md text-black hover:bg-[#FFF9E6] font-semibold"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Home
-            </a>
-            <a
-              href="/#features"
-              className="block px-3 py-2 rounded-md text-black hover:bg-[#FFF9E6] font-semibold"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Features
-            </a>
-            <a
-              href="/#about"
-              className="block px-3 py-2 rounded-md text-black hover:bg-[#FFF9E6] font-semibold"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </a>
-            <a
-              href="/#contact"
-              className="block px-3 py-2 rounded-md text-black hover:bg-[#FFF9E6] font-semibold"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </a>
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={"/#" + link.id}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setActiveSection(link.id);
+                }}
+                className={`block px-3 py-2 rounded-md font-semibold ${
+                  activeSection === link.id
+                    ? "bg-[#FFF9E6] text-[#F4C21A]"
+                    : "text-black hover:bg-[#FFF9E6] hover:text-[#F4C21A]"
+                }`}
+              >
+                {link.name}
+              </a>
+            ))}
             <Link
               to="/login"
               className="block mx-3 my-2 px-6 py-2 bg-[#F4C21A] text-black rounded-xl font-bold hover:bg-[#e0b318] transition-colors text-center"
@@ -106,5 +161,3 @@ function Navbar() {
     </nav>
   );
 }
-
-export default Navbar;

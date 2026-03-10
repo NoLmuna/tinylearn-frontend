@@ -13,7 +13,7 @@ const badgeVariants = cva(
           "border-transparent bg-gray-200 text-black hover:bg-gray-300",
         destructive:
           "border-transparent bg-red-500 text-white hover:bg-red-600",
-        outline: "text-black border-gray-300",
+        outline: "text-black border-slate-300",
       },
     },
     defaultVariants: {
@@ -28,4 +28,4 @@ function Badge({ className, variant, ...props }) {
   )
 }
 
-export { Badge, badgeVariants }
+export { Badge }

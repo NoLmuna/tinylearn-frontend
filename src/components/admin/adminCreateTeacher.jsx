@@ -93,7 +93,7 @@ function AdminCreateTeacher({ onCancel }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="firstName">
+              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="firstName">
                 First Name
               </label>
               <input
@@ -101,13 +101,13 @@ function AdminCreateTeacher({ onCancel }) {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
                 placeholder="Jane"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="lastName">
+              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="lastName">
                 Last Name
               </label>
               <input
@@ -115,7 +115,7 @@ function AdminCreateTeacher({ onCancel }) {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
                 placeholder="Doe"
                 required
               />
@@ -123,7 +123,7 @@ function AdminCreateTeacher({ onCancel }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="email">
+            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="email">
               Email
             </label>
             <input
@@ -132,14 +132,14 @@ function AdminCreateTeacher({ onCancel }) {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
+              className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
               placeholder="teacher@tinylearn.com"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="password">
+            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="password">
               Temporary Password
             </label>
             <input
@@ -148,7 +148,7 @@ function AdminCreateTeacher({ onCancel }) {
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
+              className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
               placeholder="Minimum 6 characters"
               required
             />
@@ -156,7 +156,7 @@ function AdminCreateTeacher({ onCancel }) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="subjectSpecialty">
+              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="subjectSpecialty">
                 Subject Specialty
               </label>
               <input
@@ -164,12 +164,12 @@ function AdminCreateTeacher({ onCancel }) {
                 name="subjectSpecialty"
                 value={formData.subjectSpecialty}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm"
                 placeholder="Math, Reading, Science..."
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1" htmlFor="bio">
+              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="bio">
                 Short Bio
               </label>
               <textarea
@@ -178,7 +178,7 @@ function AdminCreateTeacher({ onCancel }) {
                 value={formData.bio}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm resize-none"
+                className="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F4C21A] focus:border-transparent text-sm resize-none"
                 placeholder="Optional introduction"
               />
             </div>

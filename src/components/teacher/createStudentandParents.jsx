@@ -194,13 +194,13 @@ function CreateStudentAndParent({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
+        <CardHeader className="border-b border-slate-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
           <CardTitle className="text-2xl font-black">Create Student & Parent</CardTitle>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-slate-500" />
           </button>
         </CardHeader>
         <CardContent className="p-6">
@@ -230,7 +230,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     First Name *
                   </label>
                   <input
@@ -239,7 +239,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     value={formData.studentFirstName}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.studentFirstName ? 'border-red-300' : 'border-gray-200'
+                      formErrors.studentFirstName ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="John"
                   />
@@ -248,7 +248,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   )}
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     Last Name *
                   </label>
                   <input
@@ -257,7 +257,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     value={formData.studentLastName}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.studentLastName ? 'border-red-300' : 'border-gray-200'
+                      formErrors.studentLastName ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="Doe"
                   />
@@ -268,7 +268,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                   <Mail className="w-4 h-4" />
                   Email Address *
                 </label>
@@ -278,7 +278,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   value={formData.studentEmail}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.studentEmail ? 'border-red-300' : 'border-gray-200'
+                    formErrors.studentEmail ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="student@example.com"
                 />
@@ -288,7 +288,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                   <Lock className="w-4 h-4" />
                   Password *
                 </label>
@@ -298,7 +298,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   value={formData.studentPassword}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.studentPassword ? 'border-red-300' : 'border-gray-200'
+                    formErrors.studentPassword ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="Minimum 6 characters"
                 />
@@ -309,7 +309,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     <Award className="w-4 h-4" />
                     Grade
                   </label>
@@ -317,7 +317,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     name="grade"
                     value={formData.grade}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Grade</option>
                     <option value="5th Grade">5th Grade</option>
@@ -327,7 +327,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2">Age</label>
+                  <label className="text-sm font-bold text-slate-700 mb-2">Age</label>
                   <input
                     type="number"
                     name="age"
@@ -336,7 +336,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     min="1"
                     max="18"
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      formErrors.age ? 'border-red-300' : 'border-gray-200'
+                      formErrors.age ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="1-18"
                   />
@@ -356,7 +356,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     First Name *
                   </label>
                   <input
@@ -365,7 +365,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     value={formData.parentFirstName}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      formErrors.parentFirstName ? 'border-red-300' : 'border-gray-200'
+                      formErrors.parentFirstName ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="Jane"
                   />
@@ -374,7 +374,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   )}
                 </div>
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     Last Name *
                   </label>
                   <input
@@ -383,7 +383,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     value={formData.parentLastName}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      formErrors.parentLastName ? 'border-red-300' : 'border-gray-200'
+                      formErrors.parentLastName ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="Doe"
                   />
@@ -394,7 +394,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                   <Mail className="w-4 h-4" />
                   Email Address *
                 </label>
@@ -404,7 +404,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   value={formData.parentEmail}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                    formErrors.parentEmail ? 'border-red-300' : 'border-gray-200'
+                    formErrors.parentEmail ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="parent@example.com"
                 />
@@ -414,7 +414,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                   <Lock className="w-4 h-4" />
                   Password *
                 </label>
@@ -424,7 +424,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   value={formData.parentPassword}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                    formErrors.parentPassword ? 'border-red-300' : 'border-gray-200'
+                    formErrors.parentPassword ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="Minimum 6 characters"
                 />
@@ -435,7 +435,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     <Phone className="w-4 h-4" />
                     Phone Number
                   </label>
@@ -445,7 +445,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      formErrors.phoneNumber ? 'border-red-300' : 'border-gray-200'
+                      formErrors.phoneNumber ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="+1234567890"
                   />
@@ -454,12 +454,12 @@ function CreateStudentAndParent({ isOpen, onClose }) {
                   )}
                 </div>
                 <div>
-                  <label className="text-sm font-bold text-gray-700 mb-2">Relationship</label>
+                  <label className="text-sm font-bold text-slate-700 mb-2">Relationship</label>
                   <select
                     name="relationship"
                     value={formData.relationship}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">Select Relationship</option>
                     <option value="mother">Mother</option>
@@ -474,7 +474,7 @@ function CreateStudentAndParent({ isOpen, onClose }) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
+            <div className="flex gap-3 pt-4 border-t border-slate-200">
               <Button
                 type="button"
                 onClick={handleClose}

@@ -1,136 +1,142 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { 
-  Shield, 
-  Users, 
-  BookOpen, 
+﻿import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAdmin } from "../../contexts/adminContext";
+import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import {
+  Shield,
+  Users,
+  BookOpen,
   TrendingUp,
   Activity,
-  Clock,
   AlertCircle,
   CheckCircle,
   LogOut,
   Search,
   Plus,
-  MoreVertical,
   Eye,
-  Edit,
-  Trash2,
   LayoutDashboard,
-  BarChart3
-} from 'lucide-react';
-import logo from '../../assets/levelup-logo.png';
+  BarChart3,
+  RefreshCw,
+} from "lucide-react";
+import logo from "../../assets/levelup-logo.png";
+import AdminCreateTeacher from "../../components/admin/adminCreateTeacher.jsx";
+import { useAdminTeachers, useAdminStats } from "../../hooks/adminHooks.jsx";
 
 /**
  * Admin Dashboard Component
- * Modern administrative control panel with clean UI/UX
+ * Modern administrative control panel with real backend data
  */
 function Dashboard() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { logout, user } = useAdmin();
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [activeNav, setActiveNav] = useState('dashboard');
+  const [activeNav, setActiveNav] = useState("dashboard");
 
-  const adminUser = { name: 'Administrator', email: 'admin@tinylearn.com' }; // Mock data
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    await logout();
+    navigate("/admin/login");
   };
 
-  // System Overview Analytics
-  const systemStats = [
+  // Real backend data
+  const {
+    data: statsData,
+    isLoading: isLoadingStats,
+    refetch: refetchStats,
+  } = useAdminStats();
+  const { data: teachersResponse, isLoading: isLoadingTeachers } =
+    useAdminTeachers();
+
+  const stats = statsData?.data ?? {};
+  const apiTeachers = Array.isArray(teachersResponse?.data)
+    ? teachersResponse.data
+    : [];
+
+  const teachers = apiTeachers.map((t) => ({
+    id: t.id || t._id,
+    name: `${t.firstName} ${t.lastName}`,
+    email: t.email,
+    subject: t.subjectSpecialty || "N/A",
+    status: t.accountStatus,
+  }));
+
+  const filteredTeachers = teachers.filter(
+    (t) =>
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.email.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  const systemStatCards = [
     {
-      title: 'Total Teachers',
-      value: '42',
-      change: '+8 this month',
-      trend: 'up',
+      title: "Total Teachers",
+      value: isLoadingStats ? "â€”" : (stats.totalTeachers ?? 0),
       icon: Users,
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      textColor: 'text-indigo-600'
+      bgColor: "bg-indigo-50",
+      textColor: "text-indigo-600",
     },
     {
-      title: 'Active Classes',
-      value: '156',
-      change: '12 today',
-      trend: 'up',
+      title: "Total Students",
+      value: isLoadingStats ? "â€”" : (stats.totalStudents ?? 0),
       icon: BookOpen,
-      color: 'from-emerald-500 to-emerald-600',
-      bgColor: 'bg-emerald-50',
-      textColor: 'text-emerald-600'
+      bgColor: "bg-emerald-50",
+      textColor: "text-emerald-600",
     },
     {
-      title: 'System Health',
-      value: '98.5%',
-      change: 'All systems operational',
-      trend: 'stable',
-      icon: Activity,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600'
+      title: "Total Parents",
+      value: isLoadingStats ? "â€”" : (stats.totalParents ?? 0),
+      icon: Users,
+      bgColor: "bg-blue-50",
+      textColor: "text-blue-600",
     },
     {
-      title: 'Avg. Response Time',
-      value: '124ms',
-      change: '-12ms from last week',
-      trend: 'up',
-      icon: Clock,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-600'
-    }
-  ];
-
-  // Recent Teachers (mock data)
-  const teachers = [
-    { id: 1, name: 'Sarah Johnson', email: 'sarah.j@tinylearn.com', subject: 'Mathematics', classes: 8, status: 'active' },
-    { id: 2, name: 'Michael Chen', email: 'michael.c@tinylearn.com', subject: 'Science', classes: 6, status: 'active' },
-    { id: 3, name: 'Emily Davis', email: 'emily.d@tinylearn.com', subject: 'English', classes: 7, status: 'active' },
-    { id: 4, name: 'James Wilson', email: 'james.w@tinylearn.com', subject: 'History', classes: 5, status: 'active' },
-    { id: 5, name: 'Lisa Anderson', email: 'lisa.a@tinylearn.com', subject: 'Art', classes: 4, status: 'active' }
-  ];
-
-  // System Activity Log
-  const activityLog = [
-    { id: 1, type: 'success', message: 'New teacher account created: John Smith', time: '5 mins ago' },
-    { id: 2, type: 'info', message: 'Class schedule updated by Sarah Johnson', time: '23 mins ago' },
-    { id: 3, type: 'warning', message: 'High server load detected - Auto-scaled', time: '1 hour ago' },
-    { id: 4, type: 'success', message: 'Database backup completed successfully', time: '2 hours ago' },
-    { id: 5, type: 'info', message: 'System maintenance scheduled for tonight', time: '3 hours ago' }
+      title: "Total Users",
+      value: isLoadingStats ? "â€”" : (stats.totalUsers ?? 0),
+      icon: TrendingUp,
+      bgColor: "bg-purple-50",
+      textColor: "text-purple-600",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-slate-50">
       {/* Modern Top Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-lg bg-white/95">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo Section */}
             <div className="flex items-center gap-8">
-              <Link to="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
+              <Link
+                to="/admin/dashboard"
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src={logo}
+                  alt="TinyLearn"
+                  className="h-10 w-10 object-contain"
+                />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                  <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
                     TinyLearn
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-md">
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white rounded-md">
                       ADMIN
                     </span>
                   </h1>
                 </div>
               </Link>
 
-              {/* Navigation Links */}
               <div className="hidden md:flex items-center gap-1">
                 <Link
                   to="/admin/dashboard"
-                  onClick={() => setActiveNav('dashboard')}
+                  onClick={() => setActiveNav("dashboard")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    activeNav === 'dashboard'
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    activeNav === "dashboard"
+                      ? "bg-indigo-50 text-indigo-600"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <LayoutDashboard className="w-4 h-4" />
@@ -138,11 +144,11 @@ function Dashboard() {
                 </Link>
                 <Link
                   to="/admin/teachers"
-                  onClick={() => setActiveNav('teachers')}
+                  onClick={() => setActiveNav("teachers")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    activeNav === 'teachers'
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    activeNav === "teachers"
+                      ? "bg-indigo-50 text-indigo-600"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <Users className="w-4 h-4" />
@@ -150,11 +156,11 @@ function Dashboard() {
                 </Link>
                 <Link
                   to="/admin/reports"
-                  onClick={() => setActiveNav('reports')}
+                  onClick={() => setActiveNav("reports")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                    activeNav === 'reports'
-                      ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    activeNav === "reports"
+                      ? "bg-indigo-50 text-indigo-600"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <BarChart3 className="w-4 h-4" />
@@ -163,15 +169,18 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* Admin Profile & Logout */}
             <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-xs font-bold text-gray-900">{adminUser.name}</p>
-                  <p className="text-xs text-gray-500">Admin</p>
+                  <p className="text-xs font-bold text-slate-900">
+                    {user?.firstName
+                      ? `${user.firstName} ${user.lastName}`
+                      : "Administrator"}
+                  </p>
+                  <p className="text-xs text-slate-500">Admin</p>
                 </div>
               </div>
               <Button
@@ -190,51 +199,68 @@ function Dashboard() {
 
       {/* Main Dashboard Content */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8">
-        {/* Welcome Header */}
-        <div>
-          <h2 className="text-4xl font-black text-gray-900 mb-2">
-            Dashboard Overview
-          </h2>
-          <p className="text-lg text-gray-600">
-            Monitor system performance and manage teachers
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-4xl font-black text-slate-900 mb-2">
+              Dashboard Overview
+            </h2>
+            <p className="text-lg text-slate-600">
+              Monitor system performance and manage teachers
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetchStats()}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
         </div>
 
         {/* System Stats Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {systemStats.map((stat, index) => (
-            <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+          {systemStatCards.map((stat, index) => (
+            <Card
+              key={index}
+              className="border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div className={`p-3 rounded-xl ${stat.bgColor}`}>
                     <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
                   </div>
-                  {stat.trend === 'up' && (
-                    <TrendingUp className="w-5 h-5 text-green-500" />
-                  )}
                 </div>
-                <p className="text-sm font-medium text-gray-600 mb-1">{stat.title}</p>
-                <p className="text-3xl font-black text-gray-900 mb-2">{stat.value}</p>
-                <p className="text-xs text-gray-500 font-medium">{stat.change}</p>
+                <p className="text-sm font-medium text-slate-600 mb-1">
+                  {stat.title}
+                </p>
+                <p className="text-3xl font-black text-slate-900">
+                  {stat.value}
+                </p>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Teacher Management Section */}
-        <Card className="border-none shadow-lg">
-          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="border-b border-slate-100 bg-slate-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <CardTitle className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
                   <Users className="w-6 h-6 text-indigo-600" />
                   Teacher Management
                 </CardTitle>
-                <p className="text-sm text-gray-600 mt-1">Create and manage teacher accounts</p>
+                <p className="text-sm text-slate-600 mt-1">
+                  {isLoadingTeachers
+                    ? "Loading..."
+                    : `${teachers.length} teacher${teachers.length !== 1 ? "s" : ""} registered`}
+                </p>
               </div>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all"
+                className="bg-indigo-600 hover:bg-indigo-700 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-md transition-all"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create New Teacher
@@ -242,165 +268,140 @@ function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Search Bar */}
             <div className="mb-6">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search teachers by name, email, or subject..."
+                  placeholder="Search teachers by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
-            {/* Teachers Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Name</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Email</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Subject</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Classes</th>
-                    <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teachers.map((teacher) => (
-                    <tr key={teacher.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white font-bold">
-                            {teacher.name.charAt(0)}
-                          </div>
-                          <span className="font-semibold text-gray-900">{teacher.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-gray-600">{teacher.email}</td>
-                      <td className="py-4 px-4">
-                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold">
-                          {teacher.subject}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-gray-900 font-semibold">{teacher.classes}</td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="hover:bg-indigo-50 hover:text-indigo-600">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
+            {isLoadingTeachers ? (
+              <div className="text-center py-12 text-slate-500">
+                Loading teachers...
+              </div>
+            ) : filteredTeachers.length === 0 ? (
+              <div className="text-center py-12 text-slate-500">
+                {teachers.length === 0
+                  ? "No teachers found. Create one to get started."
+                  : "No teachers match your search."}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        Name
+                      </th>
+                      <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        Email
+                      </th>
+                      <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        Subject
+                      </th>
+                      <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        Status
+                      </th>
+                      <th className="text-right py-4 px-4 text-sm font-bold text-slate-700">
+                        Actions
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredTeachers.map((teacher) => (
+                      <tr
+                        key={teacher.id}
+                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                      >
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold">
+                              {teacher.name.charAt(0)}
+                            </div>
+                            <span className="font-semibold text-slate-900">
+                              {teacher.name}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-slate-600">
+                          {teacher.email}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold">
+                            {teacher.subject}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-bold ${
+                              teacher.status === "active"
+                                ? "bg-green-100 text-green-700"
+                                : teacher.status === "suspended"
+                                  ? "bg-red-100 text-red-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {teacher.status || "pending"}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => navigate(`/admin/teachers`)}
+                              className="hover:bg-blue-50 hover:text-blue-600"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* System Activity Monitor */}
-        <Card className="border-none shadow-lg">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <Activity className="w-6 h-6 text-blue-600" />
-              System Activity Monitor
-            </CardTitle>
-            <p className="text-sm text-gray-600 mt-1">Real-time system behavior and events</p>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              {activityLog.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    activity.type === 'success' ? 'bg-green-100' :
-                    activity.type === 'warning' ? 'bg-yellow-100' :
-                    'bg-blue-100'
-                  }`}>
-                    {activity.type === 'success' && <CheckCircle className="w-5 h-5 text-green-600" />}
-                    {activity.type === 'warning' && <AlertCircle className="w-5 h-5 text-yellow-600" />}
-                    {activity.type === 'info' && <Activity className="w-5 h-5 text-blue-600" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Create Teacher Modal (Simple placeholder) */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl font-black text-gray-900">Create New Teacher</CardTitle>
-              <p className="text-sm text-gray-600 mt-1">Add a new teacher to the system</p>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">First Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Enter first name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    placeholder="Enter last name"
-                  />
-                </div>
+        {/* Pending Teachers notice */}
+        {stats.pendingTeachers > 0 && (
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-yellow-400">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-yellow-600" />
               </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="teacher@tinylearn.com"
-                />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-900">
+                  {stats.pendingTeachers} teacher account
+                  {stats.pendingTeachers !== 1 ? "s" : ""} pending approval
+                </p>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Review pending teachers in the Teachers section.
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Subject</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="e.g., Mathematics"
-                />
-              </div>
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
-                >
-                  Create Teacher
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/teachers")}
+              >
+                Review
+              </Button>
             </CardContent>
           </Card>
-        </div>
+        )}
+      </div>
+
+      {/* Create Teacher Modal */}
+      {showCreateModal && (
+        <AdminCreateTeacher onClose={() => setShowCreateModal(false)} />
       )}
     </div>
   );

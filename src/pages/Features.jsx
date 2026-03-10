@@ -11,7 +11,8 @@ function Features() {
             Platform Features
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover all the powerful tools and features that make TinyLearn the best choice for your learning journey
+            Discover all the powerful tools and features that make TinyLearn the
+            best choice for your learning journey
           </p>
         </div>
 
@@ -19,78 +20,156 @@ function Features() {
           {/* Feature 1 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              <svg
+                className="w-8 h-8 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Fast Learning</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Interactive Lessons
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Accelerate your learning with our scientifically-designed curriculum that maximizes retention and understanding.
+              Engage with carefully crafted lessons designed to make learning
+              fun, interactive, and highly effective for students.
             </p>
           </div>
 
           {/* Feature 2 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <svg
+                className="w-8 h-8 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Rich Content Library</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Exciting Quests
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Access thousands of courses, tutorials, and resources across multiple domains, all curated by industry experts.
+              Complete assignments disguised as thrilling quests to earn
+              rewards, keeping motivation high and reinforcing knowledge.
             </p>
           </div>
 
           {/* Feature 3 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Progress Tracking</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Progress Tracking
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Monitor your learning journey with detailed analytics, achievement milestones, and personalized insights.
+              Parents and teachers can easily monitor student progress, track
+              completed assignments, and identify areas for improvement.
             </p>
           </div>
 
           {/* Feature 4 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg
+                className="w-8 h-8 text-orange-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Active Community</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Direct Communication
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Connect with thousands of fellow learners, participate in discussions, and grow together in a supportive environment.
+              Seamlessly connect teachers and parents through our integrated
+              messaging system to stay updated on student development.
             </p>
           </div>
 
           {/* Feature 5 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-8 h-8 text-pink-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Flexible Learning</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Role-Based Portals
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Learn at your own pace, on your own schedule. Our platform is available 24/7 on any device, anywhere.
+              Dedicated interfaces designed specifically for students, parents,
+              and teachers to provide the best tools for each role.
             </p>
           </div>
 
           {/* Feature 6 */}
           <div className="bg-white rounded-xl shadow-md p-8 border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="w-14 h-14 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              <svg
+                className="w-8 h-8 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                />
               </svg>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-3">Recognized Certificates</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Easy Class Management
+            </h3>
             <p className="text-gray-600 leading-relaxed">
-              Earn industry-recognized certificates upon course completion to showcase your skills and boost your career.
+              Teachers can effortlessly create robust lesson plans, manage
+              assignments, and review submissions in one organized spot.
             </p>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useAdmin } from '../../contexts/adminContext';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { ArrowLeft, BookOpen, Calendar, Clock, User, Award, Eye, Video, Image as ImageIcon, TrendingUp, Bell, LogOut, Users, MessageCircle, AlertCircle } from 'lucide-react';
@@ -19,8 +20,10 @@ function SpecLessons() {
 
   const teacherUser = { name: 'Sarah Johnson', subject: 'Mathematics' };
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const { logout } = useAdmin();
+
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -34,7 +37,7 @@ function SpecLessons() {
       physical: 'bg-orange-100 text-orange-700',
       social: 'bg-indigo-100 text-indigo-700',
     };
-    return colors[category] || 'bg-gray-100 text-gray-700';
+    return colors[category] || 'bg-slate-100 text-slate-700';
   };
 
   const getDifficultyColor = (difficulty) => {
@@ -43,20 +46,20 @@ function SpecLessons() {
       intermediate: 'bg-yellow-100 text-yellow-700',
       advanced: 'bg-red-100 text-red-700',
     };
-    return colors[difficulty] || 'bg-gray-100 text-gray-700';
+    return colors[difficulty] || 'bg-slate-100 text-slate-700';
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="text-center py-16">
               <div className="w-20 h-20 mx-auto mb-4 bg-indigo-50 rounded-2xl flex items-center justify-center animate-pulse">
                 <BookOpen className="w-10 h-10 text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Loading lesson...</h3>
-              <p className="text-gray-600">Please wait while we fetch the data</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Loading lesson...</h3>
+              <p className="text-slate-600">Please wait while we fetch the data</p>
             </CardContent>
           </Card>
         </div>
@@ -66,13 +69,13 @@ function SpecLessons() {
 
   if (!lesson || !lesson._id) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+      <div className="min-h-screen bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="text-center py-16">
               <AlertCircle className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Lesson not found</h3>
-              <p className="text-gray-600 mb-6">The lesson you're looking for doesn't exist or has been removed.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Lesson not found</h3>
+              <p className="text-slate-600 mb-6">The lesson you're looking for doesn't exist or has been removed.</p>
               <Button onClick={() => navigate('/teacher/materials')}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Materials
@@ -85,16 +88,16 @@ function SpecLessons() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
               <Link to="/teacher/dashboard" className="flex items-center gap-3">
                 <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-gray-900">Teacher Portal</h1>
+                  <h1 className="text-xl font-black text-slate-900">Teacher Portal</h1>
                   <p className="text-xs text-indigo-600 font-semibold">{teacherUser.subject}</p>
                 </div>
               </Link>
@@ -102,14 +105,14 @@ function SpecLessons() {
               <div className="hidden md:flex items-center gap-1">
                 <Link
                   to="/teacher/dashboard"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <TrendingUp className="w-4 h-4" />
                   Dashboard
                 </Link>
                 <Link
                   to="/teacher/users"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <Users className="w-4 h-4" />
                   Users
@@ -123,7 +126,7 @@ function SpecLessons() {
                 </Link>
                 <Link
                   to="/teacher/messages"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Messages
@@ -136,13 +139,13 @@ function SpecLessons() {
               <Button variant="ghost" size="sm">
                 <Bell className="w-5 h-5" />
               </Button>
-              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
                   {teacherUser.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-900">{teacherUser.name}</p>
-                  <p className="text-xs text-gray-500">Teacher</p>
+                  <p className="text-xs font-bold text-slate-900">{teacherUser.name}</p>
+                  <p className="text-xs text-slate-500">Teacher</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={handleLogout} className="flex items-center gap-2">
@@ -167,7 +170,7 @@ function SpecLessons() {
         </Button>
 
         {/* Lesson Header */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-6">
               {/* Lesson Image */}
@@ -180,7 +183,7 @@ function SpecLessons() {
                   />
                 </div>
               ) : (
-                <div className="w-full md:w-64 h-48 md:h-64 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                <div className="w-full md:w-64 h-48 md:h-64 rounded-xl bg-slate-100 flex items-center justify-center">
                   <BookOpen className="w-20 h-20 text-indigo-400" />
                 </div>
               )}
@@ -189,9 +192,9 @@ function SpecLessons() {
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h1 className="text-3xl font-black text-gray-900 mb-2">{lesson.title}</h1>
+                    <h1 className="text-3xl font-black text-slate-900 mb-2">{lesson.title}</h1>
                     {lesson.description && (
-                      <p className="text-gray-600 text-lg mb-4">{lesson.description}</p>
+                      <p className="text-slate-600 text-lg mb-4">{lesson.description}</p>
                     )}
                   </div>
                 </div>
@@ -204,7 +207,7 @@ function SpecLessons() {
                   <span className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${getDifficultyColor(lesson.difficulty)}`}>
                     {lesson.difficulty}
                   </span>
-                  <span className="px-3 py-1 rounded-full text-sm font-semibold bg-gray-100 text-gray-700">
+                  <span className="px-3 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-700">
                     {lesson.ageGroup}
                   </span>
                   {lesson.duration && (
@@ -221,7 +224,7 @@ function SpecLessons() {
                 </div>
 
                 {/* Meta Info */}
-                <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                <div className="flex flex-wrap gap-4 text-sm text-slate-600">
                   {lesson.createdAt && (
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -248,15 +251,15 @@ function SpecLessons() {
 
         {/* Video Section */}
         {lesson.videoUrl && (
-          <Card className="border-none shadow-lg mb-6">
-            <CardHeader className="border-b border-gray-100">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow mb-6">
+            <CardHeader className="border-b border-slate-100">
               <CardTitle className="text-xl font-black flex items-center gap-2">
                 <Video className="w-5 h-5" />
                 Video Content
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="aspect-video rounded-xl overflow-hidden bg-gray-100">
+              <div className="aspect-video rounded-xl overflow-hidden bg-slate-100">
                 <iframe
                   src={lesson.videoUrl}
                   className="w-full h-full"
@@ -271,8 +274,8 @@ function SpecLessons() {
 
         {/* Chapters Section */}
         {lesson.content && lesson.content.length > 0 && (
-          <Card className="border-none shadow-lg">
-            <CardHeader className="border-b border-gray-100">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="border-b border-slate-100">
               <CardTitle className="text-xl font-black flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 Chapters ({lesson.content.length})
@@ -281,15 +284,15 @@ function SpecLessons() {
             <CardContent className="p-6">
               <div className="space-y-4">
                 {lesson.content.map((chapter, index) => (
-                  <div key={index} className="border-2 border-gray-200 rounded-xl p-5 hover:border-indigo-200 transition-all">
+                  <div key={index} className="border-2 border-slate-200 rounded-xl p-5 hover:border-indigo-200 transition-all">
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
                         <span className="text-indigo-600 font-bold">{index + 1}</span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 mb-2 text-lg">{chapter.chapter}</h3>
+                        <h3 className="font-bold text-slate-900 mb-2 text-lg">{chapter.chapter}</h3>
                         {chapter.chapterContent && (
-                          <p className="text-gray-600 whitespace-pre-wrap">{chapter.chapterContent}</p>
+                          <p className="text-slate-600 whitespace-pre-wrap">{chapter.chapterContent}</p>
                         )}
                         {chapter.isSeen && (
                           <div className="mt-2 flex items-center gap-2 text-sm text-green-600">
@@ -308,11 +311,11 @@ function SpecLessons() {
 
         {/* Empty State for Chapters */}
         {(!lesson.content || lesson.content.length === 0) && (
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="text-center py-16">
               <BookOpen className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No chapters available</h3>
-              <p className="text-gray-600">This lesson doesn't have any chapters yet.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">No chapters available</h3>
+              <p className="text-slate-600">This lesson doesn't have any chapters yet.</p>
             </CardContent>
           </Card>
         )}

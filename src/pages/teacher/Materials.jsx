@@ -1,13 +1,44 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { BookOpen, Users, MessageCircle, LogOut, Upload, Plus, FileText, Video, Image, File, TrendingUp, Bell, Eye, Edit, Trash2, Download, Archive, RotateCcw } from 'lucide-react';
-import logo from '../../assets/levelup-logo.png';
-import CreateLesson from '../../components/teacher/createLessons';
-import EditLesson from '../../components/teacher/editLessons';
-import CreateAssignment from '../../components/teacher/createAssignment';
-import { useTeacherLessons, useArchiveLesson, useRestoreLesson, useTeacherAssignments } from '../../hooks/teacherHooks';
+/* eslint-disable */
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAdmin } from "../../contexts/adminContext";
+import { Button } from "../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import {
+  BookOpen,
+  Users,
+  MessageCircle,
+  LogOut,
+  Upload,
+  Plus,
+  FileText,
+  Video,
+  Image,
+  File,
+  TrendingUp,
+  Bell,
+  Eye,
+  Edit,
+  Trash2,
+  Download,
+  Archive,
+  RotateCcw,
+} from "lucide-react";
+import logo from "../../assets/levelup-logo.png";
+import CreateLesson from "../../components/teacher/createLessons";
+import EditLesson from "../../components/teacher/editLessons";
+import CreateAssignment from "../../components/teacher/createAssignment";
+import {
+  useTeacherLessons,
+  useArchiveLesson,
+  useRestoreLesson,
+  useTeacherAssignments,
+} from "../../hooks/teacherHooks";
 
 /**
  * Teacher Learning Materials Page
@@ -15,25 +46,30 @@ import { useTeacherLessons, useArchiveLesson, useRestoreLesson, useTeacherAssign
  */
 function TeacherMaterials() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('modules');
+  const [activeTab, setActiveTab] = useState("modules");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showCreateLessonModal, setShowCreateLessonModal] = useState(false);
   const [showEditLessonModal, setShowEditLessonModal] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [showArchived, setShowArchived] = useState(false);
-  const [showCreateAssignmentModal, setShowCreateAssignmentModal] = useState(false);
+  const [showCreateAssignmentModal, setShowCreateAssignmentModal] =
+    useState(false);
 
-  const teacherUser = { name: 'Sarah Johnson', subject: 'Mathematics' };
+  const teacherUser = { name: "Sarah Johnson", subject: "Mathematics" };
 
   // Hooks
-  const { data: lessonsData, isLoading: isLoadingLessons } = useTeacherLessons(showArchived);
-  const { data: assignmentsData, isLoading: isLoadingAssignments } = useTeacherAssignments();
+  const { data: lessonsData, isLoading: isLoadingLessons } =
+    useTeacherLessons(showArchived);
+  const { data: assignmentsData, isLoading: isLoadingAssignments } =
+    useTeacherAssignments();
   const archiveLesson = useArchiveLesson();
   const restoreLesson = useRestoreLesson();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+  const { logout } = useAdmin();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   const handleEdit = (lesson) => {
@@ -42,28 +78,42 @@ function TeacherMaterials() {
   };
 
   const handleArchive = async (lesson) => {
-    if (!window.confirm(`Are you sure you want to archive "${lesson.title}"? This will deactivate the lesson.`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to archive "${lesson.title}"? This will deactivate the lesson.`,
+      )
+    ) {
       return;
     }
 
     try {
       await archiveLesson.mutateAsync(lesson._id || lesson.id);
     } catch (error) {
-      console.error('Archive error:', error);
-      alert(error.response?.data?.message || 'Failed to archive lesson. Please try again.');
+      console.error("Archive error:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to archive lesson. Please try again.",
+      );
     }
   };
 
   const handleRestore = async (lesson) => {
-    if (!window.confirm(`Are you sure you want to restore "${lesson.title}"? This will reactivate the lesson.`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to restore "${lesson.title}"? This will reactivate the lesson.`,
+      )
+    ) {
       return;
     }
 
     try {
       await restoreLesson.mutateAsync(lesson._id || lesson.id);
     } catch (error) {
-      console.error('Restore error:', error);
-      alert(error.response?.data?.message || 'Failed to restore lesson. Please try again.');
+      console.error("Restore error:", error);
+      alert(
+        error.response?.data?.message ||
+          "Failed to restore lesson. Please try again.",
+      );
     }
   };
 
@@ -72,43 +122,51 @@ function TeacherMaterials() {
 
   const getFileIcon = (type) => {
     switch (type) {
-      case 'pdf':
+      case "pdf":
         return <FileText className="w-5 h-5 text-red-600" />;
-      case 'video':
+      case "video":
         return <Video className="w-5 h-5 text-indigo-600" />;
-      case 'image':
+      case "image":
         return <Image className="w-5 h-5 text-blue-600" />;
       default:
-        return <File className="w-5 h-5 text-gray-600" />;
+        return <File className="w-5 h-5 text-slate-600" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
               <Link to="/teacher/dashboard" className="flex items-center gap-3">
-                <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
+                <img
+                  src={logo}
+                  alt="TinyLearn"
+                  className="h-10 w-10 object-contain"
+                />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-gray-900">Teacher Portal</h1>
-                  <p className="text-xs text-indigo-600 font-semibold">{teacherUser.subject}</p>
+                  <h1 className="text-xl font-black text-slate-900">
+                    Teacher Portal
+                  </h1>
+                  <p className="text-xs text-indigo-600 font-semibold">
+                    {teacherUser.subject}
+                  </p>
                 </div>
               </Link>
 
               <div className="hidden md:flex items-center gap-1">
                 <Link
                   to="/teacher/dashboard"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <TrendingUp className="w-4 h-4" />
                   Dashboard
                 </Link>
                 <Link
                   to="/teacher/users"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <Users className="w-4 h-4" />
                   Users
@@ -122,11 +180,13 @@ function TeacherMaterials() {
                 </Link>
                 <Link
                   to="/teacher/messages"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Messages
-                  <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
+                  <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    3
+                  </span>
                 </Link>
               </div>
             </div>
@@ -135,16 +195,26 @@ function TeacherMaterials() {
               <Button variant="ghost" size="sm">
                 <Bell className="w-5 h-5" />
               </Button>
-              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                  {teacherUser.name.split(' ').map(n => n[0]).join('')}
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                  {teacherUser.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-900">{teacherUser.name}</p>
-                  <p className="text-xs text-gray-500">Teacher</p>
+                  <p className="text-xs font-bold text-slate-900">
+                    {teacherUser.name}
+                  </p>
+                  <p className="text-xs text-slate-500">Teacher</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="flex items-center gap-2"
+              >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Logout</span>
               </Button>
@@ -156,18 +226,26 @@ function TeacherMaterials() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-black text-gray-900 mb-2">Learning Materials</h2>
-          <p className="text-gray-600 text-lg">Upload modules and create assignments</p>
+          <h2 className="text-3xl font-black text-slate-900 mb-2">
+            Learning Materials
+          </h2>
+          <p className="text-slate-600 text-lg">
+            Upload modules and create assignments
+          </p>
         </div>
 
         {/* Stats */}
         <div className="grid sm:grid-cols-3 gap-6 mb-8">
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Total Lessons</p>
-                  <p className="text-4xl font-black text-gray-900">{lessons.length}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Total Lessons
+                  </p>
+                  <p className="text-4xl font-black text-slate-900">
+                    {lessons.length}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-indigo-50">
                   <BookOpen className="w-8 h-8 text-indigo-600" />
@@ -175,12 +253,16 @@ function TeacherMaterials() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Active Assignments</p>
-                  <p className="text-4xl font-black text-gray-900">{assignments.filter(a => a.isActive !== false).length}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Active Assignments
+                  </p>
+                  <p className="text-4xl font-black text-slate-900">
+                    {assignments.filter((a) => a.isActive !== false).length}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-blue-50">
                   <FileText className="w-8 h-8 text-blue-600" />
@@ -188,12 +270,16 @@ function TeacherMaterials() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Active Lessons</p>
-                  <p className="text-4xl font-black text-gray-900">{lessons.filter(l => l.isActive !== false).length}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Active Lessons
+                  </p>
+                  <p className="text-4xl font-black text-slate-900">
+                    {lessons.filter((l) => l.isActive !== false).length}
+                  </p>
                 </div>
                 <div className="p-4 rounded-xl bg-green-50">
                   <Eye className="w-8 h-8 text-green-600" />
@@ -206,17 +292,25 @@ function TeacherMaterials() {
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
           <Button
-            onClick={() => setActiveTab('modules')}
-            variant={activeTab === 'modules' ? 'default' : 'outline'}
-            className={activeTab === 'modules' ? 'bg-gradient-to-r from-indigo-500 to-blue-600' : ''}
+            onClick={() => setActiveTab("modules")}
+            variant={activeTab === "modules" ? "default" : "outline"}
+            className={
+              activeTab === "modules"
+                ? "bg-gradient-to-r from-indigo-500 to-blue-600"
+                : ""
+            }
           >
             <BookOpen className="w-4 h-4 mr-2" />
             Learning Modules
           </Button>
           <Button
-            onClick={() => setActiveTab('assignments')}
-            variant={activeTab === 'assignments' ? 'default' : 'outline'}
-            className={activeTab === 'assignments' ? 'bg-gradient-to-r from-indigo-500 to-blue-600' : ''}
+            onClick={() => setActiveTab("assignments")}
+            variant={activeTab === "assignments" ? "default" : "outline"}
+            className={
+              activeTab === "assignments"
+                ? "bg-gradient-to-r from-indigo-500 to-blue-600"
+                : ""
+            }
           >
             <FileText className="w-4 h-4 mr-2" />
             Assignments
@@ -224,19 +318,25 @@ function TeacherMaterials() {
         </div>
 
         {/* Modules Tab */}
-        {activeTab === 'modules' && (
-          <Card className="border-none shadow-lg">
-            <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
+        {activeTab === "modules" && (
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="border-b border-slate-100 bg-slate-50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-2xl font-black">Learning Lessons</CardTitle>
+                <CardTitle className="text-2xl font-black">
+                  Learning Lessons
+                </CardTitle>
                 <div className="flex gap-3">
                   <Button
                     variant={showArchived ? "default" : "outline"}
                     onClick={() => setShowArchived(!showArchived)}
-                    className={showArchived ? "bg-orange-500 hover:bg-orange-600 text-white" : ""}
+                    className={
+                      showArchived
+                        ? "bg-orange-500 hover:bg-orange-600 text-white"
+                        : ""
+                    }
                   >
                     <Archive className="w-4 h-4 mr-2" />
-                    {showArchived ? 'Hide Archived' : 'Show Archived'}
+                    {showArchived ? "Hide Archived" : "Show Archived"}
                   </Button>
                   <Button
                     onClick={() => setShowCreateLessonModal(true)}
@@ -259,33 +359,40 @@ function TeacherMaterials() {
             <CardContent className="p-6">
               {isLoadingLessons ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">Loading lessons...</p>
+                  <p className="text-slate-600">Loading lessons...</p>
                 </div>
               ) : lessons.length === 0 ? (
                 <div className="text-center py-8">
                   <BookOpen className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">No lessons found</p>
+                  <p className="text-slate-600">No lessons found</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {lessons.map((lesson) => (
-                    <div key={lesson._id || lesson.id} className={`border-2 rounded-xl p-5 hover:border-indigo-200 transition-all ${!lesson.isActive ? 'opacity-60 bg-gray-50 border-gray-200' : 'border-gray-100 hover:bg-indigo-50/30'}`}>
+                    <div
+                      key={lesson._id || lesson.id}
+                      className={`border-2 rounded-xl p-5 hover:border-indigo-200 transition-all ${!lesson.isActive ? "opacity-60 bg-slate-50 border-slate-200" : "border-slate-100 hover:bg-indigo-50/30"}`}
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4 flex-1">
                           {lesson.imageUrl ? (
-                            <img 
-                              src={lesson.imageUrl} 
+                            <img
+                              src={lesson.imageUrl}
                               alt={lesson.title}
                               className="w-16 h-16 object-cover rounded-xl"
                             />
                           ) : (
-                            <div className="p-3 rounded-xl bg-gray-50">
+                            <div className="p-3 rounded-xl bg-slate-50">
                               <BookOpen className="w-8 h-8 text-indigo-600" />
                             </div>
                           )}
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className={`font-bold ${!lesson.isActive ? 'text-gray-500' : 'text-gray-900'}`}>{lesson.title}</h3>
+                              <h3
+                                className={`font-bold ${!lesson.isActive ? "text-slate-500" : "text-slate-900"}`}
+                              >
+                                {lesson.title}
+                              </h3>
                               {!lesson.isActive && (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
                                   <Archive className="w-3 h-3" />
@@ -293,10 +400,14 @@ function TeacherMaterials() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                              <span className="capitalize">{lesson.category}</span>
+                            <div className="flex items-center gap-4 text-sm text-slate-600">
+                              <span className="capitalize">
+                                {lesson.category}
+                              </span>
                               <span>•</span>
-                              <span className="capitalize">{lesson.difficulty}</span>
+                              <span className="capitalize">
+                                {lesson.difficulty}
+                              </span>
                               <span>•</span>
                               <span>{lesson.ageGroup}</span>
                               {lesson.duration && (
@@ -308,27 +419,38 @@ function TeacherMaterials() {
                               {lesson.createdAt && (
                                 <>
                                   <span>•</span>
-                                  <span>Created {new Date(lesson.createdAt).toLocaleDateString()}</span>
+                                  <span>
+                                    Created{" "}
+                                    {new Date(
+                                      lesson.createdAt,
+                                    ).toLocaleDateString()}
+                                  </span>
                                 </>
                               )}
                             </div>
                             {lesson.description && (
-                              <p className="text-sm text-gray-500 mt-1 line-clamp-1">{lesson.description}</p>
+                              <p className="text-sm text-slate-500 mt-1 line-clamp-1">
+                                {lesson.description}
+                              </p>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="hover:bg-blue-50 hover:text-blue-600"
-                            onClick={() => navigate(`/teacher/lessons/${lesson._id || lesson.id}`)}
+                            onClick={() =>
+                              navigate(
+                                `/teacher/lessons/${lesson._id || lesson.id}`,
+                              )
+                            }
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="hover:bg-indigo-50 hover:text-indigo-600"
                             onClick={() => handleEdit(lesson)}
                             disabled={!lesson.isActive}
@@ -336,9 +458,9 @@ function TeacherMaterials() {
                             <Edit className="w-4 h-4" />
                           </Button>
                           {lesson.isActive ? (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="hover:bg-red-50 hover:text-red-600"
                               onClick={() => handleArchive(lesson)}
                               disabled={archiveLesson.isPending}
@@ -346,9 +468,9 @@ function TeacherMaterials() {
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           ) : (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="hover:bg-green-50 hover:text-green-600"
                               onClick={() => handleRestore(lesson)}
                               disabled={restoreLesson.isPending}
@@ -367,11 +489,13 @@ function TeacherMaterials() {
         )}
 
         {/* Assignments Tab */}
-        {activeTab === 'assignments' && (
-          <Card className="border-none shadow-lg">
-            <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
+        {activeTab === "assignments" && (
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="border-b border-slate-100 bg-slate-50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-2xl font-black">Assignments</CardTitle>
+                <CardTitle className="text-2xl font-black">
+                  Assignments
+                </CardTitle>
                 <Button
                   onClick={() => setShowCreateAssignmentModal(true)}
                   className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-purple-600 hover:to-indigo-600"
@@ -384,48 +508,85 @@ function TeacherMaterials() {
             <CardContent className="p-6">
               {isLoadingAssignments ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">Loading assignments...</p>
+                  <p className="text-slate-600">Loading assignments...</p>
                 </div>
               ) : assignments.length === 0 ? (
                 <div className="text-center py-8">
                   <FileText className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600">No assignments found</p>
-                  <p className="text-sm text-gray-500 mt-2">Create your first assignment to get started</p>
+                  <p className="text-slate-600">No assignments found</p>
+                  <p className="text-sm text-slate-500 mt-2">
+                    Create your first assignment to get started
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Title</th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Linked Lesson</th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Due Date</th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Submissions</th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Type</th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Status</th>
-                        <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Title
+                        </th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Linked Lesson
+                        </th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Due Date
+                        </th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Submissions
+                        </th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Type
+                        </th>
+                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                          Status
+                        </th>
+                        <th className="text-right py-4 px-4 text-sm font-bold text-slate-700">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {assignments.map((assignment) => {
                         const assignmentId = assignment._id || assignment.id;
-                        const submissionStats = assignment.submissionStats || {};
+                        const submissionStats =
+                          assignment.submissionStats || {};
                         const totalAssigned = submissionStats.total || 0;
                         const submitted = submissionStats.submitted || 0;
-                        const dueDate = assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : 'N/A';
-                        const lessonTitle = assignment.lessonId?.title || 'No lesson linked';
+                        const dueDate = assignment.dueDate
+                          ? new Date(assignment.dueDate).toLocaleDateString()
+                          : "N/A";
+                        const lessonTitle =
+                          assignment.lessonId?.title || "No lesson linked";
                         const isActive = assignment.isActive !== false;
-                        const progressPercentage = totalAssigned > 0 ? (submitted / totalAssigned) * 100 : 0;
+                        const progressPercentage =
+                          totalAssigned > 0
+                            ? (submitted / totalAssigned) * 100
+                            : 0;
 
                         return (
-                          <tr key={assignmentId} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${!isActive ? 'opacity-60 bg-gray-50' : ''}`}>
-                            <td className="py-4 px-4 font-semibold text-gray-900">{assignment.title}</td>
-                            <td className="py-4 px-4 text-sm text-gray-600">{lessonTitle}</td>
-                            <td className="py-4 px-4 text-sm text-gray-600">{dueDate}</td>
+                          <tr
+                            key={assignmentId}
+                            className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${!isActive ? "opacity-60 bg-slate-50" : ""}`}
+                          >
+                            <td className="py-4 px-4 font-semibold text-slate-900">
+                              {assignment.title}
+                            </td>
+                            <td className="py-4 px-4 text-sm text-slate-600">
+                              {lessonTitle}
+                            </td>
+                            <td className="py-4 px-4 text-sm text-slate-600">
+                              {dueDate}
+                            </td>
                             <td className="py-4 px-4">
                               <div className="text-sm">
-                                <span className="font-semibold text-gray-900">{submitted}</span>
-                                <span className="text-gray-600"> / {totalAssigned}</span>
+                                <span className="font-semibold text-slate-900">
+                                  {submitted}
+                                </span>
+                                <span className="text-slate-600">
+                                  {" "}
+                                  / {totalAssigned}
+                                </span>
                               </div>
                               {totalAssigned > 0 && (
                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
@@ -438,35 +599,47 @@ function TeacherMaterials() {
                             </td>
                             <td className="py-4 px-4">
                               <span className="px-2 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 capitalize">
-                                {assignment.assignmentType || 'homework'}
+                                {assignment.assignmentType || "homework"}
                               </span>
                             </td>
                             <td className="py-4 px-4">
-                              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                              }`}>
-                                {isActive ? 'Active' : 'Archived'}
+                              <span
+                                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                  isActive
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-slate-100 text-slate-700"
+                                }`}
+                              >
+                                {isActive ? "Active" : "Archived"}
                               </span>
                             </td>
                             <td className="py-4 px-4">
                               <div className="flex items-center justify-end gap-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   className="hover:bg-blue-50 hover:text-blue-600"
-                                  onClick={() => navigate(`/teacher/assignments/${assignmentId}/submissions`)}
+                                  onClick={() =>
+                                    navigate(
+                                      `/teacher/assignments/${assignmentId}/submissions`,
+                                    )
+                                  }
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   className="hover:bg-indigo-50 hover:text-indigo-600"
                                   disabled={!isActive}
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" className="hover:bg-red-50 hover:text-red-600">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="hover:bg-red-50 hover:text-red-600"
+                                >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                               </div>
@@ -484,14 +657,14 @@ function TeacherMaterials() {
       </div>
 
       {/* Create Lesson Modal */}
-      <CreateLesson 
-        isOpen={showCreateLessonModal} 
-        onClose={() => setShowCreateLessonModal(false)} 
+      <CreateLesson
+        isOpen={showCreateLessonModal}
+        onClose={() => setShowCreateLessonModal(false)}
       />
 
       {/* Edit Lesson Modal */}
-      <EditLesson 
-        isOpen={showEditLessonModal} 
+      <EditLesson
+        isOpen={showEditLessonModal}
         onClose={() => {
           setShowEditLessonModal(false);
           setSelectedLesson(null);
@@ -503,34 +676,46 @@ function TeacherMaterials() {
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-2xl shadow-2xl">
-            <CardHeader className="border-b border-gray-100">
-              <CardTitle className="text-2xl font-black">Upload Learning Module</CardTitle>
+            <CardHeader className="border-b border-slate-100">
+              <CardTitle className="text-2xl font-black">
+                Upload Learning Module
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Module Title</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Module Title
+                </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="e.g., Introduction to Algebra"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Description
+                </label>
                 <textarea
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   rows="3"
                   placeholder="Brief description of the module..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Upload File</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Upload File
+                </label>
+                <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer">
                   <Upload className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-                  <p className="text-sm font-semibold text-gray-700 mb-1">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500">PDF, Video, or Image files (Max 100MB)</p>
+                  <p className="text-sm font-semibold text-slate-700 mb-1">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    PDF, Video, or Image files (Max 100MB)
+                  </p>
                 </div>
               </div>
 
@@ -556,9 +741,9 @@ function TeacherMaterials() {
       )}
 
       {/* Create Assignment Modal */}
-      <CreateAssignment 
-        isOpen={showCreateAssignmentModal} 
-        onClose={() => setShowCreateAssignmentModal(false)} 
+      <CreateAssignment
+        isOpen={showCreateAssignmentModal}
+        onClose={() => setShowCreateAssignmentModal(false)}
       />
     </div>
   );

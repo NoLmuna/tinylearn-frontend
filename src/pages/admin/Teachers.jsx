@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAdmin } from '../../contexts/adminContext';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { 
@@ -31,10 +32,11 @@ function Teachers() {
   const [filterSubject, setFilterSubject] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  const { logout } = useAdmin();
   const adminUser = { name: 'Administrator', email: 'admin@tinylearn.com' };
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -66,18 +68,18 @@ function Teachers() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-slate-50">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-lg bg-white/95">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-8">
               <Link to="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                  <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
                     TinyLearn
-                    <span className="text-xs font-semibold px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-md">
+                    <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white rounded-md">
                       ADMIN
                     </span>
                   </h1>
@@ -91,7 +93,7 @@ function Teachers() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                     activeNav === 'dashboard'
                       ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <LayoutDashboard className="w-4 h-4" />
@@ -103,7 +105,7 @@ function Teachers() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                     activeNav === 'teachers'
                       ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <Users className="w-4 h-4" />
@@ -115,7 +117,7 @@ function Teachers() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                     activeNav === 'reports'
                       ? 'bg-indigo-50 text-indigo-600'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   <BarChart3 className="w-4 h-4" />
@@ -125,13 +127,13 @@ function Teachers() {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
                   <Shield className="w-4 h-4 text-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-xs font-bold text-gray-900">{adminUser.name}</p>
-                  <p className="text-xs text-gray-500">Admin</p>
+                  <p className="text-xs font-bold text-slate-900">{adminUser.name}</p>
+                  <p className="text-xs text-slate-500">Admin</p>
                 </div>
               </div>
               <Button
@@ -152,59 +154,59 @@ function Teachers() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-4xl font-black text-gray-900 mb-2">Teacher Management</h2>
-          <p className="text-lg text-gray-600">Manage and monitor all teacher accounts</p>
+          <h2 className="text-4xl font-black text-slate-900 mb-2">Teacher Management</h2>
+          <p className="text-lg text-slate-600">Manage and monitor all teacher accounts</p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-600">Total Teachers</p>
+                <p className="text-sm font-medium text-slate-600">Total Teachers</p>
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
-              <p className="text-3xl font-black text-gray-900">{teachers.length}</p>
+              <p className="text-3xl font-black text-slate-900">{teachers.length}</p>
               <p className="text-xs text-green-600 font-semibold mt-1">+2 this month</p>
             </CardContent>
           </Card>
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-600">Total Classes</p>
+                <p className="text-sm font-medium text-slate-600">Total Classes</p>
                 <LayoutDashboard className="w-5 h-5 text-emerald-600" />
               </div>
-              <p className="text-3xl font-black text-gray-900">{teachers.reduce((acc, t) => acc + t.classes, 0)}</p>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Across all teachers</p>
+              <p className="text-3xl font-black text-slate-900">{teachers.reduce((acc, t) => acc + t.classes, 0)}</p>
+              <p className="text-xs text-slate-500 font-semibold mt-1">Across all teachers</p>
             </CardContent>
           </Card>
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-600">Total Students</p>
+                <p className="text-sm font-medium text-slate-600">Total Students</p>
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
-              <p className="text-3xl font-black text-gray-900">{teachers.reduce((acc, t) => acc + t.students, 0)}</p>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Learning actively</p>
+              <p className="text-3xl font-black text-slate-900">{teachers.reduce((acc, t) => acc + t.students, 0)}</p>
+              <p className="text-xs text-slate-500 font-semibold mt-1">Learning actively</p>
             </CardContent>
           </Card>
-          <Card className="border-none shadow-lg">
+          <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-medium text-gray-600">Subjects</p>
+                <p className="text-sm font-medium text-slate-600">Subjects</p>
                 <BarChart3 className="w-5 h-5 text-purple-600" />
               </div>
-              <p className="text-3xl font-black text-gray-900">{subjects.length - 1}</p>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Different subjects</p>
+              <p className="text-3xl font-black text-slate-900">{subjects.length - 1}</p>
+              <p className="text-xs text-slate-500 font-semibold mt-1">Different subjects</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Teachers Table */}
-        <Card className="border-none shadow-lg">
-          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="border-b border-slate-100 bg-slate-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <CardTitle className="text-2xl font-black text-gray-900">All Teachers</CardTitle>
+              <CardTitle className="text-2xl font-black text-slate-900">All Teachers</CardTitle>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Download className="w-4 h-4" />
@@ -212,7 +214,7 @@ function Teachers() {
                 </Button>
                 <Button
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg"
+                  className="bg-indigo-600 hover:bg-indigo-700 transition-colors hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Teacher
@@ -230,7 +232,7 @@ function Teachers() {
                   placeholder="Search by name or email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -238,7 +240,7 @@ function Teachers() {
                 <select
                   value={filterSubject}
                   onChange={(e) => setFilterSubject(e.target.value)}
-                  className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+                  className="px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
                 >
                   {subjects.map(subject => (
                     <option key={subject} value={subject.toLowerCase()}>{subject}</option>
@@ -251,26 +253,26 @@ function Teachers() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Teacher</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Subject</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Classes</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Students</th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-700">Join Date</th>
-                    <th className="text-right py-4 px-4 text-sm font-bold text-gray-700">Actions</th>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">Teacher</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">Subject</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">Classes</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">Students</th>
+                    <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">Join Date</th>
+                    <th className="text-right py-4 px-4 text-sm font-bold text-slate-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredTeachers.map((teacher) => (
-                    <tr key={teacher.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <tr key={teacher.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-white font-bold text-sm">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
                             {teacher.name.split(' ').map(n => n[0]).join('')}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-900">{teacher.name}</p>
-                            <p className="text-xs text-gray-500">{teacher.email}</p>
+                            <p className="font-semibold text-slate-900">{teacher.name}</p>
+                            <p className="text-xs text-slate-500">{teacher.email}</p>
                           </div>
                         </div>
                       </td>
@@ -279,9 +281,9 @@ function Teachers() {
                           {teacher.subject}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-gray-900 font-semibold">{teacher.classes}</td>
-                      <td className="py-4 px-4 text-gray-900 font-semibold">{teacher.students}</td>
-                      <td className="py-4 px-4 text-gray-600 text-sm">{teacher.joinDate}</td>
+                      <td className="py-4 px-4 text-slate-900 font-semibold">{teacher.classes}</td>
+                      <td className="py-4 px-4 text-slate-900 font-semibold">{teacher.students}</td>
+                      <td className="py-4 px-4 text-slate-600 text-sm">{teacher.joinDate}</td>
                       <td className="py-4 px-4">
                         <div className="flex items-center justify-end gap-2">
                           <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
@@ -304,7 +306,7 @@ function Teachers() {
             {filteredTeachers.length === 0 && (
               <div className="text-center py-12">
                 <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 font-semibold">No teachers found</p>
+                <p className="text-slate-500 font-semibold">No teachers found</p>
               </div>
             )}
           </CardContent>

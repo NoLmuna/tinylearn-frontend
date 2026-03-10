@@ -10,45 +10,62 @@ function About() {
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-8">
             About TinyLearn
           </h1>
-          
+
           <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
             <p>
-              TinyLearn is a modern web application built with the latest technologies
-              to provide a seamless learning experience. We believe that education should
-              be accessible, engaging, and effective for everyone.
+              TinyLearn is a modern web application built with the latest
+              technologies to provide a seamless learning experience. We believe
+              that education should be accessible, engaging, and effective for
+              everyone.
             </p>
-            
+
             <p>
-              Our platform combines cutting-edge technology with proven educational methods
-              to create an experience that's both powerful and intuitive. Whether you're
-              starting a new career, expanding your skills, or pursuing a passion, we're
-              here to support your journey.
+              Our platform combines cutting-edge technology with proven
+              educational methods to create an experience that's both powerful
+              and intuitive. Whether you're starting a new career, expanding
+              your skills, or pursuing a passion, we're here to support your
+              journey.
             </p>
-            
+
             <p>
-              Founded in 2025, TinyLearn has grown to serve thousands of learners worldwide.
-              Our team is dedicated to continuous improvement and innovation, ensuring that
-              you always have access to the best learning tools and resources.
+              Founded in 2025, TinyLearn has grown to serve thousands of
+              learners worldwide. Our team is dedicated to continuous
+              improvement and innovation, ensuring that you always have access
+              to the best learning tools and resources.
             </p>
 
             <div className="mt-12 pt-8 border-t border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Values</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Our Values
+              </h2>
               <ul className="space-y-3">
                 <li className="flex items-start">
                   <span className="text-blue-600 font-bold mr-3">•</span>
-                  <span><strong>Accessibility:</strong> Learning should be available to everyone, everywhere</span>
+                  <span>
+                    <strong>Accessibility:</strong> Learning should be available
+                    to everyone, everywhere
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-600 font-bold mr-3">•</span>
-                  <span><strong>Quality:</strong> We maintain the highest standards in all our content</span>
+                  <span>
+                    <strong>Quality:</strong> We maintain the highest standards
+                    in all our content
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-600 font-bold mr-3">•</span>
-                  <span><strong>Community:</strong> Learning is better together</span>
+                  <span>
+                    <strong>Collaboration:</strong> Facilitating seamless
+                    connections between teachers and parents
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-blue-600 font-bold mr-3">•</span>
-                  <span><strong>Innovation:</strong> We constantly evolve to meet your needs</span>
+                  <span>
+                    <strong>Engagement:</strong> Making learning an exciting
+                    adventure for students
+                  </span>
                 </li>
               </ul>
             </div>

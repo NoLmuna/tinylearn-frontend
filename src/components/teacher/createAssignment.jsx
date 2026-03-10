@@ -46,6 +46,7 @@ function CreateAssignment({ isOpen, onClose }) {
   useEffect(() => {
     // Reset form when modal opens
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         title: '',
         description: '',
@@ -214,16 +215,16 @@ function CreateAssignment({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
+        <CardHeader className="border-b border-slate-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
           <CardTitle className="text-2xl font-black flex items-center gap-2">
             <FileText className="w-6 h-6" />
             Create New Assignment
           </CardTitle>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-slate-500" />
           </button>
         </CardHeader>
         <CardContent className="p-6">
@@ -246,17 +247,17 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2">Basic Information</h3>
+              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
               
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Title *</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Title *</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    formErrors.title ? 'border-red-300' : 'border-gray-200'
+                    formErrors.title ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="e.g., Algebra Practice Set 1"
                 />
@@ -266,14 +267,14 @@ function CreateAssignment({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Description *</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Description *</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows="4"
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    formErrors.description ? 'border-red-300' : 'border-gray-200'
+                    formErrors.description ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="Assignment description and instructions..."
                 />
@@ -283,7 +284,7 @@ function CreateAssignment({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                   <BookOpen className="w-4 h-4" />
                   Link to Lesson (Optional)
                 </label>
@@ -291,7 +292,7 @@ function CreateAssignment({ isOpen, onClose }) {
                   name="lessonId"
                   value={formData.lessonId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">Select a lesson (optional)</option>
                   {lessons.filter(l => l.isActive !== false).map((lesson) => (
@@ -305,11 +306,11 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Assignment Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2">Assignment Details</h3>
+              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Assignment Details</h3>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     <Calendar className="w-4 h-4" />
                     Due Date *
                   </label>
@@ -320,7 +321,7 @@ function CreateAssignment({ isOpen, onClose }) {
                     onChange={handleInputChange}
                     min={getMinDate()}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.dueDate ? 'border-red-300' : 'border-gray-200'
+                      formErrors.dueDate ? 'border-red-300' : 'border-slate-200'
                     }`}
                   />
                   {formErrors.dueDate && (
@@ -329,7 +330,7 @@ function CreateAssignment({ isOpen, onClose }) {
                 </div>
 
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
                     <Award className="w-4 h-4" />
                     Max Points *
                   </label>
@@ -341,7 +342,7 @@ function CreateAssignment({ isOpen, onClose }) {
                     min="1"
                     max="1000"
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.maxPoints ? 'border-red-300' : 'border-gray-200'
+                      formErrors.maxPoints ? 'border-red-300' : 'border-slate-200'
                     }`}
                   />
                   {formErrors.maxPoints && (
@@ -351,12 +352,12 @@ function CreateAssignment({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Assignment Type *</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Assignment Type *</label>
                 <select
                   name="assignmentType"
                   value={formData.assignmentType}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   {assignmentTypes.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -369,13 +370,13 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Student Assignment */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2 flex items-center gap-2">
+              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
                 <Users className="w-5 h-5" />
                 Assign To
               </h3>
               
               <div>
-                <label className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-xl hover:border-indigo-300 cursor-pointer transition-colors">
+                <label className="flex items-center gap-3 p-4 border-2 border-slate-200 rounded-xl hover:border-indigo-300 cursor-pointer transition-colors">
                   <input
                     type="checkbox"
                     name="assignToAll"
@@ -383,18 +384,18 @@ function CreateAssignment({ isOpen, onClose }) {
                     onChange={handleInputChange}
                     className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                   />
-                  <span className="font-semibold text-gray-900">Assign to All Students</span>
+                  <span className="font-semibold text-slate-900">Assign to All Students</span>
                 </label>
               </div>
 
               {!formData.assignToAll && (
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Select Students *</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Select Students *</label>
                   <div className={`max-h-60 overflow-y-auto border-2 rounded-xl p-4 ${
-                    formErrors.assignedTo ? 'border-red-300' : 'border-gray-200'
+                    formErrors.assignedTo ? 'border-red-300' : 'border-slate-200'
                   }`}>
                     {students.length === 0 ? (
-                      <p className="text-sm text-gray-500 text-center py-4">No students available</p>
+                      <p className="text-sm text-slate-500 text-center py-4">No students available</p>
                     ) : (
                       <div className="space-y-2">
                         {students.map((student) => {
@@ -408,7 +409,7 @@ function CreateAssignment({ isOpen, onClose }) {
                           return (
                             <label
                               key={studentId}
-                              className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer"
+                              className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg cursor-pointer"
                             >
                               <input
                                 type="checkbox"
@@ -416,7 +417,7 @@ function CreateAssignment({ isOpen, onClose }) {
                                 onChange={() => handleStudentToggle(studentId)}
                                 className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
                               />
-                              <span className="text-sm text-gray-700">{studentName}</span>
+                              <span className="text-sm text-slate-700">{studentName}</span>
                             </label>
                           );
                         })}
@@ -431,7 +432,7 @@ function CreateAssignment({ isOpen, onClose }) {
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
+            <div className="flex gap-3 pt-4 border-t border-slate-200">
               <Button
                 type="button"
                 onClick={handleClose}

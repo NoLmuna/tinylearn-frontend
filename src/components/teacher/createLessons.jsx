@@ -253,16 +253,16 @@ function CreateLesson({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="border-b border-gray-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
+        <CardHeader className="border-b border-slate-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
           <CardTitle className="text-2xl font-black flex items-center gap-2">
             <BookOpen className="w-6 h-6" />
             Create New Lesson
           </CardTitle>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-slate-500" />
           </button>
         </CardHeader>
         <CardContent className="p-6">
@@ -285,17 +285,17 @@ function CreateLesson({ isOpen, onClose }) {
 
             {/* Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-gray-900 border-b border-gray-200 pb-2">Basic Information</h3>
+              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
               
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Title *</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Title *</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    formErrors.title ? 'border-red-300' : 'border-gray-200'
+                    formErrors.title ? 'border-red-300' : 'border-slate-200'
                   }`}
                   placeholder="e.g., Introduction to Algebra"
                 />
@@ -305,26 +305,26 @@ function CreateLesson({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Brief description of the lesson..."
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Category *</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Category *</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.category ? 'border-red-300' : 'border-gray-200'
+                      formErrors.category ? 'border-red-300' : 'border-slate-200'
                     }`}
                   >
                     <option value="">Select Category</option>
@@ -342,12 +342,12 @@ function CreateLesson({ isOpen, onClose }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Difficulty</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Difficulty</label>
                   <select
                     name="difficulty"
                     value={formData.difficulty}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -358,14 +358,14 @@ function CreateLesson({ isOpen, onClose }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Age Group *</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Age Group *</label>
                   <input
                     type="text"
                     name="ageGroup"
                     value={formData.ageGroup}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      formErrors.ageGroup ? 'border-red-300' : 'border-gray-200'
+                      formErrors.ageGroup ? 'border-red-300' : 'border-slate-200'
                     }`}
                     placeholder="e.g., 5-7 years"
                   />
@@ -375,7 +375,7 @@ function CreateLesson({ isOpen, onClose }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Duration (minutes)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Duration (minutes)</label>
                   <input
                     type="number"
                     name="duration"
@@ -383,16 +383,16 @@ function CreateLesson({ isOpen, onClose }) {
                     onChange={handleInputChange}
                     min="1"
                     max="300"
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="e.g., 30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Lesson Image</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Lesson Image</label>
                 {!imagePreview ? (
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition-colors">
+                  <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-indigo-400 transition-colors">
                     <input
                       type="file"
                       accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
@@ -407,8 +407,8 @@ function CreateLesson({ isOpen, onClose }) {
                       <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center">
                         <BookOpen className="w-6 h-6 text-indigo-600" />
                       </div>
-                      <p className="text-sm font-semibold text-gray-700">Click to upload image</p>
-                      <p className="text-xs text-gray-500">JPEG, PNG, GIF, or WebP (Max 5MB)</p>
+                      <p className="text-sm font-semibold text-slate-700">Click to upload image</p>
+                      <p className="text-xs text-slate-500">JPEG, PNG, GIF, or WebP (Max 5MB)</p>
                     </label>
                   </div>
                 ) : (
@@ -416,7 +416,7 @@ function CreateLesson({ isOpen, onClose }) {
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-48 object-cover rounded-xl border-2 border-gray-200"
+                      className="w-full h-48 object-cover rounded-xl border-2 border-slate-200"
                     />
                     <button
                       type="button"
@@ -433,13 +433,13 @@ function CreateLesson({ isOpen, onClose }) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Video URL</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Video URL</label>
                 <input
                   type="url"
                   name="videoUrl"
                   value={formData.videoUrl}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="https://example.com/video.mp4"
                 />
               </div>
@@ -453,15 +453,15 @@ function CreateLesson({ isOpen, onClose }) {
                     onChange={handleInputChange}
                     className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm font-bold text-gray-700">Publish immediately</span>
+                  <span className="text-sm font-bold text-slate-700">Publish immediately</span>
                 </label>
               </div>
             </div>
 
             {/* Chapters Section */}
-            <div className="space-y-4 pt-4 border-t border-gray-200">
+            <div className="space-y-4 pt-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-gray-900">Chapters *</h3>
+                <h3 className="text-lg font-black text-slate-900">Chapters *</h3>
                 <Button
                   type="button"
                   onClick={addChapter}
@@ -476,10 +476,10 @@ function CreateLesson({ isOpen, onClose }) {
 
               <div className="space-y-3">
                 {formData.chapters.map((chapter, index) => (
-                  <div key={index} className="p-4 border-2 border-gray-200 rounded-xl bg-gray-50">
+                  <div key={index} className="p-4 border-2 border-slate-200 rounded-xl bg-slate-50">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <label className="block text-sm font-bold text-gray-700">
+                        <label className="block text-sm font-bold text-slate-700">
                           Chapter {index + 1} *
                         </label>
                         {formData.chapters.length > 1 && (
@@ -500,7 +500,7 @@ function CreateLesson({ isOpen, onClose }) {
                           value={chapter.chapter}
                           onChange={(e) => handleChapterChange(index, 'chapter', e.target.value)}
                           className={`w-full px-4 py-2 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                            formErrors[`chapter-${index}`] ? 'border-red-300' : 'border-gray-200'
+                            formErrors[`chapter-${index}`] ? 'border-red-300' : 'border-slate-200'
                           }`}
                           placeholder={`Chapter ${index + 1} title...`}
                         />
@@ -509,14 +509,14 @@ function CreateLesson({ isOpen, onClose }) {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">
+                        <label className="block text-sm font-bold text-slate-700 mb-2">
                           Chapter Content
                         </label>
                         <textarea
                           value={chapter.chapterContent}
                           onChange={(e) => handleChapterChange(index, 'chapterContent', e.target.value)}
                           rows="4"
-                          className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-4 py-2 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                           placeholder={`Enter the content for Chapter ${index + 1}...`}
                         />
                       </div>
@@ -527,7 +527,7 @@ function CreateLesson({ isOpen, onClose }) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
+            <div className="flex gap-3 pt-4 border-t border-slate-200">
               <Button
                 type="button"
                 onClick={handleClose}

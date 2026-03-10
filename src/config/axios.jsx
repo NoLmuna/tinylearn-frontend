@@ -13,29 +13,9 @@ export const api = axios.create({
   },
 });
 
-// Add request interceptor to include token in Authorization header
-api.interceptors.request.use(
-  (config) => {
-    // Get token from cookie
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-      }
-      return null;
-    };
-
-    const token = getCookie('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// The auth token is an HttpOnly cookie set by the server on login.
+// withCredentials: true (above) tells the browser to include it automatically.
+// No manual Authorization header is needed or possible for HttpOnly cookies.
 
 export default api;
 
