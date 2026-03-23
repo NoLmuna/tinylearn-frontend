@@ -182,7 +182,7 @@ function ViewSubmissions() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900">
+                  <h1 className="text-xl font-semibold text-slate-900">
                     Teacher Portal
                   </h1>
                 </div>
@@ -206,7 +206,7 @@ function ViewSubmissions() {
         {assignment && (
           <Card className="mb-6 border-2 border-indigo-200">
             <CardHeader>
-              <CardTitle className="text-2xl font-black text-slate-900 mb-2">
+              <CardTitle className="text-2xl font-semibold text-slate-900 mb-2">
                 {assignment.title}
               </CardTitle>
               <div className="flex items-center gap-4 text-sm text-slate-600">
@@ -254,7 +254,7 @@ function ViewSubmissions() {
           <Card>
             <CardContent className="p-12 text-center">
               <FileText className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
+              <h3 className="text-xl font-medium text-slate-900 mb-2">
                 No submissions found
               </h3>
               <p className="text-slate-600">
@@ -292,7 +292,7 @@ function ViewSubmissions() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <User className="w-5 h-5 text-slate-600" />
-                          <h3 className="text-lg font-bold text-slate-900">
+                          <h3 className="text-lg font-medium text-slate-900">
                             {studentName}
                           </h3>
                           {getStatusBadge(submission.status)}
@@ -317,7 +317,7 @@ function ViewSubmissions() {
                           <div className="ml-8 mt-2 flex items-center gap-4">
                             <div className="flex items-center gap-2">
                               <Award className="w-4 h-4 text-green-600" />
-                              <span className="font-bold text-green-700">
+                              <span className="font-medium text-green-700">
                                 Score: {submission.score} /{" "}
                                 {assignment?.maxPoints || "N/A"}
                               </span>
@@ -380,7 +380,7 @@ function ViewSubmissions() {
           <Card className="w-full max-w-2xl shadow-2xl">
             <CardHeader className="border-b border-slate-100">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-black">
+                <CardTitle className="text-2xl font-semibold">
                   Grade Submission
                 </CardTitle>
                 <button
@@ -400,7 +400,7 @@ function ViewSubmissions() {
               <div className="space-y-6">
                 {/* Student Info */}
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-2">Student</h3>
+                  <h3 className="font-medium text-slate-900 mb-2">Student</h3>
                   <p className="text-slate-700">
                     {selectedSubmission.studentId?.firstName}{" "}
                     {selectedSubmission.studentId?.lastName}
@@ -409,7 +409,7 @@ function ViewSubmissions() {
 
                 {/* Submission Content */}
                 <div>
-                  <h3 className="font-bold text-slate-900 mb-2">Submission</h3>
+                  <h3 className="font-medium text-slate-900 mb-2">Submission</h3>
                   <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-4 max-h-60 overflow-y-auto">
                     <p className="text-slate-700 whitespace-pre-wrap">
                       {selectedSubmission.content || "No content submitted"}
@@ -420,7 +420,7 @@ function ViewSubmissions() {
                 {/* Grade Form */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Score * (Max: {assignment?.maxPoints || "N/A"})
                     </label>
                     <input
@@ -446,7 +446,7 @@ function ViewSubmissions() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Feedback (Optional)
                     </label>
                     <textarea

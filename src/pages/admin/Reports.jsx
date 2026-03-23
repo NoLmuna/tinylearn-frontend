@@ -138,7 +138,7 @@ function Reports() {
               <Link to="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
                     TinyLearn
                     <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white rounded-md">
                       ADMIN
@@ -218,7 +218,7 @@ function Reports() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-4xl font-black text-slate-900 mb-2">System & Reports</h2>
+            <h2 className="text-4xl font-semibold text-slate-900 mb-2">System & Reports</h2>
             <p className="text-lg text-slate-600">Monitor system health and performance metrics</p>
           </div>
           <div className="flex gap-3">
@@ -253,7 +253,7 @@ function Reports() {
                   )}
                 </div>
                 <p className="text-sm font-medium text-slate-600 mb-1">{metric.title}</p>
-                <p className="text-3xl font-black text-slate-900 mb-2">{metric.value}</p>
+                <p className="text-3xl font-semibold text-slate-900 mb-2">{metric.value}</p>
                 <p className="text-xs text-slate-500 font-medium">{metric.detail}</p>
               </CardContent>
             </Card>
@@ -265,7 +265,7 @@ function Reports() {
           <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="border-b border-slate-100">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
+                <CardTitle className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
                   <Clock className="w-6 h-6 text-indigo-600" />
                   Performance Logs
                 </CardTitle>
@@ -305,7 +305,7 @@ function Reports() {
           <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="border-b border-slate-100">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
+                <CardTitle className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
                   <BarChart3 className="w-6 h-6 text-indigo-600" />
                   User Statistics
                 </CardTitle>
@@ -324,7 +324,7 @@ function Reports() {
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-slate-900">{stat.label}</p>
                     </div>
-                    <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                    <p className="text-2xl font-semibold text-slate-900">{stat.value}</p>
                   </div>
                 ))}
               </div>
@@ -335,7 +335,7 @@ function Reports() {
         {/* System Overview Card */}
         <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="border-b border-slate-100 bg-slate-50">
-            <CardTitle className="text-2xl font-black text-slate-900">Quick System Overview</CardTitle>
+            <CardTitle className="text-2xl font-semibold text-slate-900">Quick System Overview</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid md:grid-cols-3 gap-6">
@@ -343,7 +343,7 @@ function Reports() {
                 <div className="flex items-center gap-3 mb-4">
                   <CheckCircle className="w-8 h-8 text-green-600" />
                   <div>
-                    <p className="text-2xl font-black text-slate-900">All Clear</p>
+                    <p className="text-2xl font-semibold text-slate-900">All Clear</p>
                     <p className="text-sm text-slate-600">System Status</p>
                   </div>
                 </div>
@@ -354,7 +354,7 @@ function Reports() {
                 <div className="flex items-center gap-3 mb-4">
                   <TrendingUp className="w-8 h-8 text-blue-600" />
                   <div>
-                    <p className="text-2xl font-black text-slate-900">Optimized</p>
+                    <p className="text-2xl font-semibold text-slate-900">Optimized</p>
                     <p className="text-sm text-slate-600">Performance</p>
                   </div>
                 </div>
@@ -365,7 +365,7 @@ function Reports() {
                 <div className="flex items-center gap-3 mb-4">
                   <Activity className="w-8 h-8 text-purple-600" />
                   <div>
-                    <p className="text-2xl font-black text-slate-900">1,234</p>
+                    <p className="text-2xl font-semibold text-slate-900">1,234</p>
                     <p className="text-sm text-slate-600">Active Users</p>
                   </div>
                 </div>

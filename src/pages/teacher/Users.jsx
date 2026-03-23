@@ -230,7 +230,7 @@ function TeacherUsers() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900">
+                  <h1 className="text-xl font-semibold text-slate-900">
                     Teacher Portal
                   </h1>
                   <p className="text-xs text-indigo-600 font-semibold">
@@ -279,14 +279,14 @@ function TeacherUsers() {
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm">
                   {teacherUser.name
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900">
+                  <p className="text-xs font-medium text-slate-900">
                     {teacherUser.name}
                   </p>
                   <p className="text-xs text-slate-500">Teacher</p>
@@ -309,7 +309,7 @@ function TeacherUsers() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-black text-slate-900 mb-2">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-2">
             User Management
           </h2>
           <p className="text-slate-600 text-lg">
@@ -326,7 +326,7 @@ function TeacherUsers() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Total Students
                   </p>
-                  <p className="text-4xl font-black text-slate-900">
+                  <p className="text-4xl font-semibold text-slate-900">
                     {studentCount}
                   </p>
                   <p className="text-xs text-slate-500 mt-2">
@@ -347,7 +347,7 @@ function TeacherUsers() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Linked Parents
                   </p>
-                  <p className="text-4xl font-black text-slate-900">
+                  <p className="text-4xl font-semibold text-slate-900">
                     {parentCount}
                   </p>
                   <p className="text-xs text-slate-500 mt-2">
@@ -368,7 +368,7 @@ function TeacherUsers() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Avg. Performance
                   </p>
-                  <p className="text-4xl font-black text-slate-900">89%</p>
+                  <p className="text-4xl font-semibold text-slate-900">89%</p>
                   <p className="text-xs text-slate-500 mt-2">
                     ↑ 5% improvement
                   </p>
@@ -439,7 +439,7 @@ function TeacherUsers() {
               <div className="w-20 h-20 mx-auto mb-4 bg-indigo-50 rounded-2xl flex items-center justify-center animate-pulse">
                 <Users className="w-10 h-10 text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
+              <h3 className="text-xl font-medium text-slate-900 mb-2">
                 Loading users...
               </h3>
               <p className="text-slate-600">
@@ -461,7 +461,7 @@ function TeacherUsers() {
                   {/* Header with Avatar */}
                   <div className="flex items-center gap-4 mb-4">
                     <div
-                      className={`w-14 h-14 rounded-full bg-gradient-to-br ${!user.isActive ? "from-gray-400 to-gray-600" : user.type === "student" ? "from-blue-400 to-blue-600" : "from-green-400 to-green-600"} flex items-center justify-center text-white font-bold text-lg shadow-md`}
+                      className={`w-14 h-14 rounded-full bg-gradient-to-br ${!user.isActive ? "from-gray-400 to-gray-600" : user.type === "student" ? "from-blue-400 to-blue-600" : "from-green-400 to-green-600"} flex items-center justify-center text-white font-medium text-lg shadow-md`}
                     >
                       {user.name
                         .split(" ")
@@ -471,7 +471,7 @@ function TeacherUsers() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3
-                          className={`font-bold text-lg ${!user.isActive ? "text-slate-500" : "text-slate-900"}`}
+                          className={`font-medium text-lg ${!user.isActive ? "text-slate-500" : "text-slate-900"}`}
                         >
                           {user.name}
                         </h3>
@@ -536,7 +536,7 @@ function TeacherUsers() {
                           <span className="text-xs font-semibold text-slate-600">
                             Performance
                           </span>
-                          <span className="text-sm font-bold text-indigo-600">
+                          <span className="text-sm font-medium text-indigo-600">
                             {user.performance}%
                           </span>
                         </div>
@@ -552,7 +552,7 @@ function TeacherUsers() {
                           <span className="text-xs font-semibold text-slate-600">
                             Attendance
                           </span>
-                          <span className="text-sm font-bold text-blue-600">
+                          <span className="text-sm font-medium text-blue-600">
                             {user.attendance}%
                           </span>
                         </div>
@@ -674,7 +674,7 @@ function TeacherUsers() {
               <div className="w-20 h-20 mx-auto mb-4 bg-indigo-50 rounded-2xl flex items-center justify-center">
                 <Users className="w-10 h-10 text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
+              <h3 className="text-xl font-medium text-slate-900 mb-2">
                 No users found
               </h3>
               <p className="text-slate-600 mb-6">

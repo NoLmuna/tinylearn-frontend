@@ -171,7 +171,7 @@ function Dashboard() {
           <div className="w-24 h-24 mx-auto mb-6 bg-[#F4C21A] rounded-full flex items-center justify-center animate-bounce shadow-lg border-4 border-white">
             <BookOpen className="w-12 h-12 text-white" />
           </div>
-          <div className="text-3xl text-indigo-700 font-black tracking-wide">
+          <div className="text-3xl text-indigo-700 font-semibold tracking-wide">
             Loading your adventure...
           </div>
           <p className="text-indigo-500 mt-3 font-semibold text-lg">
@@ -200,7 +200,7 @@ function Dashboard() {
                   className="h-14 w-14 object-contain"
                 />
               </div>
-              <span className="text-3xl font-black text-indigo-900 tracking-tight">
+              <span className="text-3xl font-semibold text-indigo-900 tracking-tight">
                 Tiny<span className="text-[#F4C21A]">Learn</span>
               </span>
             </Link>
@@ -209,7 +209,7 @@ function Dashboard() {
                 <p className="text-sm text-indigo-600 font-bold">
                   Ready to learn? 🚀
                 </p>
-                <p className="text-xl font-black text-indigo-900">
+                <p className="text-xl font-semibold text-indigo-900">
                   {user?.name}
                 </p>
               </div>
@@ -229,7 +229,7 @@ function Dashboard() {
         {/* Welcome Banner */}
         <div className="bg-gradient-to-r from-[#F4C21A] via-[#FFD700] to-[#FFA500] rounded-[3rem] shadow-2xl p-10 text-center relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-          <h1 className="text-5xl sm:text-6xl font-black text-indigo-900 mb-4 drop-shadow-sm">
+          <h1 className="text-5xl sm:text-6xl font-semibold text-indigo-900 mb-4 drop-shadow-sm">
             Hi {user?.name}! 🌟
           </h1>
           <p className="text-2xl text-indigo-800 font-bold drop-shadow-sm">
@@ -252,7 +252,7 @@ function Dashboard() {
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-xl transform -rotate-6">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-4xl font-black text-indigo-900 tracking-tight">
+            <h2 className="text-4xl font-semibold text-indigo-900 tracking-tight">
               My Lessons 📚
             </h2>
           </div>
@@ -260,7 +260,7 @@ function Dashboard() {
           {lessons.length === 0 ? (
             <div className="bg-white/80 backdrop-blur-sm rounded-[3rem] shadow-xl p-12 text-center border-4 border-dashed border-indigo-200">
               <BookOpen className="w-20 h-20 mx-auto text-indigo-300 mb-4 animate-bounce" />
-              <h3 className="text-2xl font-black text-indigo-900 mb-2">
+              <h3 className="text-2xl font-semibold text-indigo-900 mb-2">
                 No lessons right now!
               </h3>
               <p className="text-lg text-indigo-600 font-semibold">
@@ -282,7 +282,7 @@ function Dashboard() {
                         {lesson.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-2xl font-black text-indigo-900 mb-2 line-clamp-2 leading-tight">
+                        <h3 className="text-2xl font-semibold text-indigo-900 mb-2 line-clamp-2 leading-tight">
                           {lesson.title}
                         </h3>
                         <p className="text-md text-indigo-500 font-bold mb-3">
@@ -304,7 +304,7 @@ function Dashboard() {
                         <span className="font-bold text-indigo-700">
                           Your Progress
                         </span>
-                        <span className="font-black text-indigo-900 bg-white px-3 py-1 rounded-full shadow-sm">
+                        <span className="font-semibold text-indigo-900 bg-white px-3 py-1 rounded-full shadow-sm">
                           {lesson.completed} / {lesson.lessons}
                         </span>
                       </div>
@@ -322,7 +322,7 @@ function Dashboard() {
                       onClick={() => {
                         navigate(`/student/lessons/${lesson.id}`);
                       }}
-                      className="mt-6 w-full bg-[#F4C21A] hover:bg-[#FFD700] active:scale-95 text-indigo-900 font-black py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl text-xl border-b-4 border-yellow-600 active:border-b-0 active:mt-7 flex justify-center items-center gap-2"
+                      className="mt-6 w-full bg-[#F4C21A] hover:bg-[#FFD700] active:scale-95 text-indigo-900 font-semibold py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl text-xl border-b-4 border-yellow-600 active:border-b-0 active:mt-7 flex justify-center items-center gap-2"
                     >
                       {lesson.progress > 0
                         ? "Keep Going! 🚀"
@@ -341,7 +341,7 @@ function Dashboard() {
             <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-xl transform rotate-6">
               <FileCheck className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-4xl font-black text-indigo-900 tracking-tight">
+            <h2 className="text-4xl font-semibold text-indigo-900 tracking-tight">
               My Quests 🏆
             </h2>
           </div>
@@ -350,7 +350,7 @@ function Dashboard() {
             {assignments.length === 0 && (
               <div className="md:col-span-2 bg-white/80 backdrop-blur-sm rounded-[3rem] shadow-xl p-12 text-center border-4 border-dashed border-emerald-200">
                 <FileCheck className="w-20 h-20 mx-auto text-emerald-300 mb-4 animate-bounce" />
-                <h3 className="text-2xl font-black text-emerald-900 mb-2">
+                <h3 className="text-2xl font-semibold text-emerald-900 mb-2">
                   No active quests!
                 </h3>
                 <p className="text-lg text-emerald-600 font-semibold">
@@ -376,7 +376,7 @@ function Dashboard() {
                         {assignment.icon}
                       </div>
                       <div>
-                        <h3 className="text-2xl font-black text-indigo-900 mb-2 leading-tight">
+                        <h3 className="text-2xl font-semibold text-indigo-900 mb-2 leading-tight">
                           {assignment.title}
                         </h3>
                         <p className="text-md text-indigo-500 font-bold bg-indigo-50 inline-block px-3 py-1 rounded-lg">
@@ -398,14 +398,14 @@ function Dashboard() {
                       className={`w-6 h-6 ${assignment.urgent ? "text-red-600 animate-spin-slow" : "text-gray-500"}`}
                     />
                     <span
-                      className={`text-md font-black ${
+                      className={`text-md font-semibold ${
                         assignment.urgent ? "text-red-700" : "text-gray-700"
                       }`}
                     >
                       Due: {assignment.dueDate}
                     </span>
                     {assignment.urgent && (
-                      <span className="ml-auto bg-red-500 text-white text-sm font-black px-4 py-1.5 rounded-full shadow-md">
+                      <span className="ml-auto bg-red-500 text-white text-sm font-semibold px-4 py-1.5 rounded-full shadow-md">
                         HURRY! 🏃
                       </span>
                     )}
@@ -416,7 +416,7 @@ function Dashboard() {
                       onClick={() =>
                         navigate(`/student/assignments/${assignment.id}`)
                       }
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-black py-4 px-6 rounded-2xl transition-all shadow-lg text-xl border-b-4 border-green-700 active:border-b-0 active:mt-[4px] relative"
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-2xl transition-all shadow-lg text-xl border-b-4 border-green-700 active:border-b-0 active:mt-[4px] relative"
                     >
                       Completed! 🎉
                     </button>
@@ -429,7 +429,7 @@ function Dashboard() {
                         assignment.urgent
                           ? "bg-red-500 hover:bg-red-600 border-red-700 text-white"
                           : "bg-[#F4C21A] hover:bg-[#d4a617] border-[#c09615] text-black"
-                      } font-black py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl text-xl border-b-4 active:border-b-0 active:translate-y-1 relative`}
+                      } font-semibold py-4 px-6 rounded-2xl transition-all shadow-lg hover:shadow-xl text-xl border-b-4 active:border-b-0 active:translate-y-1 relative`}
                     >
                       {assignment.submission?.status === "draft"
                         ? "Continue Quest! ⚔️"
@@ -447,7 +447,7 @@ function Dashboard() {
           <div className="flex justify-center mb-4">
             <Award className="w-16 h-16 text-[#F4C21A]" />
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-2">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-2">
             Keep up the great work!
           </h3>
           <p className="text-lg text-gray-700 font-medium">

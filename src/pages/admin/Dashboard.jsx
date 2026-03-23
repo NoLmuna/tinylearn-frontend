@@ -120,7 +120,7 @@ function Dashboard() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
                     TinyLearn
                     <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white rounded-md">
                       ADMIN
@@ -201,7 +201,7 @@ function Dashboard() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-4xl font-black text-slate-900 mb-2">
+            <h2 className="text-4xl font-semibold text-slate-900 mb-2">
               Dashboard Overview
             </h2>
             <p className="text-lg text-slate-600">
@@ -235,7 +235,7 @@ function Dashboard() {
                 <p className="text-sm font-medium text-slate-600 mb-1">
                   {stat.title}
                 </p>
-                <p className="text-3xl font-black text-slate-900">
+                <p className="text-3xl font-semibold text-slate-900">
                   {stat.value}
                 </p>
               </CardContent>
@@ -248,7 +248,7 @@ function Dashboard() {
           <CardHeader className="border-b border-slate-100 bg-slate-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
+                <CardTitle className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
                   <Users className="w-6 h-6 text-indigo-600" />
                   Teacher Management
                 </CardTitle>

@@ -216,7 +216,7 @@ function CreateAssignment({ isOpen, onClose }) {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="border-b border-slate-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
-          <CardTitle className="text-2xl font-black flex items-center gap-2">
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <FileText className="w-6 h-6" />
             Create New Assignment
           </CardTitle>
@@ -247,7 +247,7 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
+              <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
               
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Title *</label>
@@ -306,7 +306,7 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Assignment Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Assignment Details</h3>
+              <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2">Assignment Details</h3>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -370,7 +370,7 @@ function CreateAssignment({ isOpen, onClose }) {
 
             {/* Student Assignment */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2 flex items-center gap-2">
                 <Users className="w-5 h-5" />
                 Assign To
               </h3>

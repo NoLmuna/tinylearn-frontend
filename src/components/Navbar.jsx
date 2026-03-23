@@ -65,7 +65,7 @@ export default function Navbar() {
               alt="TinyLearn"
               className="object-contain w-16 h-16"
             />
-            <span className="text-2xl font-black text-black">TinyLearn</span>
+            <span className="text-2xl font-semibold text-black">TinyLearn</span>
           </Link>
 
           <div className="items-center hidden space-x-8 md:flex">

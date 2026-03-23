@@ -99,7 +99,7 @@ function Login() {
                 </div>
               </div>
               <div>
-                <h1 className="text-3xl font-black text-white mb-1">
+                <h1 className="text-3xl font-semibold text-white mb-1">
                   TinyLearn Admin
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-[#F4C21A] text-sm font-semibold">

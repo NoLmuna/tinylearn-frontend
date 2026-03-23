@@ -1,4 +1,4 @@
-﻿import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAdmin } from "../../contexts/adminContext";
 import { Button } from "../../components/ui/button";
 import {
@@ -139,7 +139,7 @@ function Dashboard() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900">
+                  <h1 className="text-xl font-semibold text-slate-900">
                     Teacher Portal
                   </h1>
                 </div>
@@ -181,11 +181,11 @@ function Dashboard() {
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm">
                   {user?.firstName?.[0]?.toUpperCase() ?? "T"}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900">
+                  <p className="text-xs font-medium text-slate-900">
                     {teacherName}
                   </p>
                   <p className="text-xs text-slate-500">Teacher</p>
@@ -208,7 +208,7 @@ function Dashboard() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-black text-slate-900 mb-2">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-2">
             Welcome back, {teacherName}!
           </h2>
           <p className="text-slate-600 text-lg">
@@ -232,7 +232,7 @@ function Dashboard() {
                 <p className="text-sm font-medium text-slate-600 mb-1">
                   {stat.title}
                 </p>
-                <p className="text-3xl font-black text-slate-900 mb-2">
+                <p className="text-3xl font-semibold text-slate-900 mb-2">
                   {stat.value}
                 </p>
                 <p className="text-xs text-slate-500">{stat.description}</p>
@@ -244,7 +244,7 @@ function Dashboard() {
         {/* Quick Actions */}
         <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl font-black">Quick Actions</CardTitle>
+            <CardTitle className="text-2xl font-semibold">Quick Actions</CardTitle>
             <CardDescription>
               Common tasks to manage your classroom
             </CardDescription>
@@ -255,14 +255,14 @@ function Dashboard() {
                 <button
                   key={index}
                   onClick={() => navigate(action.path)}
-                  className="p-6 bg-white rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:shadow-lg transition-all group"
+                  className="p-6 bg-white rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:shadow-lg transition-all group flex flex-col items-center justify-center text-center w-full"
                 >
                   <div
                     className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
                   >
                     <action.icon className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-sm font-bold text-slate-900">
+                  <p className="text-sm font-semibold text-slate-900">
                     {action.title}
                   </p>
                 </button>
@@ -274,7 +274,7 @@ function Dashboard() {
         {/* Conversations preview */}
         <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="text-2xl font-black">
+            <CardTitle className="text-2xl font-semibold">
               Recent Messages
             </CardTitle>
             <CardDescription>Latest conversations with parents</CardDescription>
@@ -295,7 +295,7 @@ function Dashboard() {
                       to="/teacher/messages"
                       className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
                     >
-                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center font-medium text-indigo-700 flex-shrink-0">
                         {(other.firstName?.[0] ?? "?").toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -304,7 +304,7 @@ function Dashboard() {
                             {other.firstName} {other.lastName}
                           </p>
                           {conv.unreadCount > 0 && (
-                            <span className="w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                            <span className="w-5 h-5 bg-red-500 text-white text-xs font-medium rounded-full flex items-center justify-center">
                               {conv.unreadCount}
                             </span>
                           )}

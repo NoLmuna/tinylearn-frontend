@@ -293,7 +293,7 @@ function EditLesson({ isOpen, onClose, lesson }) {
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader className="border-b border-slate-100 flex flex-row items-center justify-between sticky top-0 bg-white z-10">
-          <CardTitle className="text-2xl font-black flex items-center gap-2">
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             <BookOpen className="w-6 h-6" />
             Edit Lesson
           </CardTitle>
@@ -324,7 +324,7 @@ function EditLesson({ isOpen, onClose, lesson }) {
 
             {/* Basic Information */}
             <div className="space-y-4">
-              <h3 className="text-lg font-black text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
+              <h3 className="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-2">Basic Information</h3>
               
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Title *</label>
@@ -500,7 +500,7 @@ function EditLesson({ isOpen, onClose, lesson }) {
             {/* Chapters Section */}
             <div className="space-y-4 pt-4 border-t border-slate-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-slate-900">Chapters *</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Chapters *</h3>
                 <Button
                   type="button"
                   onClick={addChapter}

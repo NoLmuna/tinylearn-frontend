@@ -147,7 +147,7 @@ function TeacherMaterials() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900">
+                  <h1 className="text-xl font-semibold text-slate-900">
                     Teacher Portal
                   </h1>
                   <p className="text-xs text-indigo-600 font-semibold">
@@ -196,14 +196,14 @@ function TeacherMaterials() {
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm">
                   {teacherUser.name
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900">
+                  <p className="text-xs font-medium text-slate-900">
                     {teacherUser.name}
                   </p>
                   <p className="text-xs text-slate-500">Teacher</p>
@@ -226,7 +226,7 @@ function TeacherMaterials() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-black text-slate-900 mb-2">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-2">
             Learning Materials
           </h2>
           <p className="text-slate-600 text-lg">
@@ -243,7 +243,7 @@ function TeacherMaterials() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Total Lessons
                   </p>
-                  <p className="text-4xl font-black text-slate-900">
+                  <p className="text-4xl font-semibold text-slate-900">
                     {lessons.length}
                   </p>
                 </div>
@@ -260,7 +260,7 @@ function TeacherMaterials() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Active Assignments
                   </p>
-                  <p className="text-4xl font-black text-slate-900">
+                  <p className="text-4xl font-semibold text-slate-900">
                     {assignments.filter((a) => a.isActive !== false).length}
                   </p>
                 </div>
@@ -277,7 +277,7 @@ function TeacherMaterials() {
                   <p className="text-sm font-medium text-slate-600 mb-1">
                     Active Lessons
                   </p>
-                  <p className="text-4xl font-black text-slate-900">
+                  <p className="text-4xl font-semibold text-slate-900">
                     {lessons.filter((l) => l.isActive !== false).length}
                   </p>
                 </div>
@@ -322,7 +322,7 @@ function TeacherMaterials() {
           <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="border-b border-slate-100 bg-slate-50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-2xl font-black">
+                <CardTitle className="text-2xl font-semibold">
                   Learning Lessons
                 </CardTitle>
                 <div className="flex gap-3">
@@ -389,7 +389,7 @@ function TeacherMaterials() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <h3
-                                className={`font-bold ${!lesson.isActive ? "text-slate-500" : "text-slate-900"}`}
+                                className={`font-medium ${!lesson.isActive ? "text-slate-500" : "text-slate-900"}`}
                               >
                                 {lesson.title}
                               </h3>
@@ -493,7 +493,7 @@ function TeacherMaterials() {
           <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="border-b border-slate-100 bg-slate-50">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-2xl font-black">
+                <CardTitle className="text-2xl font-semibold">
                   Assignments
                 </CardTitle>
                 <Button
@@ -523,25 +523,25 @@ function TeacherMaterials() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-slate-200">
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Title
                         </th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Linked Lesson
                         </th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Due Date
                         </th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Submissions
                         </th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Type
                         </th>
-                        <th className="text-left py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-left py-4 px-4 text-sm font-medium text-slate-700">
                           Status
                         </th>
-                        <th className="text-right py-4 px-4 text-sm font-bold text-slate-700">
+                        <th className="text-right py-4 px-4 text-sm font-medium text-slate-700">
                           Actions
                         </th>
                       </tr>
@@ -677,13 +677,13 @@ function TeacherMaterials() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-2xl shadow-2xl">
             <CardHeader className="border-b border-slate-100">
-              <CardTitle className="text-2xl font-black">
+              <CardTitle className="text-2xl font-semibold">
                 Upload Learning Module
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Module Title
                 </label>
                 <input
@@ -694,7 +694,7 @@ function TeacherMaterials() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Description
                 </label>
                 <textarea
@@ -705,7 +705,7 @@ function TeacherMaterials() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Upload File
                 </label>
                 <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer">

@@ -148,7 +148,7 @@ function SpecLesson() {
           <div className="w-24 h-24 mx-auto mb-6 bg-[#F4C21A] rounded-full flex items-center justify-center animate-bounce shadow-lg border-4 border-white">
             <BookOpen className="w-12 h-12 text-white" />
           </div>
-          <div className="text-3xl text-indigo-700 font-black tracking-wide">
+          <div className="text-3xl text-indigo-700 font-semibold tracking-wide">
             Loading lesson...
           </div>
           <p className="text-indigo-500 mt-3 font-semibold text-lg">
@@ -165,7 +165,7 @@ function SpecLesson() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-[3rem] shadow-2xl p-12 text-center border-4 border-dashed border-indigo-200">
             <BookOpen className="w-24 h-24 mx-auto text-indigo-300 mb-4 animate-pulse" />
-            <h3 className="text-3xl font-black text-indigo-900 mb-2">
+            <h3 className="text-3xl font-semibold text-indigo-900 mb-2">
               Lesson not found
             </h3>
             <p className="text-lg text-indigo-600 font-semibold mb-8">
@@ -173,7 +173,7 @@ function SpecLesson() {
             </p>
             <button
               onClick={() => navigate("/student/dashboard")}
-              className="bg-[#F4C21A] hover:bg-[#FFD700] text-indigo-900 font-black py-4 px-8 rounded-2xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-xl border-b-4 border-yellow-600 active:border-b-0 active:translate-y-1"
+              className="bg-[#F4C21A] hover:bg-[#FFD700] text-indigo-900 font-semibold py-4 px-8 rounded-2xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-xl border-b-4 border-yellow-600 active:border-b-0 active:translate-y-1"
             >
               <ArrowLeft className="w-6 h-6 inline mr-2" />
               Back to Dashboard 🚀
@@ -207,7 +207,7 @@ function SpecLesson() {
                   className="h-14 w-14 object-contain transition-transform group-hover:scale-110"
                 />
               </div>
-              <span className="text-3xl font-black text-indigo-900 tracking-tight hidden sm:block">
+              <span className="text-3xl font-semibold text-indigo-900 tracking-tight hidden sm:block">
                 Tiny<span className="text-[#F4C21A]">Learn</span>
               </span>
             </Link>
@@ -241,7 +241,7 @@ function SpecLesson() {
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-4xl font-black text-gray-900 mb-2">
+              <h1 className="text-4xl font-semibold text-gray-900 mb-2">
                 {lesson.title}
               </h1>
               {lesson.description && (
@@ -325,7 +325,7 @@ function SpecLesson() {
           <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white mb-1">
+                <h2 className="text-2xl font-semibold text-white mb-1">
                   {currentChapter.chapter}
                 </h2>
                 <p className="text-indigo-100">
@@ -426,7 +426,7 @@ function SpecLesson() {
         {currentChapterIndex === chapters.length - 1 && (
           <div className="mt-8 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl shadow-xl p-8 text-center">
             <Award className="w-16 h-16 mx-auto text-white mb-4" />
-            <h3 className="text-2xl font-black text-white mb-2">
+            <h3 className="text-2xl font-semibold text-white mb-2">
               Amazing work!
             </h3>
             <p className="text-lg text-white font-semibold">

@@ -102,7 +102,7 @@ function TeacherMessages() {
                   className="h-10 w-10 object-contain"
                 />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900">
+                  <h1 className="text-xl font-semibold text-slate-900">
                     Teacher Portal
                   </h1>
                 </div>
@@ -144,11 +144,11 @@ function TeacherMessages() {
                 <Bell className="w-5 h-5" />
               </Button>
               <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm">
                   {user?.firstName?.[0]?.toUpperCase() ?? "T"}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900">
+                  <p className="text-xs font-medium text-slate-900">
                     {teacherName}
                   </p>
                   <p className="text-xs text-slate-500">Teacher</p>
@@ -171,7 +171,7 @@ function TeacherMessages() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-black text-slate-900 mb-2">Messages</h2>
+          <h2 className="text-3xl font-semibold text-slate-900 mb-2">Messages</h2>
           <p className="text-slate-600 text-lg">Communicate with parents</p>
         </div>
 
@@ -212,14 +212,14 @@ function TeacherMessages() {
                         className={`w-full p-4 border-b border-slate-200 hover:bg-white transition-all text-left ${isSelected ? "bg-white border-l-4 border-l-indigo-500" : ""}`}
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm flex-shrink-0">
                             {(
                               conv.partner?.firstName?.[0] ?? "?"
                             ).toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <p className="font-bold text-slate-900 truncate">
+                              <p className="font-medium text-slate-900 truncate">
                                 {conv.partner?.firstName}{" "}
                                 {conv.partner?.lastName}
                               </p>
@@ -259,13 +259,13 @@ function TeacherMessages() {
                 <>
                   <CardHeader className="border-b border-slate-200 bg-white shrink-0">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-white font-medium text-sm">
                         {(
                           selectedConv?.partner?.firstName?.[0] ?? "?"
                         ).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900">
+                        <p className="font-medium text-slate-900">
                           {selectedConv?.partner?.firstName}{" "}
                           {selectedConv?.partner?.lastName}
                         </p>

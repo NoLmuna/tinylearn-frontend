@@ -206,7 +206,7 @@ export default function Landing() {
             Let's Make Learning Fun!
           </Badge>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-slate-800 mb-8 leading-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-semibold text-slate-800 mb-8 leading-tight">
             Where Little Minds Begin{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F4C21A] via-[#FF6B9D] to-[#4CC9F0]">
               Big Adventures!
@@ -287,7 +287,7 @@ export default function Landing() {
             >
               <Star className="w-16 h-16 text-[#F4C21A]" />
             </motion.div>
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-800 mb-6">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-slate-800 mb-6">
               Amazing Things You Can Do!
             </h2>
             <p className="text-2xl text-slate-600 max-w-3xl mx-auto font-medium">
@@ -320,7 +320,7 @@ export default function Landing() {
                             />
                           </div>
                           <div className="flex-1 mt-4 sm:mt-0">
-                            <CardTitle className="text-3xl mb-3 font-black text-slate-800 group-hover:text-black transition-colors">
+                            <CardTitle className="text-3xl mb-3 font-semibold text-slate-800 group-hover:text-black transition-colors">
                               {feature.title}
                             </CardTitle>
                             <CardDescription className="text-lg text-slate-700 leading-relaxed font-medium">
@@ -352,7 +352,7 @@ export default function Landing() {
                       <CheckCircle2 className="w-12 h-12 text-[#52B788]" />
                     </div>
                   </div>
-                  <CardTitle className="text-2xl font-black text-slate-800">
+                  <CardTitle className="text-2xl font-semibold text-slate-800">
                     Safe & Secure
                   </CardTitle>
                   <CardDescription className="text-base text-slate-600 font-medium mt-3">
@@ -371,7 +371,7 @@ export default function Landing() {
                       <BookOpen className="w-12 h-12 text-[#4CC9F0]" />
                     </div>
                   </div>
-                  <CardTitle className="text-2xl font-black text-slate-800">
+                  <CardTitle className="text-2xl font-semibold text-slate-800">
                     Amazing Teachers
                   </CardTitle>
                   <CardDescription className="text-base text-slate-600 font-medium mt-3">
@@ -390,7 +390,7 @@ export default function Landing() {
                       <Zap className="w-12 h-12 text-[#FF6B9D]" />
                     </div>
                   </div>
-                  <CardTitle className="text-2xl font-black text-slate-800">
+                  <CardTitle className="text-2xl font-semibold text-slate-800">
                     Learn Anytime!
                   </CardTitle>
                   <CardDescription className="text-base text-slate-600 font-medium mt-3">
@@ -433,7 +433,7 @@ export default function Landing() {
             >
               <MessageCircle className="w-16 h-16 text-[#F4C21A]" />
             </motion.div>
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-800 mb-6">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-slate-800 mb-6">
               What People Are Saying!
             </h2>
             <p className="text-xl text-slate-700 font-medium">
@@ -467,7 +467,7 @@ export default function Landing() {
                       "{testimonial.content}"
                     </CardDescription>
                     <div className="mt-auto text-center pt-6 border-t-2 border-slate-100">
-                      <CardTitle className="text-xl font-black text-slate-800">
+                      <CardTitle className="text-xl font-semibold text-slate-800">
                         {testimonial.name}
                       </CardTitle>
                       <CardDescription className="text-base font-bold text-[#F4C21A] mt-1">
@@ -501,7 +501,7 @@ export default function Landing() {
                   <BookOpen className="w-12 h-12 text-[#4CC9F0]" />
                 </div>
               </div>
-              <h2 className="text-5xl sm:text-6xl font-black text-slate-800 leading-tight">
+              <h2 className="text-5xl sm:text-6xl font-semibold text-slate-800 leading-tight">
                 Learning Made Fun & Exciting!
               </h2>
               <div className="space-y-6 text-xl text-slate-600 leading-relaxed font-medium">
@@ -624,7 +624,7 @@ export default function Landing() {
             <div className="flex justify-center mb-6">
               <MessageCircle className="w-16 h-16 text-[#FF6B9D]" />
             </div>
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-800 mb-6">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-slate-800 mb-6">
               Let's Get Started!
             </h2>
             <p className="text-2xl text-slate-700 max-w-3xl mx-auto font-medium">
@@ -662,7 +662,7 @@ export default function Landing() {
                   </motion.div>
 
                   <div className="relative z-10 h-full flex flex-col justify-center">
-                    <h3 className="text-4xl font-black mb-10 leading-tight">
+                    <h3 className="text-4xl font-semibold mb-10 leading-tight">
                       Level Up Learning Center
                     </h3>
                     <div className="space-y-8">
@@ -674,7 +674,7 @@ export default function Landing() {
                           <BookOpen className="w-8 h-8 text-black" />
                         </div>
                         <div>
-                          <h4 className="text-2xl font-black mb-2">
+                          <h4 className="text-2xl font-semibold mb-2">
                             Where to Find Us
                           </h4>
                           <p className="text-lg leading-relaxed font-medium">
@@ -693,7 +693,7 @@ export default function Landing() {
                           <MessageCircle className="w-8 h-8 text-black" />
                         </div>
                         <div>
-                          <h4 className="text-2xl font-black mb-2">Call Us</h4>
+                          <h4 className="text-2xl font-semibold mb-2">Call Us</h4>
                           <p className="text-xl font-bold">(047) 222 5321</p>
                         </div>
                       </motion.div>
@@ -706,7 +706,7 @@ export default function Landing() {
                           <Zap className="w-8 h-8 text-black" />
                         </div>
                         <div>
-                          <h4 className="text-2xl font-black mb-2">Email Us</h4>
+                          <h4 className="text-2xl font-semibold mb-2">Email Us</h4>
                           <p className="text-lg font-bold">
                             lulc2014@gmail.com
                           </p>
@@ -717,7 +717,7 @@ export default function Landing() {
                 </div>
 
                 <div className="p-12 bg-white flex flex-col justify-center">
-                  <h3 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
+                  <h3 className="text-3xl font-semibold text-slate-800 mb-8 flex items-center gap-3">
                     <MessageCircle className="w-10 h-10 text-[#4CC9F0]" /> Send
                     Us a Message!
                   </h3>
@@ -787,7 +787,7 @@ export default function Landing() {
                 <div className="p-3 bg-gradient-to-br from-[#F4C21A] to-[#FFD93D] rounded-xl">
                   <Star className="w-8 h-8 text-black" />
                 </div>
-                <h3 className="text-3xl font-black">
+                <h3 className="text-3xl font-semibold">
                   Tiny<span className="text-[#F4C21A]">Learn</span>
                 </h3>
               </div>
@@ -887,7 +887,7 @@ export default function Landing() {
         onClick={scrollToTop}
         className="fixed bottom-8 right-8 z-50 w-14 h-14 bg-gradient-to-br from-[#F4C21A] to-[#FFD93D] rounded-2xl flex items-center justify-center shadow-2xl text-black border-4 border-white cursor-pointer"
       >
-        <ArrowUp className="w-8 h-8 font-black" />
+        <ArrowUp className="w-8 h-8 font-semibold" />
       </motion.button>
     </div>
   );

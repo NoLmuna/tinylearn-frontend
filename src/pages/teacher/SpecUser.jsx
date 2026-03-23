@@ -220,7 +220,7 @@ function SpecUser() {
             <div className="w-20 h-20 mx-auto mb-4 bg-indigo-50 rounded-2xl flex items-center justify-center animate-pulse">
               <User className="w-10 h-10 text-purple-400" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
+            <h3 className="text-xl font-medium text-slate-900 mb-2">
               Loading user...
             </h3>
             <p className="text-slate-600">Please wait</p>
@@ -236,7 +236,7 @@ function SpecUser() {
         <Card className="w-full max-w-md">
           <CardContent className="text-center py-16">
             <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-400" />
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
+            <h3 className="text-xl font-medium text-slate-900 mb-2">
               User not found
             </h3>
             <p className="text-slate-600 mb-6">
@@ -268,7 +268,7 @@ function SpecUser() {
                 className="h-10 w-10 object-contain"
               />
               <div className="hidden sm:block">
-                <h1 className="text-xl font-black text-slate-900">
+                <h1 className="text-xl font-semibold text-slate-900">
                   Teacher Portal
                 </h1>
               </div>
@@ -307,13 +307,13 @@ function SpecUser() {
                   type === "student"
                     ? "from-blue-400 to-blue-600"
                     : "from-green-400 to-green-600"
-                } flex items-center justify-center text-white font-bold text-2xl shadow-md`}
+                } flex items-center justify-center text-white font-medium text-2xl shadow-md`}
               >
                 {user.firstName?.[0]}
                 {user.lastName?.[0]}
               </div>
               <div className="flex-1">
-                <h2 className="text-3xl font-black text-slate-900 mb-2">
+                <h2 className="text-3xl font-semibold text-slate-900 mb-2">
                   {user.firstName} {user.lastName}
                 </h2>
                 <span
@@ -343,7 +343,7 @@ function SpecUser() {
         {/* User Details Card */}
         <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader>
-            <CardTitle className="text-2xl font-black">
+            <CardTitle className="text-2xl font-semibold">
               {isEditing ? "Edit User Information" : "User Information"}
             </CardTitle>
           </CardHeader>
@@ -362,7 +362,7 @@ function SpecUser() {
               <div className="grid grid-cols-2 gap-6">
                 {/* First Name */}
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     First Name *
                   </label>
                   {isEditing ? (
@@ -393,7 +393,7 @@ function SpecUser() {
 
                 {/* Last Name */}
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Last Name *
                   </label>
                   {isEditing ? (
@@ -424,7 +424,7 @@ function SpecUser() {
 
                 {/* Email (Read-only) */}
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                     <Mail className="w-4 h-4" />
                     Email
                   </label>
@@ -438,7 +438,7 @@ function SpecUser() {
                 {type === "student" && (
                   <>
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                      <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                         <Award className="w-4 h-4" />
                         Grade
                       </label>
@@ -463,7 +463,7 @@ function SpecUser() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
                         Age
                       </label>
                       {isEditing ? (
@@ -500,7 +500,7 @@ function SpecUser() {
                 {type === "parent" && (
                   <>
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                      <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                         <Phone className="w-4 h-4" />
                         Phone Number
                       </label>
@@ -532,7 +532,7 @@ function SpecUser() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
                         Relationship
                       </label>
                       {isEditing ? (
@@ -561,7 +561,7 @@ function SpecUser() {
 
                 {/* Account Status */}
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Account Status
                   </label>
                   {isEditing ? (
@@ -589,7 +589,7 @@ function SpecUser() {
 
                 {/* Is Active */}
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
                     Account Active
                   </label>
                   {isEditing ? (
@@ -620,7 +620,7 @@ function SpecUser() {
 
                 {/* Last Login */}
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mb-2">
                     <Calendar className="w-4 h-4" />
                     Last Login
                   </label>
@@ -665,7 +665,7 @@ function SpecUser() {
         {type === "student" && !isEditing && (
           <Card className="border border-slate-200 shadow-sm mt-6">
             <CardHeader>
-              <CardTitle className="text-2xl font-black flex items-center gap-2">
+              <CardTitle className="text-2xl font-semibold flex items-center gap-2">
                 <BookOpen className="w-6 h-6 text-indigo-600" />
                 Academic Progress & Activity
               </CardTitle>
@@ -696,7 +696,7 @@ function SpecUser() {
                           )}
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-800 text-lg">
+                          <h4 className="font-medium text-slate-800 text-lg">
                             {prog.lessonId?.title || "Educational Material"}
                           </h4>
                           <p className="text-sm font-semibold text-slate-500 mt-0.5 capitalize">
@@ -706,7 +706,7 @@ function SpecUser() {
                       </div>
                       <div className="text-right">
                         <span
-                          className={`text-2xl font-black ${prog.progressPercentage === 100 ? "text-emerald-500" : "text-amber-500"}`}
+                          className={`text-2xl font-semibold ${prog.progressPercentage === 100 ? "text-emerald-500" : "text-amber-500"}`}
                         >
                           {prog.progressPercentage || 0}%
                         </span>

@@ -77,7 +77,7 @@ function Teachers() {
               <Link to="/admin/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <img src={logo} alt="TinyLearn" className="h-10 w-10 object-contain" />
                 <div className="hidden sm:block">
-                  <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  <h1 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
                     TinyLearn
                     <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white rounded-md">
                       ADMIN
@@ -154,7 +154,7 @@ function Teachers() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-4xl font-black text-slate-900 mb-2">Teacher Management</h2>
+          <h2 className="text-4xl font-semibold text-slate-900 mb-2">Teacher Management</h2>
           <p className="text-lg text-slate-600">Manage and monitor all teacher accounts</p>
         </div>
 
@@ -166,7 +166,7 @@ function Teachers() {
                 <p className="text-sm font-medium text-slate-600">Total Teachers</p>
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
-              <p className="text-3xl font-black text-slate-900">{teachers.length}</p>
+              <p className="text-3xl font-semibold text-slate-900">{teachers.length}</p>
               <p className="text-xs text-green-600 font-semibold mt-1">+2 this month</p>
             </CardContent>
           </Card>
@@ -176,7 +176,7 @@ function Teachers() {
                 <p className="text-sm font-medium text-slate-600">Total Classes</p>
                 <LayoutDashboard className="w-5 h-5 text-emerald-600" />
               </div>
-              <p className="text-3xl font-black text-slate-900">{teachers.reduce((acc, t) => acc + t.classes, 0)}</p>
+              <p className="text-3xl font-semibold text-slate-900">{teachers.reduce((acc, t) => acc + t.classes, 0)}</p>
               <p className="text-xs text-slate-500 font-semibold mt-1">Across all teachers</p>
             </CardContent>
           </Card>
@@ -186,7 +186,7 @@ function Teachers() {
                 <p className="text-sm font-medium text-slate-600">Total Students</p>
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
-              <p className="text-3xl font-black text-slate-900">{teachers.reduce((acc, t) => acc + t.students, 0)}</p>
+              <p className="text-3xl font-semibold text-slate-900">{teachers.reduce((acc, t) => acc + t.students, 0)}</p>
               <p className="text-xs text-slate-500 font-semibold mt-1">Learning actively</p>
             </CardContent>
           </Card>
@@ -196,7 +196,7 @@ function Teachers() {
                 <p className="text-sm font-medium text-slate-600">Subjects</p>
                 <BarChart3 className="w-5 h-5 text-purple-600" />
               </div>
-              <p className="text-3xl font-black text-slate-900">{subjects.length - 1}</p>
+              <p className="text-3xl font-semibold text-slate-900">{subjects.length - 1}</p>
               <p className="text-xs text-slate-500 font-semibold mt-1">Different subjects</p>
             </CardContent>
           </Card>
@@ -206,7 +206,7 @@ function Teachers() {
         <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="border-b border-slate-100 bg-slate-50">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <CardTitle className="text-2xl font-black text-slate-900">All Teachers</CardTitle>
+              <CardTitle className="text-2xl font-semibold text-slate-900">All Teachers</CardTitle>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Download className="w-4 h-4" />

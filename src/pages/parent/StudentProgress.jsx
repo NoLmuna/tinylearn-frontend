@@ -295,7 +295,7 @@ function StudentProgress() {
                                     />
                                   </div>
                                 </div>
-                                <div className="text-2xl font-black text-gray-900">
+                                <div className="text-2xl font-semibold text-gray-900">
                                   {lesson.progress}%
                                 </div>
                               </div>
